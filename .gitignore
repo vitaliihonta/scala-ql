@@ -1,0 +1,4 @@
+version
+.sbt/
+target/
+project/project
