@@ -81,7 +81,7 @@ abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
             (_, s) => (1 to s.length / 10).map(_.toString).toList
           ),
           StringBindTransformation(
-            s => select[String].filter(_.length == s.length).map(_.toUpperCase),
+            s => select[String].where(_.length == s.length).map(_.toUpperCase),
             (strings, s) => strings.filter(_.length == s.length).map(_.toUpperCase)
           ),
           StringBindTransformation(
@@ -105,13 +105,13 @@ abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
     val simple: QueryTestFixture = QueryTestFixture(select[String], (strings, _) => strings)
 
     val filtered: QueryTestFixture =
-      QueryTestFixture(select[String].filter(_.length > 5), (strings, _) => strings.filter(_.length > 5))
+      QueryTestFixture(select[String].where(_.length > 5), (strings, _) => strings.filter(_.length > 5))
 
     val mapped: QueryTestFixture =
       QueryTestFixture(select[String].map(_.toUpperCase), (strings, _) => strings.map(_.toUpperCase))
 
     val chained: QueryTestFixture = QueryTestFixture(
-      select[String].filter(_.length > 2).map(_.capitalize).sorted,
+      select[String].where(_.length > 2).map(_.capitalize).sorted,
       (strings, _) => strings.filter(_.length > 2).map(_.capitalize).sorted
     )
 

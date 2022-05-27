@@ -18,13 +18,13 @@ sealed trait Query[-In, +Out] {
   def collect[B](pf: PartialFunction[Out, B]): Query[In, B] =
     mapFilter(pf.lift)
 
-  def filter(p: Predicate[Out]): Query[In, Out] =
+  def where(p: Predicate[Out]): Query[In, Out] =
     mapFilter(x => Some(x).filter(p))
 
-  def withFilter(p: Predicate[Out]): Query[In, Out] = filter(p)
+  def withFilter(p: Predicate[Out]): Query[In, Out] = where(p)
 
-  def filterNot(p: Predicate[Out]): Query[In, Out] =
-    filter(!p(_))
+  def whereNot(p: Predicate[Out]): Query[In, Out] =
+    where(!p(_))
 
   def mapConcat[B](f: Out => Iterable[B]): Query[In, B] =
     flatMap(out => new Query.Const[B](f(out)))
@@ -32,8 +32,8 @@ sealed trait Query[-In, +Out] {
   def flatMap[In2 <: In, B](f: Out => Query[In2, B]): Query[In2, B] =
     new Query.FlatMapQuery[In2, Out, B](this, f)
 
-  def filterM[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
-    new Query.FilterMQuery[In2, Out](this, p)
+  def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
+    new Query.WhereSubQuery[In2, Out](this, p)
 
   def ++[In2 <: In, Out0 >: Out](that: Query[In2, Out0]): Query[In2, Out0] =
     union(that)
@@ -114,8 +114,8 @@ object Query {
     override def map[B](f: Out1 => B): Query[In, B] =
       new FlatMapQuery[In, Out0, B](source, projectM(_).map(f))
 
-    override def filter(p: Predicate[Out1]): Query[In, Out1] =
-      new FlatMapQuery[In, Out0, Out1](source, projectM(_).filter(p))
+    override def where(p: Predicate[Out1]): Query[In, Out1] =
+      new FlatMapQuery[In, Out0, Out1](source, projectM(_).where(p))
 
     override def toString: String = s"$source -> flatMap"
   }
@@ -131,18 +131,18 @@ object Query {
     override def toString: String = s"$source -> mapFilter"
   }
 
-  final class FilterMQuery[In, Out](
+  final class WhereSubQuery[In, Out](
     private[scalaql] val source:    Query[In, Out],
     private[scalaql] val predicate: Out => QueryResult[In, Boolean])
       extends Query[In, Out] {
 
-    override def filter(p: Predicate[Out]): Query[In, Out] =
-      new FilterMQuery[In, Out](source, x => predicate(x).map(_ && p(x)))
+    override def where(p: Predicate[Out]): Query[In, Out] =
+      new WhereSubQuery[In, Out](source, x => predicate(x).map(_ && p(x)))
 
     override def toString: String = s"$source -> filterM"
 
-    override def filterM[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
-      new FilterMQuery[In2, Out](
+    override def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
+      new WhereSubQuery[In2, Out](
         source,
         out =>
           predicate(out).flatMap {
@@ -232,8 +232,8 @@ object Query {
   final class UnionQuery[In, Out](private[scalaql] val left: Query[In, Out], private[scalaql] val right: Query[In, Out])
       extends Query[In, Out] {
 
-    override def filter(p: Predicate[Out]): Query[In, Out] =
-      new UnionQuery[In, Out](left.filter(p), right.filter(p))
+    override def where(p: Predicate[Out]): Query[In, Out] =
+      new UnionQuery[In, Out](left.where(p), right.where(p))
 
     override def map[B](f: Out => B): Query[In, B] =
       new UnionQuery[In, B](left.map(f), right.map(f))
@@ -244,8 +244,8 @@ object Query {
     override def union[In2 <: In, Out0 >: Out](that: Query[In2, Out0]): Query[In2, Out0] =
       new UnionQuery[In2, Out0](left, right union that)
 
-    override def filterM[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
-      new UnionQuery[In2, Out](left.filterM(p), right.filterM(p))
+    override def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
+      new UnionQuery[In2, Out](left.whereSubQuery(p), right.whereSubQuery(p))
 
     override def toString: String = s"($left UNION $right)"
   }

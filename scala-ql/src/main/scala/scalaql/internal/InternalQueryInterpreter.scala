@@ -64,7 +64,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           )
         )
 
-      case query: Query.FilterMQuery[In, Out] =>
+      case query: Query.WhereSubQuery[In, Out] =>
         import query._
         interpret[In, Out](in, source)(
           Step[Out](

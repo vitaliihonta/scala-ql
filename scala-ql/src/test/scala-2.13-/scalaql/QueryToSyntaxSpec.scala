@@ -8,8 +8,8 @@ class QueryToSyntaxSpec extends ScalaqlUnitSpec {
       val people = arbitraryN[Person]
 
       val query: Query[From[Person], Person] = select[Person]
-        .filter(_.profession == Profession.Developer)
-        .filter(_.age >= 18)
+        .where(_.profession == Profession.Developer)
+        .where(_.age >= 18)
         .sortBy(_.age)
         .map(person => person.copy(name = s"Engineer ${person.name}"))
 

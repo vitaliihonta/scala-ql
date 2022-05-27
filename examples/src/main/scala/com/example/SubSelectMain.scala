@@ -7,10 +7,10 @@ object SubSelectMain extends App {
 
   def hasAdults(faculty: Faculty) =
     select[Student]
-      .filter(_.faculty == faculty.name)
+      .where(_.faculty == faculty.name)
       .exists(_.age >= 18)
 
-  val query = select[Faculty].filterM(hasAdults)
+  val query = select[Faculty].whereSubQuery(hasAdults)
 
   println {
     query.toList

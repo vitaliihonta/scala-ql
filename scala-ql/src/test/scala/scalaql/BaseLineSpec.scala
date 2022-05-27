@@ -35,7 +35,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       }
 
       val query = select[Company]
-        .filterM(company => select.from(offices).exists(_.floors >= minFloors(company)))
+        .whereSubQuery(company => select.from(offices).exists(_.floors >= minFloors(company)))
         .map(_.name)
 
       val expectedResult = companies
@@ -49,8 +49,8 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val people = arbitraryN[Person]
 
       val query: Query[From[Person], Person] = select[Person]
-        .filter(_.profession == Profession.Developer)
-        .filter(_.age >= 18)
+        .where(_.profession == Profession.Developer)
+        .where(_.age >= 18)
         .sortBy(_.age)
         .map(person => person.copy(name = s"Engineer ${person.name}"))
 
@@ -151,8 +151,8 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       val query: Query[From[Company] with From[Person], Profession] = {
         select[Person]
-          .filterM(person => select[Company].exists(_.industry == person.industry))
-          .filter(_.age >= 30)
+          .whereSubQuery(person => select[Company].exists(_.industry == person.industry))
+          .where(_.age >= 30)
           .map(_.profession)
       }
 
@@ -194,7 +194,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val companies = arbitraryN[Company]
 
       val query = select[Person]
-        .filter(_.age >= 18)
+        .where(_.age >= 18)
         .join(select[Company])
         .on(_.profession.industries contains _.industry)
 
@@ -216,7 +216,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val companies = arbitraryN[Company]
 
       val query = select[Person]
-        .filter(_.age >= 18)
+        .where(_.age >= 18)
         .crossJoin(select[Company])
         .on(_.profession.industries contains _.industry)
 
@@ -238,7 +238,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val companies = arbitraryN[Company]
 
       val query = select[Person]
-        .filter(_.age >= 18)
+        .where(_.age >= 18)
         .leftJoin(select[Company])
         .on(_.profession.industries contains _.industry)
 
@@ -276,8 +276,8 @@ class BaseLineSpec extends ScalaqlUnitSpec {
     "correctly process query with simple union" in repeated {
       val people = arbitraryN[Person]
 
-      val query = select[Person].filter(_.profession == Profession.Developer) ++
-        select[Person].filter(_.age >= 18)
+      val query = select[Person].where(_.profession == Profession.Developer) ++
+        select[Person].where(_.age >= 18)
 
       val expectedResult = {
         people.filter(_.profession == Profession.Developer) ++ people.filter(_.age >= 18)
@@ -294,9 +294,9 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       def result(p: Person, w: Workspace) = s"${p.name} is on ${w.floor} floor of ${w.office}"
 
-      val query = (select[Person].filter(_.profession == Profession.Developer) ++
-        select[Person].filter(_.age >= 18) ++
-        select[Person].filterM(person => select[Company].exists(c => person.profession.industries contains c.industry)))
+      val query = (select[Person].where(_.profession == Profession.Developer) ++
+        select[Person].where(_.age >= 18) ++
+        select[Person].whereSubQuery(person => select[Company].exists(c => person.profession.industries contains c.industry)))
         .join(select[Workspace])
         .on(_.name == _.employee)
         .map { case (p, w) => result(p, w) }
@@ -329,7 +329,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .map(WorkspaceInfo.tupled)
 
       val query2 = select[WorkspaceInfo]
-        .filter(_.office.floors > 2)
+        .where(_.office.floors > 2)
         .map(_.office.company)
 
       val query: Query[From[Office] with From[Workspace], String] = query1 >>> query2

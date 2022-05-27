@@ -7,7 +7,7 @@ object ExistsMain extends App {
 
   val query = for {
     studentGradesByFaculty <- select[Student]
-                               .filter(_.age >= 18)
+                               .where(_.age >= 18)
                                .groupBy(_.faculty)
                                .aggregate((_, students) => students.avgBy(_.age.toDouble) && students.sumBy(_.grade))
                                .map { case (fac, age, grade) => (fac, (age, grade)) }

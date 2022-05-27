@@ -48,7 +48,7 @@ class FunctorFilterLaws extends ScalaqlLawsSpec("FunctorFilter") {
     (testInput: QueryTestFixture, testData: TestData, p: StringPredicate) =>
       import testData._
 
-      val left = testInput.query.filter(p.predicate).toList.run(from(strings) & from(ints))
+      val left = testInput.query.where(p.predicate).toList.run(from(strings) & from(ints))
 
       val right = testInput.query.mapFilter(x => Some(x).filter(p.predicate)).toList.run(from(strings) & from(ints))
 
@@ -61,9 +61,9 @@ class FunctorFilterLaws extends ScalaqlLawsSpec("FunctorFilter") {
     (testInput: QueryTestFixture, testData: TestData, p: StringPredicate) =>
       import testData._
 
-      val left = testInput.query.filterNot(p.predicate).toList.run(from(strings) & from(ints))
+      val left = testInput.query.whereNot(p.predicate).toList.run(from(strings) & from(ints))
 
-      val right = testInput.query.filter(!p.predicate(_)).toList.run(from(strings) & from(ints))
+      val right = testInput.query.where(!p.predicate(_)).toList.run(from(strings) & from(ints))
 
       val expected = testInput.plainFunc(strings, ints).filterNot(p.predicate)
 

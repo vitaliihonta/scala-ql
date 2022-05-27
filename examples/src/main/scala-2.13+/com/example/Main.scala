@@ -8,7 +8,7 @@ object Main extends App {
 
   val query: Query[From[Student], FacultyInfo] =
     select[Student]
-      .filter(_.age >= 18)
+      .where(_.age >= 18)
       .groupBy(_.faculty)
       .aggregate((faculty, students) =>
         students.avgBy(_.age.toDouble) &&
