@@ -3,7 +3,7 @@ package scalaql.syntax
 import scalaql._
 
 @forbiddenInheritance
-trait ScalaqlSyntax extends ScalaqlAliases with ScalaqlDsl {
+trait ScalaqlSyntax extends ScalaqlAliases with ScalaqlDsl with OrderingSyntax {
 
   final implicit def RunSyntax[In, Out](self: QueryResult[In, Out]): RunSyntax[In, Out] =
     new RunSyntax[In, Out](self)
@@ -19,4 +19,7 @@ trait ScalaqlSyntax extends ScalaqlAliases with ScalaqlDsl {
 
   final implicit def QueryToSyntax[In, Out](self: Query[In, Out]): QueryToSyntax[In, Out] =
     new QueryToSyntax[In, Out](self)
+
+  final implicit def WhereSyntax[A](self: A): WhereSyntax[A] =
+    new WhereSyntax[A](self)
 }

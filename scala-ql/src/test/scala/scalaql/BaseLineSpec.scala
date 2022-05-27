@@ -296,7 +296,9 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       val query = (select[Person].where(_.profession == Profession.Developer) ++
         select[Person].where(_.age >= 18) ++
-        select[Person].whereSubQuery(person => select[Company].exists(c => person.profession.industries contains c.industry)))
+        select[Person].whereSubQuery(person =>
+          select[Company].exists(c => person.profession.industries contains c.industry)
+        ))
         .join(select[Workspace])
         .on(_.name == _.employee)
         .map { case (p, w) => result(p, w) }

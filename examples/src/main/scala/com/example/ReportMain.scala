@@ -28,7 +28,7 @@ object ReportMain extends App {
             )((age, cascadeInfos) => cascadeInfos.toList.map(ByAge(age, _)))
       }
       .map(ByFaculty.tupled)
-      .sortBy(_.faculty)
+      .sortBy(_.faculty)(desc)
 
   println {
     query.toList.run(from(students)).mkString("\n")
