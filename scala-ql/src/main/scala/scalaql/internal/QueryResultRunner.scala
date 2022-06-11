@@ -16,6 +16,10 @@ private[scalaql] object QueryResultRunner {
         import queryResult.*
         QueryInterpreter.runCollect(mapResult).interpret[In, Out](in, query)(()).asInstanceOf[Out]
 
+      case queryResult: QueryResult.Foreach[In, Out] =>
+        import queryResult.*
+        QueryInterpreter.runForeach.interpret(in, query)(sideEffect).asInstanceOf[Out]
+
       case queryResult: QueryResult.CollectMap[In, k, v] =>
         import queryResult.*
         QueryInterpreter.runCollectBuffer.interpret[In, (k, v)](in, query)(()).toMap.asInstanceOf[Out]

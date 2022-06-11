@@ -12,11 +12,9 @@ object FlatMapMain extends App {
     if student.faculty == faculty.name
   } yield (student, faculty)
 
-  println {
-    query.toList
-      .run(
-        from(students) & from(faculties)
-      )
-      .mkString("\n")
-  }
+  query
+    .foreach(println)
+    .run(
+      from(students) & from(faculties)
+    )
 }

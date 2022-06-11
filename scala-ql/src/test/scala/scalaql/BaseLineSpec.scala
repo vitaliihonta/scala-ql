@@ -45,6 +45,23 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       query.toList.run(from(companies)) shouldEqual expectedResult
     }
 
+    "correctly execute foreach" in repeated {
+      val companies = arbitraryN[Company]
+
+      var counter = 0
+      val query = select[Company]
+        .map(_.name.length)
+        .foreach(counter += _)
+
+      val expectedResult = companies
+        .map(_.name.length)
+        .sum
+
+      query.run(from(companies))
+
+      counter shouldEqual expectedResult
+    }
+
     "correctly process simple map + filter + sort" in repeated {
       val people = arbitraryN[Person]
 
