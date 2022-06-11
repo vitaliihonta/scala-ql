@@ -17,9 +17,9 @@ object From {
   private[scalaql] def single[A: Tag](values: Iterable[A]): From[A] =
     singleTag(Tag[A].tag, values).asInstanceOf[From[A]]
 
-  final implicit class FromSyntax[Self <: From[_]](private val self: Self) extends AnyVal {
-    def and[B <: From[_]](that: B): Self with B = new From[Any](self.inputs ++ that.inputs).asInstanceOf[Self with B]
+  final implicit class FromSyntax[Self <: From[?]](private val self: Self) extends AnyVal {
+    def and[B <: From[?]](that: B): Self & B = new From[Any](self.inputs ++ that.inputs).asInstanceOf[Self & B]
 
-    def &[B <: From[_]](that: B): Self with B = self.and[B](that)
+    def &[B <: From[?]](that: B): Self & B = self.and[B](that)
   }
 }

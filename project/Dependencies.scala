@@ -12,6 +12,20 @@ object Dependencies {
     val kindProjector = compilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
   }
 
+  object Csv {
+    val scalaCsv = "com.github.tototoshi" %% "scala-csv" % "1.3.10"
+  }
+
+  object Json {
+    val circeCore   = "io.circe" %% "circe-core"   % "0.14.1"
+    val circeParser = "io.circe" %% "circe-parser" % "0.14.1"
+  }
+
+  object Macros {
+    val magnoliaScala3 = "com.softwaremill.magnolia1_3" %% "magnolia" % "1.1.3"
+    val magnoliaScala2 = "com.softwaremill.magnolia1_2" %% "magnolia" % "1.1.2"
+  }
+
   object Testing {
     val scalatest  = "org.scalatest"  %% "scalatest"  % "3.2.12" % Test
     val scalacheck = "org.scalacheck" %% "scalacheck" % "1.16.0" % Test

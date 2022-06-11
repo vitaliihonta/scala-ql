@@ -40,7 +40,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         val input = ToFrom.transform(in) and From.singleTag(outATag, tmpBuffer.toList)
         interpret[From[out0], Out](input.asInstanceOf[From[out0]], right)(step)
 
-      case query: Query.MapFilterQuery[In, out0, Out] =>
+      case query: Query.MapWhereQuery[In, out0, Out] =>
         import query.*
         interpret[In, out0](in, source)(
           Step[out0](

@@ -67,7 +67,12 @@ lazy val examples =
     .settings(baseSettings)
     .settings(crossCompileSettings)
     .settings(
-      publishArtifact := false
+      publishArtifact := false,
+      libraryDependencies ++= Seq(
+        Csv.scalaCsv,
+        Json.circeCore,
+        Json.circeParser
+      )
     )
     .jvmPlatform(scalaVersions = allScalaVersions)
 
@@ -80,11 +85,27 @@ lazy val `scala-ql` =
       libraryDependencies ++= Seq(
         Reflect.izumi,
         Testing.scalatest,
-        Testing.scalacheck
+        Testing.scalacheck,
+        Csv.scalaCsv     % Optional,
+        Json.circeCore   % Optional,
+        Json.circeParser % Optional
       ) ++ {
         CrossVersion.partialVersion(scalaVersion.value) match {
-          case Some((2, n)) if n < 13 => Seq(Typelevel.spire2_12)
-          case _                      => Seq(Typelevel.spire)
+          case Some((3, _)) =>
+            Seq(
+              Typelevel.spire,
+              Macros.magnoliaScala3
+            )
+          case Some((2, n)) if n >= 13 =>
+            Seq(
+              Typelevel.spire,
+              Macros.magnoliaScala2
+            )
+          case _ =>
+            Seq(
+              Typelevel.spire2_12,
+              Macros.magnoliaScala2
+            )
         }
       }
     )

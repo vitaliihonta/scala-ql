@@ -4,7 +4,6 @@ import izumi.reflect.Tag
 import izumi.reflect.macrortti.LightTypeTag
 import scalaql.utils.TupleFlatten
 import spire.algebra.Order
-
 import scala.annotation.unchecked.uncheckedVariance
 
 sealed trait Query[-In, +Out] {
@@ -13,7 +12,7 @@ sealed trait Query[-In, +Out] {
     new Query.MapQuery[In, Out, B](this, f)
 
   def mapFilter[B](f: Out => Option[B]): Query[In, B] =
-    new Query.MapFilterQuery[In, Out, B](this, f)
+    new Query.MapWhereQuery[In, Out, B](this, f)
 
   def collect[B](pf: PartialFunction[Out, B]): Query[In, B] =
     mapFilter(pf.lift)
@@ -103,7 +102,7 @@ object Query {
     override def map[B](f: Out1 => B): Query[In, B] =
       new MapQuery[In, Out0, B](source, project andThen f)
 
-    override def toString: String = s"$source -> map"
+    override def toString: String = s"$source -> MAP"
   }
 
   final class FlatMapQuery[In, Out0, Out1](
@@ -117,18 +116,18 @@ object Query {
     override def where(p: Predicate[Out1]): Query[In, Out1] =
       new FlatMapQuery[In, Out0, Out1](source, projectM(_).where(p))
 
-    override def toString: String = s"$source -> flatMap"
+    override def toString: String = s"$source -> FLAT_MAP"
   }
 
-  final class MapFilterQuery[In, Out, Out1](
+  final class MapWhereQuery[In, Out, Out1](
     private[scalaql] val source:        Query[In, Out],
     private[scalaql] val mapFilterFunc: Out => Option[Out1])
       extends Query[In, Out1] {
 
     override def mapFilter[B](g: Out1 => Option[B]): Query[In, B] =
-      new MapFilterQuery[In, Out, B](source, mapFilterFunc(_).flatMap(g))
+      new MapWhereQuery[In, Out, B](source, mapFilterFunc(_).flatMap(g))
 
-    override def toString: String = s"$source -> mapFilter"
+    override def toString: String = s"$source -> MAP_WHERE"
   }
 
   final class WhereSubQuery[In, Out](
@@ -139,7 +138,7 @@ object Query {
     override def where(p: Predicate[Out]): Query[In, Out] =
       new WhereSubQuery[In, Out](source, x => predicate(x).map(_ && p(x)))
 
-    override def toString: String = s"$source -> filterM"
+    override def toString: String = s"$source -> WHERE_SUB_QUERY"
 
     override def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
       new WhereSubQuery[In2, Out](
@@ -158,7 +157,7 @@ object Query {
   )(private[scalaql] implicit val order: Order[By])
       extends Query[In, Out] {
 
-    override def toString: String = s"$source -> sortBy"
+    override def toString: String = s"$source -> SORT_BY"
   }
 
   final class AggregateQuery[In, Out0, G, Out1, Out2](
@@ -168,11 +167,15 @@ object Query {
     private[scalaql] val tupled: TupleFlatten.Aux[(G, Out1), Out2])
       extends Query[In, Out2] {
 
-    override def toString: String = s"$source -> aggregate"
+    override def toString: String = s"$source -> AGGREGATE"
   }
 
   sealed trait GroupByQuery[-In, +Out, +G] {
-    def aggregate[B](f: Aggregate[G, Out, B])(implicit tupled: TupleFlatten[(G, B)]): Query[In, tupled.Out]
+
+    def aggregate[B](
+      f:               Aggregate[G, Out, B] @uncheckedVariance
+    )(implicit tupled: TupleFlatten[(G, B)]
+    ): Query[In, tupled.Out]
   }
 
   final class GroupByQueryImpl[In, Out, G](
