@@ -1,5 +1,3 @@
 package scalaql.csv
 
-trait CsvEncoderAutoDerivation {
-
-}
+trait CsvEncoderAutoDerivation {}
