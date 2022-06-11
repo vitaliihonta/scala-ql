@@ -4,17 +4,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-sealed trait CsvDecoderInput
-
-object CsvDecoderInput {
-  case class Row(row: Map[String, String]) extends CsvDecoderInput
-  case class Field(field: String)          extends CsvDecoderInput
-}
-
 trait CsvDecoder[A] {
 
   @throws[IllegalArgumentException]
-  def read(value: CsvDecoderInput): A
+  def read(value: CsvEntry): A
 
   def map[B](f: A => B): CsvDecoder[B]
 }
@@ -22,37 +15,37 @@ trait CsvDecoder[A] {
 object CsvDecoder extends LowPriorityCsvFieldDecoders {
 
   trait Row[A] extends CsvDecoder[A] { self =>
-    def readRow(value: CsvDecoderInput.Row): A
+    def readRow(value: CsvEntry.Row): A
 
-    override final def read(value: CsvDecoderInput): A = value match {
-      case row: CsvDecoderInput.Row => readRow(row)
-      case _                        => throw new IllegalArgumentException("Row decoder expects row, got field")
+    override final def read(value: CsvEntry): A = value match {
+      case row: CsvEntry.Row => readRow(row)
+      case _                 => throw new IllegalArgumentException("Row decoder expects row, got field")
     }
 
     final def map[B](f: A => B): CsvDecoder.Row[B] = new CsvDecoder.Row[B] {
-      override def readRow(value: CsvDecoderInput.Row): B = f(self.read(value))
+      override def readRow(value: CsvEntry.Row): B = f(self.read(value))
     }
   }
 
   trait Field[A] extends CsvDecoder[A] { self =>
-    def readField(value: CsvDecoderInput.Field): A
+    def readField(value: CsvEntry.Field): A
 
-    override final def read(value: CsvDecoderInput): A = value match {
-      case field: CsvDecoderInput.Field => readField(field)
-      case _                            => throw new IllegalArgumentException("Field decoder expects field, got row")
+    override final def read(value: CsvEntry): A = value match {
+      case field: CsvEntry.Field => readField(field)
+      case _                     => throw new IllegalArgumentException("Field decoder expects field, got row")
     }
 
     final def map[B](f: A => B): CsvDecoder.Field[B] = new CsvDecoder.Field[B] {
-      override def readField(value: CsvDecoderInput.Field): B = f(self.read(value))
+      override def readField(value: CsvEntry.Field): B = f(self.read(value))
     }
   }
 
   def rowDecoder[A](f: Map[String, String] => A): CsvDecoder.Row[A] = new CsvDecoder.Row[A] {
-    override def readRow(value: CsvDecoderInput.Row): A = f(value.row)
+    override def readRow(value: CsvEntry.Row): A = f(value.row)
   }
 
   def fieldDecoder[A](f: String => A): CsvDecoder.Field[A] = new CsvDecoder.Field[A] {
-    override def readField(value: CsvDecoderInput.Field): A = f(value.field)
+    override def readField(value: CsvEntry.Field): A = f(value.field)
   }
 }
 

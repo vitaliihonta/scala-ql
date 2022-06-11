@@ -2,10 +2,11 @@ package com.example
 
 import scalaql.*
 import com.example.Hogwarts.*
+
+import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 
 object FilesExample extends App {
-  case class FacultyStats(faculty: String, avgGrade: Double)
 
   val query: Query[From[Student] & From[Faculty], FacultyStats] =
     select[Student]
@@ -17,12 +18,15 @@ object FilesExample extends App {
       .map((FacultyStats.apply _).tupled)
 
   println {
-    query.toList
+    query
+      .foreach(
+        json.write.file[FacultyStats](Paths.get("examples/out/faculty_stats.json"), StandardCharsets.UTF_8)
+      )
       .run(
         from(
-          csv.file[Student](path = Paths.get("examples/src/main/resources/students.csv"))
+          csv.read.file[Student](path = Paths.get("examples/src/main/resources/students.csv"))
         ) & from(
-          json.file[Faculty](path = Paths.get("examples/src/main/resources/faculties.json"))
+          json.read.file[Faculty](path = Paths.get("examples/src/main/resources/faculties.json"))
         )
       )
   }

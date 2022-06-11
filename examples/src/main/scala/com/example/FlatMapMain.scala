@@ -13,7 +13,7 @@ object FlatMapMain extends App {
   } yield (student, faculty)
 
   query
-    .foreach(println)
+    .foreach(println(_))
     .run(
       from(students) & from(faculties)
     )

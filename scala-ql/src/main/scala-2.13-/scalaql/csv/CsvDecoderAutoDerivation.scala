@@ -8,10 +8,10 @@ trait CsvDecoderAutoDerivation {
 
   def join[T](ctx: CaseClass[CsvDecoder, T]): CsvDecoder.Row[T] = new CsvDecoder.Row[T] {
 
-    override def readRow(value: CsvDecoderInput.Row): T =
+    override def readRow(value: CsvEntry.Row): T =
       ctx.construct(param =>
         param.typeclass.read(
-          CsvDecoderInput.Field(
+          CsvEntry.Field(
             value.row.getOrElse(
               param.label,
               throw new IllegalArgumentException(s"Field not found in row: ${param.label}")

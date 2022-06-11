@@ -8,7 +8,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
       case class Person(name: String, age: Int)
 
       summon[CsvDecoder.Row[Person]].readRow(
-        CsvDecoderInput.Row(
+        CsvEntry.Row(
           Map("name" -> "vitalii", "age" -> "24")
         )
       ) shouldEqual Person(name = "vitalii", age = 24)

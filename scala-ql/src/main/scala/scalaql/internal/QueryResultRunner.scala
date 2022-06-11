@@ -16,9 +16,20 @@ private[scalaql] object QueryResultRunner {
         import queryResult.*
         QueryInterpreter.runCollect(mapResult).interpret[In, Out](in, query)(()).asInstanceOf[Out]
 
-      case queryResult: QueryResult.Foreach[In, Out] =>
+      case queryResult: QueryResult.ForeachWithResource[r, s, In, Out] =>
         import queryResult.*
-        QueryInterpreter.runForeach.interpret(in, query)(sideEffect).asInstanceOf[Out]
+        val resource = sideEffect.acquire()
+        var state    = sideEffect.initialState
+        try
+          QueryInterpreter.runForeach
+            .interpret(in, query) { in =>
+              state = sideEffect.use(resource, state, in)
+            }
+            .asInstanceOf[Out]
+        finally {
+          sideEffect.release(resource, state)
+          state = null.asInstanceOf[s] // free memory
+        }
 
       case queryResult: QueryResult.CollectMap[In, k, v] =>
         import queryResult.*

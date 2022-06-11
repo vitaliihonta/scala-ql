@@ -2,6 +2,7 @@ package scalaql.syntax
 
 import scalaql.Query
 import scalaql.QueryResult
+import scalaql.SideEffectWithResource
 import scalaql.internal.FunctionK
 
 final class BasicQuerySyntax[In, Out](private val self: Query[In, Out]) extends AnyVal {
@@ -19,5 +20,8 @@ final class BasicQuerySyntax[In, Out](private val self: Query[In, Out]) extends 
     find(p).map(_.nonEmpty)
 
   def foreach(f: Out => Unit): QueryResult[In, Unit] =
-    new QueryResult.Foreach(self, f)
+    new QueryResult.ForeachWithResource(self, SideEffectWithResource.noFinalize(f))
+
+  def foreach[R, S](sideEffect: SideEffectWithResource[R, S, Out]): QueryResult[In, Unit] =
+    new QueryResult.ForeachWithResource(self, sideEffect)
 }

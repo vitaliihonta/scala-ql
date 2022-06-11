@@ -2,3 +2,5 @@ version
 .sbt/
 target/
 project/project
+examples/out/*.json
+examples/out/*.csv

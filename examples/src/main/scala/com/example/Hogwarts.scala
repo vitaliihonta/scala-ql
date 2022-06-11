@@ -1,6 +1,9 @@
 package com.example
 
 import io.circe.Decoder
+import io.circe.Encoder
+import io.circe.Json
+import io.circe.syntax.*
 
 object Hogwarts {
 
@@ -12,6 +15,8 @@ object Hogwarts {
     specialization: String)
 
   case class Faculty(name: String, founder: String, description: String)
+
+  case class FacultyStats(faculty: String, avgGrade: Double)
 
   val Gryffindor: Faculty = Faculty(
     name = "Gryffindor",
@@ -82,5 +87,12 @@ object Hogwarts {
       founder     <- c.get[String]("founder")
       description <- c.get[String]("description")
     } yield Faculty(name, founder, description)
+  }
+
+  implicit val facultyStatsEncoder: Encoder[FacultyStats] = Encoder.instance { (value: FacultyStats) =>
+    Json.obj(
+      "name"      -> value.faculty.asJson,
+      "avg_grade" -> value.avgGrade.asJson
+    )
   }
 }

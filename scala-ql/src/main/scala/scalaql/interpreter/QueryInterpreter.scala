@@ -5,6 +5,7 @@ import scalaql.internal.FindInterpreter
 import scalaql.internal.ForeachInterpreter
 import scalaql.internal.FunctionK
 import scalaql.Query
+import scalaql.SideEffectWithResource
 import scalaql.ToFrom
 import scalaql.unstableApi
 

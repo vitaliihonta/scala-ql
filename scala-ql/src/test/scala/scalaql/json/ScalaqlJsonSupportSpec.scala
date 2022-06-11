@@ -24,7 +24,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
         .toList
         .run(
           from(
-            json.string(rawJson)
+            json.read.string(rawJson)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24))
