@@ -1,23 +1,33 @@
 import Dependencies._
 
-val scala213 = "2.13.5"
-val scala212 = "2.12.13"
+val scala212 = "2.12.15"
+val scala213 = "2.13.8"
+val scala3   = "3.1.2"
 
-val allScalaVersions = List(scala212, scala213)
+val allScalaVersions = List(scala212, scala213, scala3)
 
 scalaVersion := scala213
 
 ThisBuild / organization := "com.github.vitaliihonta"
-ThisBuild / version :="0.1.0"
+ThisBuild / version := "0.2.0"
 
 val baseSettings = Seq(
   scalacOptions ++= Seq(
     "-language:implicitConversions",
-    "-language:higherKinds"
-  ),
-  libraryDependencies ++= Seq(
-    Typelevel.kindProjector
-  ),
+    "-language:higherKinds",
+    "-Xsource:3"
+  ) ++ {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _)) => Seq("-Ykind-projector")
+      case _            => Nil
+    }
+  },
+  libraryDependencies ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _)) => Nil
+      case _            => Seq(Typelevel.kindProjector)
+    }
+  },
   ideSkipProject := scalaVersion.value == scala212
 )
 
@@ -26,6 +36,7 @@ val crossCompileSettings: Seq[Def.Setting[_]] = {
     (config / unmanagedSourceDirectories) += {
       val sourceDir = (config / sourceDirectory).value
       CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((3, 1))            => sourceDir / "scala-3"
         case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
         case _                       => sourceDir / "scala-2.13-"
       }
@@ -68,10 +79,13 @@ lazy val `scala-ql` =
     .settings(
       libraryDependencies ++= Seq(
         Reflect.izumi,
-        Typelevel.spire,
         Testing.scalatest,
-        Testing.scalacheck,
-        Testing.scalacheckShapeless
-      )
+        Testing.scalacheck
+      ) ++ {
+        CrossVersion.partialVersion(scalaVersion.value) match {
+          case Some((2, n)) if n < 13 => Seq(Typelevel.spire2_12)
+          case _                      => Seq(Typelevel.spire)
+        }
+      }
     )
     .jvmPlatform(scalaVersions = allScalaVersions)

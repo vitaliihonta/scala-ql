@@ -1,12 +1,12 @@
 package scalaql.laws
 
-import scalaql._
-import org.scalacheck.Prop._
+import scalaql.*
+import org.scalacheck.Prop.*
 
 class FunctorFilterLaws extends ScalaqlLawsSpec("FunctorFilter") {
   property("mapFilter composition") = forAll {
     (testInput: QueryTestFixture, testData: TestData, f: StringMapFilter, g: StringMapFilter) =>
-      import testData._
+      import testData.*
 
       val left = testInput.query.mapFilter(f.predicate).mapFilter(g.predicate).toList.run(from(strings) & from(ints))
 
@@ -20,7 +20,7 @@ class FunctorFilterLaws extends ScalaqlLawsSpec("FunctorFilter") {
 
   property("mapFilter map consistency") = forAll {
     (testInput: QueryTestFixture, testData: TestData, f: StringTransformation) =>
-      import testData._
+      import testData.*
 
       val left = testInput.query.mapFilter(f.func.andThen(Some(_))).toList.run(from(strings) & from(ints))
 
@@ -33,7 +33,7 @@ class FunctorFilterLaws extends ScalaqlLawsSpec("FunctorFilter") {
 
   property("collect consistent with mapFilter") = forAll {
     (testInput: QueryTestFixture, testData: TestData, p: StringMapFilter) =>
-      import testData._
+      import testData.*
 
       val left = testInput.query.collect(p.partial).toList.run(from(strings) & from(ints))
 
@@ -46,7 +46,7 @@ class FunctorFilterLaws extends ScalaqlLawsSpec("FunctorFilter") {
 
   property("filter consistent with mapFilter") = forAll {
     (testInput: QueryTestFixture, testData: TestData, p: StringPredicate) =>
-      import testData._
+      import testData.*
 
       val left = testInput.query.where(p.predicate).toList.run(from(strings) & from(ints))
 
@@ -59,7 +59,7 @@ class FunctorFilterLaws extends ScalaqlLawsSpec("FunctorFilter") {
 
   property("filterNot consistent with filter") = forAll {
     (testInput: QueryTestFixture, testData: TestData, p: StringPredicate) =>
-      import testData._
+      import testData.*
 
       val left = testInput.query.whereNot(p.predicate).toList.run(from(strings) & from(ints))
 

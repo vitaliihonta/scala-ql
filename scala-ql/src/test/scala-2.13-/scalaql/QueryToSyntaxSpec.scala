@@ -1,6 +1,6 @@
 package scalaql
 
-import scalaql.fixture._
+import scalaql.fixture.*
 
 class QueryToSyntaxSpec extends ScalaqlUnitSpec {
   "QueryToSyntax" should {

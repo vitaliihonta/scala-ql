@@ -1,6 +1,7 @@
 package scalaql.syntax
 
-import scalaql._
+import scalaql.QueryResult
+import scalaql.ToFrom
 import scalaql.internal.QueryResultRunner
 
 final class RunSyntax[In, Out](private val self: QueryResult[In, Out]) extends AnyVal {

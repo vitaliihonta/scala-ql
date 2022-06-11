@@ -1,6 +1,7 @@
 package scalaql.internal
 
-import scalaql._
+import scalaql.ToFrom
+import scalaql.Query
 import scalaql.interpreter.QueryInterpreter
 
 private[scalaql] object FindInterpreter extends QueryInterpreter[* => Boolean] {

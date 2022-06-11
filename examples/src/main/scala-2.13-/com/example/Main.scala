@@ -1,7 +1,7 @@
 package com.example
 
-import com.example.Hogwarts._
-import scalaql._
+import scalaql.*
+import com.example.Hogwarts.*
 
 object Main extends App {
   case class FacultyInfo(name: String, avgAge: Double, totalGrade: Double, specializations: List[String])

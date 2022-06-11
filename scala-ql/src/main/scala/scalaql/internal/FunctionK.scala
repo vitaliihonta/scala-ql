@@ -11,8 +11,8 @@ trait FunctionK[F[_], G[_]] {
 @internalApi
 object FunctionK {
 
-  def create[F[_], G[_]](f: F[_] => G[_]): FunctionK[F, G] = new FunctionK[F, G] {
-    override def apply[A](fa: F[A]): G[A] = f(fa.asInstanceOf[F[A]]).asInstanceOf[G[A]]
+  def create[F[_], G[_]](f: F[Any] => G[Any]): FunctionK[F, G] = new FunctionK[F, G] {
+    override def apply[A](fa: F[A]): G[A] = f(fa.asInstanceOf[F[Any]]).asInstanceOf[G[A]]
   }
 
   def identity[F[_]]: FunctionK[F, F] = create[F, F](fa => fa)

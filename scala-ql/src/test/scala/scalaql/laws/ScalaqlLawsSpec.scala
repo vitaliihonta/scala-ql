@@ -3,12 +3,12 @@ package scalaql.laws
 import org.scalacheck.Arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Properties
-import scalaql._
+import scalaql.*
 
 abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
 
   case class QueryTestFixture(
-    query:     Query[From[String] with From[Int], String],
+    query:     Query[From[String] & From[Int], String],
     plainFunc: (List[String], List[Int]) => List[String])
 
   case class TestData(strings: List[String], ints: List[Int])
@@ -69,7 +69,7 @@ abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
   }
 
   case class StringBindTransformation(
-    bind:      String => Query[From[String] with From[Int], String],
+    bind:      String => Query[From[String] & From[Int], String],
     asFlatMap: (List[String], String) => List[String])
 
   protected implicit val arbitraryStringBindTransformation: Arbitrary[StringBindTransformation] = {

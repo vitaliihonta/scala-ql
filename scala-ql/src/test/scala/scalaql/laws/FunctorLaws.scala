@@ -1,11 +1,11 @@
 package scalaql.laws
 
-import org.scalacheck.Prop._
-import scalaql._
+import org.scalacheck.Prop.*
+import scalaql.*
 
 class FunctorLaws extends ScalaqlLawsSpec("Functor") {
   property("covariant identity") = forAll { (testInput: QueryTestFixture, testData: TestData) =>
-    import testData._
+    import testData.*
 
     testInput.query.map(identity).toList.run(from(strings) & from(ints)) == testInput.plainFunc(strings, ints)
   }
@@ -17,7 +17,7 @@ class FunctorLaws extends ScalaqlLawsSpec("Functor") {
       f:         StringTransformation,
       g:         StringTransformation
     ) =>
-      import testData._
+      import testData.*
 
       val left     = testInput.query.map(f.func).map(g.func).toList.run(from(strings) & from(ints))
       val right    = testInput.query.map(f.func.andThen(g.func)).toList.run(from(strings) & from(ints))

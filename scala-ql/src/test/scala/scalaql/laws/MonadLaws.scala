@@ -1,7 +1,7 @@
 package scalaql.laws
 
-import scalaql._
-import org.scalacheck.Prop._
+import scalaql.*
+import org.scalacheck.Prop.*
 
 class MonadLaws extends ScalaqlLawsSpec("Monad") {
   property("flatMap associativity") = forAll {
@@ -11,7 +11,7 @@ class MonadLaws extends ScalaqlLawsSpec("Monad") {
       f:         StringBindTransformation,
       g:         StringBindTransformation
     ) =>
-      import testData._
+      import testData.*
 
       val left  = testInput.query.flatMap(f.bind).flatMap(g.bind).toList.run(from(strings) & from(ints))
       val right = testInput.query.flatMap(a => f.bind(a).flatMap(g.bind)).toList.run(from(strings) & from(ints))
@@ -27,7 +27,7 @@ class MonadLaws extends ScalaqlLawsSpec("Monad") {
       testData: TestData,
       f:        StringBindTransformation
     ) =>
-      import testData._
+      import testData.*
 
       val left = select.from(strings).flatMap(f.bind).toList.run(from(strings) & from(ints))
 
@@ -41,7 +41,7 @@ class MonadLaws extends ScalaqlLawsSpec("Monad") {
       testInput: QueryTestFixture,
       testData:  TestData
     ) =>
-      import testData._
+      import testData.*
 
       val left  = testInput.query.flatMap(s => select.from(Seq(s))).toList.run(from(strings) & from(ints))
       val right = testInput.query.toList.run(from(strings) & from(ints))
@@ -57,7 +57,7 @@ class MonadLaws extends ScalaqlLawsSpec("Monad") {
       testData:  TestData,
       f:         StringTransformation
     ) =>
-      import testData._
+      import testData.*
 
       val left  = testInput.query.flatMap(s => select.from(Seq(f.func(s)))).toList.run(from(strings) & from(ints))
       val right = testInput.query.map(f.func).toList.run(from(strings) & from(ints))

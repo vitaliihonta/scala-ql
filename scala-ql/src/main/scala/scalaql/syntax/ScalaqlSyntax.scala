@@ -1,6 +1,9 @@
 package scalaql.syntax
 
-import scalaql._
+import scalaql.QueryResult
+import scalaql.Query
+import scalaql.forbiddenInheritance
+import scala.language.implicitConversions
 
 @forbiddenInheritance
 trait ScalaqlSyntax extends ScalaqlAliases with ScalaqlDsl with OrderingSyntax {

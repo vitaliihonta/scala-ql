@@ -1,7 +1,7 @@
 package com.example
 
-import scalaql._
-import Hogwarts._
+import scalaql.*
+import com.example.Hogwarts.*
 
 object ReportMain extends App {
 
@@ -27,7 +27,7 @@ object ReportMain extends App {
               }
             )((age, cascadeInfos) => cascadeInfos.toList.map(ByAge(age, _)))
       }
-      .map(ByFaculty.tupled)
+      .map((ByFaculty.apply _).tupled)
       .sortBy(_.faculty)(desc)
 
   println {

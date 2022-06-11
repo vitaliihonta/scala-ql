@@ -1,7 +1,7 @@
 package com.example
 
-import com.example.Hogwarts._
-import scalaql._
+import scalaql.*
+import com.example.Hogwarts.*
 
 object JoinMain extends App {
 
@@ -10,7 +10,7 @@ object JoinMain extends App {
   val query: Query[From[Faculty] with From[Student], StudentOfFaculty] = select[Student]
     .join(select[Faculty])
     .on(_.faculty == _.name)
-    .map(StudentOfFaculty.tupled)
+    .map((StudentOfFaculty.apply _).tupled)
 
   println {
     query.toList

@@ -1,6 +1,6 @@
 package scalaql
 
-import scalaql.fixture._
+import scalaql.fixture.*
 
 class BaseLineSpec extends ScalaqlUnitSpec {
   case class PeopleStats(profession: Profession, avgAge: Double)
@@ -68,7 +68,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val companies = arbitraryN[Company]
       val people    = arbitraryN[Person]
 
-      val query: Query[From[Person] with From[Company], Employee] = {
+      val query: Query[From[Person] & From[Company], Employee] = {
         for {
           person <- select[Person]
           if person.age >= 18
@@ -95,7 +95,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val people     = arbitraryN[Person]
       val workspaces = arbitraryN[Workspace](Workspace.arbitrary(people, offices))
 
-      val query: Query[From[Person] with From[Company] with From[Workspace] with From[Office], EmployeesInfo] = {
+      val query: Query[From[Person] & From[Company] & From[Workspace] & From[Office], EmployeesInfo] = {
         for {
           person <- select[Person]
           if person.age >= 18
@@ -134,7 +134,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query: Query[From[Person], PeopleStats] = select[Person]
         .groupBy(_.profession)
         .aggregate((profession, person) => person.avgBy(_.age.toDouble))
-        .map(PeopleStats.tupled)
+        .map((PeopleStats.apply _).tupled)
 
       val expectedResult =
         people.groupBy(_.profession).map {
@@ -149,7 +149,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val companies = arbitraryN[Company]
       val people    = arbitraryN[Person]
 
-      val query: Query[From[Company] with From[Person], Profession] = {
+      val query: Query[From[Company] & From[Person], Profession] = {
         select[Person]
           .whereSubQuery(person => select[Company].exists(_.industry == person.industry))
           .where(_.age >= 30)
@@ -328,13 +328,13 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query1 = select[Workspace]
         .join(select[Office])
         .on(_.office == _.location)
-        .map(WorkspaceInfo.tupled)
+        .map((WorkspaceInfo.apply _).tupled)
 
       val query2 = select[WorkspaceInfo]
         .where(_.office.floors > 2)
         .map(_.office.company)
 
-      val query: Query[From[Office] with From[Workspace], String] = query1 >>> query2
+      val query: Query[From[Office] & From[Workspace], String] = query1 >>> query2
 
       val expectedResult: Set[String] =
         workspaces

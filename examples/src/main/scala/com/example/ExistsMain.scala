@@ -1,7 +1,7 @@
 package com.example
 
-import Hogwarts._
-import scalaql._
+import scalaql.*
+import com.example.Hogwarts.*
 
 object ExistsMain extends App {
 

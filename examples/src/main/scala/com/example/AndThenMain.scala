@@ -1,7 +1,7 @@
 package com.example
 
-import scalaql._
-import Hogwarts._
+import scalaql.*
+import com.example.Hogwarts.*
 
 object AndThenMain extends App {
 
@@ -16,11 +16,11 @@ object AndThenMain extends App {
         student.avgBy(_.grade) &&
         student.map(_.specialization).distinct
     )
-    .map(FacultyInfo.tupled)
+    .map((FacultyInfo.apply _).tupled)
 
   val query2: Query[From[FacultyInfo], SpecializationInfo] = select[FacultyInfo]
     .mapConcat(facultyInfo => facultyInfo.specs.map(facultyInfo.faculty -> _))
-    .map(SpecializationInfo.tupled)
+    .map((SpecializationInfo.apply _).tupled)
 
   val query: Query[From[Student], SpecializationInfo] = query1 >>> query2
 

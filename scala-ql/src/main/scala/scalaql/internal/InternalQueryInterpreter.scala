@@ -1,6 +1,9 @@
 package scalaql.internal
 
-import scalaql._
+import scalaql.From
+import scalaql.ToFrom
+import scalaql.AggregationView
+import scalaql.Query
 import scalaql.interpreter.QueryInterpreter
 import scala.collection.mutable.ListBuffer
 
@@ -16,7 +19,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           step.next(outputs.next())
         }
 
-      case query: Query.FromQuery[_] =>
+      case query: Query.FromQuery[?] =>
         val input   = ToFrom.transform(in)
         val outputs = input.get(query.inputTag).asInstanceOf[Iterable[Out]].iterator
         while (step.check() && outputs.hasNext) {
@@ -24,12 +27,12 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         }
 
       case query: Query.UnionQuery[In, Out] =>
-        import query._
+        import query.*
         interpret[In, Out](in, left)(step)
         interpret[In, Out](in, right)(step)
 
       case query: Query.AndThenQuery[In, out0, Out] =>
-        import query._
+        import query.*
         val tmpBuffer = ListBuffer.empty[out0]
         interpret[In, out0](in, left)(
           Step.always[out0](tmpBuffer += _)
@@ -38,7 +41,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         interpret[From[out0], Out](input.asInstanceOf[From[out0]], right)(step)
 
       case query: Query.MapFilterQuery[In, out0, Out] =>
-        import query._
+        import query.*
         interpret[In, out0](in, source)(
           Step[out0](
             check = step.check,
@@ -47,7 +50,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         )
 
       case query: Query.MapQuery[In, out0, Out] =>
-        import query._
+        import query.*
         interpret[In, out0](in, source)(
           Step[out0](
             check = step.check,
@@ -56,7 +59,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         )
 
       case query: Query.FlatMapQuery[In, out0, Out] =>
-        import query._
+        import query.*
         interpret[In, out0](in, source)(
           Step[out0](
             check = step.check,
@@ -65,7 +68,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         )
 
       case query: Query.WhereSubQuery[In, Out] =>
-        import query._
+        import query.*
         interpret[In, Out](in, source)(
           Step[Out](
             check = step.check,
@@ -77,7 +80,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         )
 
       case query: Query.SortByQuery[In, Out, by] =>
-        import query._
+        import query.*
 
         val tmpBuffer = ListBuffer.empty[Out]
         interpret[In, Out](in, source)(
@@ -90,7 +93,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         }
 
       case query: Query.AggregateQuery[In, out0, g, out1, Out] =>
-        import query._
+        import query.*
         val tmpBuffer = ListBuffer.empty[out0]
         interpret[In, out0](in, source)(
           Step.always[out0](tmpBuffer += _)
@@ -103,7 +106,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         }
 
       case query: Query.JoinedQuery[In, out0, out1, Out] =>
-        import query._
+        import query.*
         val leftBuffer  = ListBuffer.empty[out0]
         val rightBuffer = ListBuffer.empty[out1]
 
@@ -120,7 +123,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           val x = leftValues.next()
           query match {
             case query: Query.InnerJoinedQuery[In, out0, out1] =>
-              import query._
+              import query.*
               joinType match {
                 case Query.InnerJoin =>
                   rightBuffer
@@ -133,7 +136,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
               }
 
             case query: Query.LeftJoinedQuery[In, out0, out1] =>
-              import query._
+              import query.*
               step.next {
                 x -> rightBuffer
                   .find(on(x, _))

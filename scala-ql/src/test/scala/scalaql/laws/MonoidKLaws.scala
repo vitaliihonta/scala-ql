@@ -1,11 +1,11 @@
 package scalaql.laws
 
 import org.scalacheck.Prop.forAll
-import scalaql._
+import scalaql.*
 
 class MonoidKLaws extends ScalaqlLawsSpec("MonoidK") {
   property("monoidK left identity") = forAll { (testInput: QueryTestFixture, testData: TestData) =>
-    import testData._
+    import testData.*
 
     val empty = select.from(Nil)
 
@@ -17,7 +17,7 @@ class MonoidKLaws extends ScalaqlLawsSpec("MonoidK") {
   }
 
   property("monoidK right identity") = forAll { (testInput: QueryTestFixture, testData: TestData) =>
-    import testData._
+    import testData.*
 
     val empty = select.from(Nil)
 
@@ -30,7 +30,7 @@ class MonoidKLaws extends ScalaqlLawsSpec("MonoidK") {
 
   property("semigroupK associative") = forAll {
     (xs: QueryTestFixture, ys: QueryTestFixture, zs: QueryTestFixture, testData: TestData) =>
-      import testData._
+      import testData.*
 
       val left  = (xs.query ++ (ys.query ++ zs.query)).toList.run(from(strings) & from(ints))
       val right = ((xs.query ++ ys.query) ++ zs.query).toList.run(from(strings) & from(ints))
