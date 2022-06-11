@@ -99,12 +99,14 @@ lazy val `scala-ql` =
           case Some((2, n)) if n >= 13 =>
             Seq(
               Typelevel.spire,
-              Macros.magnoliaScala2
+              Macros.magnoliaScala2,
+              Macros.scalaMacros.value
             )
           case _ =>
             Seq(
               Typelevel.spire2_12,
-              Macros.magnoliaScala2
+              Macros.magnoliaScala2,
+              Macros.scalaMacros.value
             )
         }
       }

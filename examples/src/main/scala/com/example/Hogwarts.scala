@@ -1,5 +1,7 @@
 package com.example
 
+import io.circe.Decoder
+
 object Hogwarts {
 
   case class Student(
@@ -72,4 +74,13 @@ object Hogwarts {
   val students: List[Student] = List(Harry, Ron, Hermione, Draco, Cedric)
 
   val faculties: List[Faculty] = List(Gryffindor, Slytherin, Hufflepuff)
+
+  // There is no production ready automatic derivation for scala 3 ¯\_(ツ)_/¯
+  implicit val facultiesJsonDecoder: Decoder[Faculty] = Decoder.instance[Faculty] { c =>
+    for {
+      name        <- c.get[String]("name")
+      founder     <- c.get[String]("founder")
+      description <- c.get[String]("description")
+    } yield Faculty(name, founder, description)
+  }
 }

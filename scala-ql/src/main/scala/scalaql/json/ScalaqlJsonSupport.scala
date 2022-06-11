@@ -9,7 +9,7 @@ import scala.io.Source
 
 trait ScalaqlJsonSupport {
 
-  final def apply[A: Decoder](
+  final def file[A: Decoder](
     path:                Path,
     encoding:            Charset = StandardCharsets.UTF_8
   )(implicit jsonConfig: JsonConfig = JsonConfig.default
@@ -18,7 +18,7 @@ trait ScalaqlJsonSupport {
       Source.fromFile(path.toFile, encoding.name)
     }
 
-  final def fromString[A: Decoder](content: String)(implicit jsonConfig: JsonConfig = JsonConfig.default): Iterable[A] =
+  final def string[A: Decoder](content: String)(implicit jsonConfig: JsonConfig = JsonConfig.default): Iterable[A] =
     readFromSource {
       Source.fromString(content)
     }

@@ -9,11 +9,11 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
   "ScalaqlCsvSupport" should {
     "correctly process simple csv" in {
       case class Person(name: String, age: Int)
-      implicit val personCsvDecoder: CsvDecoder[Person] = new CsvDecoder[Person] {
-        override def read(value: Map[String, String]): Person = {
+      implicit val personCsvDecoder: CsvDecoder.Row[Person] = new CsvDecoder.Row[Person] {
+        override def readRow(value: CsvDecoderInput.Row): Person = {
           val result = for {
-            name   <- value.get("name")
-            rawAge <- value.get("age")
+            name   <- value.row.get("name")
+            rawAge <- value.row.get("age")
             age    <- Try(rawAge.toInt).toOption
           } yield Person(name, age)
           result.getOrElse(throw new IllegalArgumentException(s"Invalid CSV: expected Person like, got $value"))
@@ -30,7 +30,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
         .toList
         .run(
           from(
-            csv.fromString(rawCsv)
+            csv.string(rawCsv)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24))

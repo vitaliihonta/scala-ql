@@ -7,15 +7,15 @@ object ExistsMain extends App {
 
   val query = for {
     studentGradesByFaculty <- select[Student]
-                               .where(_.age >= 18)
-                               .groupBy(_.faculty)
-                               .aggregate((_, students) => students.avgBy(_.age.toDouble) && students.sumBy(_.grade))
-                               .map { case (fac, age, grade) => (fac, (age, grade)) }
-                               .toMap
+                                .where(_.age >= 18)
+                                .groupBy(_.faculty)
+                                .aggregate((_, students) => students.avgBy(_.age.toDouble) && students.sumBy(_.grade))
+                                .map { case (fac, age, grade) => (fac, (age, grade)) }
+                                .toMap
     hasCoolAdults <- select[Faculty].exists { faculty =>
-                      val (avgAge, avgGrade) = studentGradesByFaculty(faculty.name)
-                      avgAge > 18 && avgGrade > 95
-                    }
+                       val (avgAge, avgGrade) = studentGradesByFaculty(faculty.name)
+                       avgAge > 18 && avgGrade > 95
+                     }
   } yield hasCoolAdults
 
   println {

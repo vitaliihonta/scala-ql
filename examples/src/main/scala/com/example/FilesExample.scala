@@ -1,32 +1,13 @@
-# ScalaQL
+package com.example
 
-ScalaQL is simple statically typed (and lawful) query DSL for scala.
-
-## Use cases
-
-- Generating data reports
-- Data exploration
-
-## Supported sources
-
-- Any scala collection
-- CSV/TSV file
-- JSON file (single line / multiline)
-- [TBD] parquet
-
-## Example
-
-Examples could be found [here](./examples/src/main/)
-
-```scala
-import scalaql._
-import com.example.Hogwarts._
+import scalaql.*
+import com.example.Hogwarts.*
 import java.nio.file.Paths
 
 object FilesExample extends App {
   case class FacultyStats(faculty: String, avgGrade: Double)
 
-  val query: Query[From[Student] with From[Faculty], FacultyStats] =
+  val query: Query[From[Student] & From[Faculty], FacultyStats] =
     select[Student]
       .where(_.age >= 18)
       .join(select[Faculty])
@@ -46,5 +27,3 @@ object FilesExample extends App {
       )
   }
 }
-
-```

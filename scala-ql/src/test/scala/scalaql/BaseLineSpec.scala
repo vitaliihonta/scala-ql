@@ -12,13 +12,13 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query: Query[Any, String] =
         select
           .from(people)
-          .collect {
-            case Person(name, _, Profession.Unemployed, _) => s"Unemployed $name"
+          .collect { case Person(name, _, Profession.Unemployed, _) =>
+            s"Unemployed $name"
           }
           .sorted
 
-      val expectedResult = people.collect {
-        case Person(name, _, Profession.Unemployed, _) => s"Unemployed $name"
+      val expectedResult = people.collect { case Person(name, _, Profession.Unemployed, _) =>
+        s"Unemployed $name"
       }.sorted
 
       query.toList.run shouldEqual expectedResult
@@ -68,14 +68,13 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val companies = arbitraryN[Company]
       val people    = arbitraryN[Person]
 
-      val query: Query[From[Person] & From[Company], Employee] = {
+      val query: Query[From[Person] & From[Company], Employee] =
         for {
           person <- select[Person]
           if person.age >= 18
           company <- select[Company]
           if person.industry == company.industry
         } yield Employee(person, company.name)
-      }
 
       val expectedResult =
         people
@@ -95,7 +94,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val people     = arbitraryN[Person]
       val workspaces = arbitraryN[Workspace](Workspace.arbitrary(people, offices))
 
-      val query: Query[From[Person] & From[Company] & From[Workspace] & From[Office], EmployeesInfo] = {
+      val query: Query[From[Person] & From[Company] & From[Workspace] & From[Office], EmployeesInfo] =
         for {
           person <- select[Person]
           if person.age >= 18
@@ -106,7 +105,6 @@ class BaseLineSpec extends ScalaqlUnitSpec {
           office <- select[Office]
           if workspace.office == office.location
         } yield EmployeesInfo(person, company.name, office.location, workspace.floor)
-      }
 
       val expectedResult =
         people
@@ -125,7 +123,9 @@ class BaseLineSpec extends ScalaqlUnitSpec {
               }
           }
 
-      query.toList.run(from(people) & from(companies) & from(workspaces) & from(offices)) should contain theSameElementsAs expectedResult
+      query.toList.run(
+        from(people) & from(companies) & from(workspaces) & from(offices)
+      ) should contain theSameElementsAs expectedResult
     }
 
     "correctly process simple groupBy + aggregate" in repeated {
@@ -137,9 +137,8 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .map((PeopleStats.apply _).tupled)
 
       val expectedResult =
-        people.groupBy(_.profession).map {
-          case (profession, people) =>
-            PeopleStats(profession, people.map(_.age).sum.toDouble / people.size)
+        people.groupBy(_.profession).map { case (profession, people) =>
+          PeopleStats(profession, people.map(_.age).sum.toDouble / people.size)
         }
 
       query.toList.run(from(people)) shouldEqual expectedResult
@@ -149,12 +148,11 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val companies = arbitraryN[Company]
       val people    = arbitraryN[Person]
 
-      val query: Query[From[Company] & From[Person], Profession] = {
+      val query: Query[From[Company] & From[Person], Profession] =
         select[Person]
           .whereSubQuery(person => select[Company].exists(_.industry == person.industry))
           .where(_.age >= 30)
           .map(_.profession)
-      }
 
       val expectedResult =
         people
@@ -198,7 +196,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .join(select[Company])
         .on(_.profession.industries contains _.industry)
 
-      val expectedResult = {
+      val expectedResult =
         people
           .filter(_.age >= 18)
           .flatMap { person =>
@@ -206,7 +204,6 @@ class BaseLineSpec extends ScalaqlUnitSpec {
               .find(company => person.profession.industries contains company.industry)
               .map(company => (person, company))
           }
-      }
 
       query.toList.run(from(people) & from(companies)) should contain theSameElementsAs expectedResult
     }
@@ -220,7 +217,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .crossJoin(select[Company])
         .on(_.profession.industries contains _.industry)
 
-      val expectedResult = {
+      val expectedResult =
         people
           .filter(_.age >= 18)
           .flatMap { person =>
@@ -228,7 +225,6 @@ class BaseLineSpec extends ScalaqlUnitSpec {
               .filter(company => person.profession.industries contains company.industry)
               .map(company => (person, company))
           }
-      }
 
       query.toList.run(from(people) & from(companies)) should contain theSameElementsAs expectedResult
     }
@@ -242,14 +238,13 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .leftJoin(select[Company])
         .on(_.profession.industries contains _.industry)
 
-      val expectedResult = {
+      val expectedResult =
         people
           .filter(_.age >= 18)
           .map { person =>
             person -> companies
               .find(company => person.profession.industries contains company.industry)
           }
-      }
 
       query.toList.run(from(people) & from(companies)) should contain theSameElementsAs expectedResult
     }
@@ -261,14 +256,13 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .join(select[Person])
         .on(_.profession == _.profession)
 
-      val expectedResult = {
+      val expectedResult =
         people
           .flatMap { p1 =>
             people
               .find(p2 => p1.profession == p2.profession)
               .map(p2 => (p1, p2))
           }
-      }
 
       query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
@@ -279,9 +273,8 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query = select[Person].where(_.profession == Profession.Developer) ++
         select[Person].where(_.age >= 18)
 
-      val expectedResult = {
+      val expectedResult =
         people.filter(_.profession == Profession.Developer) ++ people.filter(_.age >= 18)
-      }
 
       query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
@@ -314,7 +307,9 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         }
       }
 
-      query.toList.run(from(workspaces) & from(companies) & from(people)) should contain theSameElementsAs expectedResult
+      query.toList.run(
+        from(workspaces) & from(companies) & from(people)
+      ) should contain theSameElementsAs expectedResult
     }
 
     "correctly process query with andThen" in repeated {

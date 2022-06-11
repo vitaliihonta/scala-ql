@@ -1,3 +1,4 @@
+import sbt.Keys.scalaVersion
 import sbt._
 
 object Dependencies {
@@ -23,6 +24,10 @@ object Dependencies {
 
   object Macros {
     val magnoliaScala3 = "com.softwaremill.magnolia1_3" %% "magnolia" % "1.1.3"
+
+    val scalaMacros = Def.setting {
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided
+    }
     val magnoliaScala2 = "com.softwaremill.magnolia1_2" %% "magnolia" % "1.1.2"
   }
 

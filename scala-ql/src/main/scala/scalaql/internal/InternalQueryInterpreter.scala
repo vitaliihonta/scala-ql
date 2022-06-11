@@ -15,16 +15,14 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
     query match {
       case query: Query.Const[Out] =>
         val outputs = query.values.iterator
-        while (step.check() && outputs.hasNext) {
+        while (step.check() && outputs.hasNext)
           step.next(outputs.next())
-        }
 
       case query: Query.FromQuery[?] =>
         val input   = ToFrom.transform(in)
         val outputs = input.get(query.inputTag).asInstanceOf[Iterable[Out]].iterator
-        while (step.check() && outputs.hasNext) {
+        while (step.check() && outputs.hasNext)
           step.next(outputs.next())
-        }
 
       case query: Query.UnionQuery[In, Out] =>
         import query.*
@@ -88,9 +86,8 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         )
 
         val outputs = tmpBuffer.sortBy[by](sortBy)(order.toOrdering).iterator
-        while (step.check() && outputs.hasNext) {
+        while (step.check() && outputs.hasNext)
           step.next(outputs.next())
-        }
 
       case query: Query.AggregateQuery[In, out0, g, out1, Out] =>
         import query.*

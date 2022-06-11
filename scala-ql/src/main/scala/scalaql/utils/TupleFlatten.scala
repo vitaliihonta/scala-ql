@@ -20,23 +20,23 @@ object TupleFlatten extends LowPriorityTupled0 {
     }
 
   implicit def tupled2Plus[A, B, C]: TupleFlatten.Aux[((A, B), C), (A, B, C)] =
-    create[((A, B), C), (A, B, C)] {
-      case ((a, b), c) => (a, b, c)
+    create[((A, B), C), (A, B, C)] { case ((a, b), c) =>
+      (a, b, c)
     }
 
   implicit def tupledPlus2[A, B, C]: TupleFlatten.Aux[(A, (B, C)), (A, B, C)] =
-    create[(A, (B, C)), (A, B, C)] {
-      case (a, (b, c)) => (a, b, c)
+    create[(A, (B, C)), (A, B, C)] { case (a, (b, c)) =>
+      (a, b, c)
     }
 
   implicit def tupled3Plus[A, B, C, D]: TupleFlatten.Aux[((A, B, C), D), (A, B, C, D)] =
-    create[((A, B, C), D), (A, B, C, D)] {
-      case ((a, b, c), d) => (a, b, c, d)
+    create[((A, B, C), D), (A, B, C, D)] { case ((a, b, c), d) =>
+      (a, b, c, d)
     }
 
   implicit def tupledPlus3[A, B, C, D]: TupleFlatten.Aux[(A, (B, C, D)), (A, B, C, D)] =
-    create[(A, (B, C, D)), (A, B, C, D)] {
-      case (a, (b, c, d)) => (a, b, c, d)
+    create[(A, (B, C, D)), (A, B, C, D)] { case (a, (b, c, d)) =>
+      (a, b, c, d)
     }
 
   // todo: make up to 7

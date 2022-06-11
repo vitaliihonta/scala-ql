@@ -22,7 +22,7 @@ abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
 
   case class StringTransformation(func: String => String)
 
-  protected implicit val arbitraryStringTransformation: Arbitrary[StringTransformation] = {
+  protected implicit val arbitraryStringTransformation: Arbitrary[StringTransformation] =
     Arbitrary(
       Gen.oneOf(
         List(
@@ -34,11 +34,10 @@ abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
         )
       )
     )
-  }
 
   case class StringPredicate(predicate: String => Boolean)
 
-  protected implicit val arbitraryStringPredicate: Arbitrary[StringPredicate] = {
+  protected implicit val arbitraryStringPredicate: Arbitrary[StringPredicate] =
     Arbitrary(
       Gen.oneOf(
         List(
@@ -49,30 +48,28 @@ abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
         )
       )
     )
-  }
 
   case class StringMapFilter(partial: PartialFunction[String, String]) {
     val predicate: String => Option[String] = partial.lift
   }
 
-  protected implicit val arbitraryStringMapFilter: Arbitrary[StringMapFilter] = {
+  protected implicit val arbitraryStringMapFilter: Arbitrary[StringMapFilter] =
     Arbitrary(
       Gen.oneOf(
         List(
-          StringMapFilter({ case s if s.nonEmpty => s }),
-          StringMapFilter({ case s if s.nonEmpty => s.head.toString + s.toUpperCase }),
-          StringMapFilter({ case s if s.length % 2 == 0 => s.trim }),
-          StringMapFilter({ case s if s.reverse == s => s.toLowerCase })
+          StringMapFilter { case s if s.nonEmpty => s },
+          StringMapFilter { case s if s.nonEmpty => s.head.toString + s.toUpperCase },
+          StringMapFilter { case s if s.length % 2 == 0 => s.trim },
+          StringMapFilter { case s if s.reverse == s => s.toLowerCase }
         )
       )
     )
-  }
 
   case class StringBindTransformation(
     bind:      String => Query[From[String] & From[Int], String],
     asFlatMap: (List[String], String) => List[String])
 
-  protected implicit val arbitraryStringBindTransformation: Arbitrary[StringBindTransformation] = {
+  protected implicit val arbitraryStringBindTransformation: Arbitrary[StringBindTransformation] =
     Arbitrary(
       Gen.oneOf(
         List(
@@ -99,7 +96,6 @@ abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
         )
       )
     )
-  }
 
   protected implicit val arbitraryTestInput: Arbitrary[QueryTestFixture] = {
     val simple: QueryTestFixture = QueryTestFixture(select[String], (strings, _) => strings)

@@ -142,13 +142,11 @@ object Aggregation {
     override def apply(xs: Iterable[A]): List[U2] =
       xs.groupBy(group1)
         .view
-        .map {
-          case (sliceB, bs) =>
-            val merged1 = bs.groupBy(group2).view.map {
-              case (sliceC, cs) =>
-                agg1(sliceB, sliceC, view1).apply(cs)
-            }
-            agg2(sliceB, view2).apply(merged1.toList)
+        .map { case (sliceB, bs) =>
+          val merged1 = bs.groupBy(group2).view.map { case (sliceC, cs) =>
+            agg1(sliceB, sliceC, view1).apply(cs)
+          }
+          agg2(sliceB, view2).apply(merged1.toList)
         }
         .toList
   }

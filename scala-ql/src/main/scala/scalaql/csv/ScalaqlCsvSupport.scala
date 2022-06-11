@@ -9,7 +9,7 @@ import java.nio.file.Path
 
 trait ScalaqlCsvSupport {
 
-  final def apply[A: CsvDecoder](
+  final def file[A: CsvDecoder.Row](
     path:               Path,
     encoding:           Charset = StandardCharsets.UTF_8
   )(implicit csvConfig: CsvConfig = CsvConfig.default
@@ -18,13 +18,16 @@ trait ScalaqlCsvSupport {
       CSVReader.open(path.toFile, encoding.name)(csvConfig.toTototoshi)
     }
 
-  final def fromString[A: CsvDecoder](content: String)(implicit csvConfig: CsvConfig = CsvConfig.default): Iterable[A] =
+  final def string[A: CsvDecoder.Row](
+    content:            String
+  )(implicit csvConfig: CsvConfig = CsvConfig.default
+  ): Iterable[A] =
     readFromReader {
       CSVReader.open(new StringReader(content))(csvConfig.toTototoshi)
     }
 
-  private def readFromReader[A: CsvDecoder](reader: CSVReader): Iterable[A] =
+  private def readFromReader[A: CsvDecoder.Row](reader: CSVReader): Iterable[A] =
     reader.iteratorWithHeaders
-      .map(implicitly[CsvDecoder[A]].read)
+      .map(raw => implicitly[CsvDecoder.Row[A]].read(CsvDecoderInput.Row(raw)))
       .toList
 }
