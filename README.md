@@ -39,8 +39,8 @@ More examples could be found [here](./examples/src/main/)
 ```scala
 package com.example
 
-import scalaql.*
-import com.example.Hogwarts.*
+import scalaql._
+import com.example.Hogwarts._
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 
