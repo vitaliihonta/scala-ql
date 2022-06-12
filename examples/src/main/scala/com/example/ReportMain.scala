@@ -29,7 +29,8 @@ object ReportMain extends App {
       .map((ByFaculty.apply _).tupled)
       .sortBy(_.faculty)(desc)
 
-  println {
-    query.toList.run(from(students)).mkString("\n")
-  }
+  query
+    .show(truncate = false)
+    .run(from(students))
+
 }

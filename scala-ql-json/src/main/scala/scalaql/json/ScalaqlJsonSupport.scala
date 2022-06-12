@@ -1,6 +1,6 @@
 package scalaql.json
 
-import scalaql.SideEffectWithResource
+import scalaql.SideEffect
 import io.circe.Decoder
 import io.circe.Encoder
 import io.circe.Json
@@ -56,14 +56,14 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
       encoding:        Charset,
       openOptions:     OpenOption*
     )(implicit config: JsonConfig
-    ): SideEffectWithResource[?, ?, A] = writeInto {
+    ): SideEffect[?, ?, A] = writeInto {
       Files.newBufferedWriter(path, encoding, openOptions: _*)
     }.afterAll((writer, _) => writer.flush())
 
     override def string[A: Encoder](
       builder:         mutable.StringBuilder
     )(implicit config: JsonConfig
-    ): SideEffectWithResource[?, ?, A] = {
+    ): SideEffect[?, ?, A] = {
       val writer = new StringWriter()
       writeInto {
         writer
@@ -75,8 +75,8 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
     private def writeInto[A: Encoder](
       acquireWriter:   => Writer
     )(implicit config: JsonConfig
-    ): SideEffectWithResource[Writer, ?, A] = {
-      def basics(writeLine: (Writer, Boolean, Json) => Unit) = SideEffectWithResource[Writer, Boolean, A](
+    ): SideEffect[Writer, ?, A] = {
+      def basics(writeLine: (Writer, Boolean, Json) => Unit) = SideEffect[Writer, Boolean, A](
         initialState = true,
         acquire = () => acquireWriter,
         release = (writer, _) => writer.close(),

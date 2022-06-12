@@ -23,6 +23,10 @@ object Dependencies {
     val circeParser = "io.circe" %% "circe-parser" % "0.14.1"
   }
 
+  object Utils {
+    val commonsLang = "org.apache.commons" % "commons-lang3" % "3.12.0"
+  }
+
   object Macros {
     val magnoliaScala3 = "com.softwaremill.magnolia1_3" %% "magnolia" % "1.1.3"
 

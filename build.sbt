@@ -8,7 +8,7 @@ val allScalaVersions = List(scala212, scala213, scala3)
 
 ThisBuild / scalaVersion  := scala213
 ThisBuild / organization  := "com.github.vitaliihonta"
-ThisBuild / version       := "0.1.0-RC2"
+ThisBuild / version       := "0.1.0-RC3"
 ThisBuild / versionScheme := Some("early-semver")
 
 val publishSettings = Seq(
@@ -115,16 +115,26 @@ lazy val `scala-ql` =
       libraryDependencies ++= Seq(
         Reflect.izumi,
         Testing.scalatest,
-        Testing.scalacheck
+        Testing.scalacheck,
+        Utils.commonsLang
       ) ++ {
         CrossVersion.partialVersion(scalaVersion.value) match {
-          case Some((2, n)) if n < 13 =>
+          case Some((3, _)) =>
             Seq(
-              Typelevel.spire2_12
+              Typelevel.spire,
+              Macros.magnoliaScala3
+            )
+          case Some((2, n)) if n >= 13 =>
+            Seq(
+              Typelevel.spire,
+              Macros.magnoliaScala2,
+              Macros.scalaMacros.value
             )
           case _ =>
             Seq(
-              Typelevel.spire
+              Typelevel.spire2_12,
+              Macros.magnoliaScala2,
+              Macros.scalaMacros.value
             )
         }
       }

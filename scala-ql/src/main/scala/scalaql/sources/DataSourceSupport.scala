@@ -1,6 +1,6 @@
 package scalaql.sources
 
-import scalaql.SideEffectWithResource
+import scalaql.SideEffect
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.nio.file.OpenOption
@@ -34,7 +34,7 @@ trait DataSourceWriteSupport[Encoder[_], Config] {
   def file[A: Encoder](
     path:            Path
   )(implicit config: Config
-  ): SideEffectWithResource[?, ?, A] =
+  ): SideEffect[?, ?, A] =
     file(path, encoding = StandardCharsets.UTF_8)
 
   def file[A: Encoder](
@@ -42,10 +42,10 @@ trait DataSourceWriteSupport[Encoder[_], Config] {
     encoding:        Charset,
     openOptions:     OpenOption*
   )(implicit config: Config
-  ): SideEffectWithResource[?, ?, A]
+  ): SideEffect[?, ?, A]
 
   def string[A: Encoder](
     builder:         mutable.StringBuilder
   )(implicit config: Config
-  ): SideEffectWithResource[?, ?, A]
+  ): SideEffect[?, ?, A]
 }
