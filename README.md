@@ -1,3 +1,5 @@
+![Build status](https://github.com/vitaliihonta/scala-ql/actions/workflows/test.yaml/badge.svg)
+
 # ScalaQL
 
 ScalaQL is simple statically typed (and lawful) query DSL for scala.
