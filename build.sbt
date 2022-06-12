@@ -6,9 +6,24 @@ val scala3   = "3.1.2"
 
 val allScalaVersions = List(scala212, scala213, scala3)
 
-ThisBuild / scalaVersion := scala213
-ThisBuild / organization := "com.github.vitaliihonta"
-ThisBuild / version      := "0.2.0"
+ThisBuild / scalaVersion  := scala213
+ThisBuild / organization  := "com.github.vitaliihonta"
+ThisBuild / version       := "0.1.0-SNAPSHOT"
+ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / licenses := Seq(
+  "Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
+)
+ThisBuild / projectInfo := ModuleInfo(
+  nameFormal = "scala-ql"
+)
+ThisBuild / developers := List(
+  Developer(
+    id = "vitaliihonta",
+    name = "Vitalii Honta",
+    email = "vitalii.honta@gmail.com",
+    url = new URL("https://github.com/vitaliihonta")
+  )
+)
 
 val baseSettings = Seq(
   scalacOptions ++= Seq(
@@ -27,7 +42,8 @@ val baseSettings = Seq(
       case _            => Seq(Typelevel.kindProjector)
     }
   },
-  ideSkipProject := scalaVersion.value == scala212
+  ideSkipProject := scalaVersion.value == scala212,
+  publishTo      := sonatypePublishToBundle.value
 )
 
 val crossCompileSettings: Seq[Def.Setting[_]] = {
