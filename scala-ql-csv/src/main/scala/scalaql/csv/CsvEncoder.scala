@@ -1,7 +1,5 @@
 package scalaql.csv
 
-import scalaql.csv
-
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -12,7 +10,7 @@ trait CsvEncoder[A] { self =>
   def contramap[B](f: B => A): CsvEncoder[B]
 }
 
-object CsvEncoder extends LowPriorityCsvFieldDecoders {
+object CsvEncoder extends LowPriorityCsvFieldEncoders {
 
   trait Row[A] extends CsvEncoder[A] { self =>
     def write(value: A): CsvEntry.Row
@@ -34,7 +32,7 @@ object CsvEncoder extends LowPriorityCsvFieldDecoders {
     override def write(value: A): CsvEntry.Row = CsvEntry.Row(f(value))
   }
 
-  def fieldEncoder[A](f: A => String): CsvEncoder.Field[A] = new csv.CsvEncoder.Field[A] {
+  def fieldEncoder[A](f: A => String): CsvEncoder.Field[A] = new CsvEncoder.Field[A] {
     override def write(value: A): CsvEntry.Field = CsvEntry.Field(f(value))
   }
 }

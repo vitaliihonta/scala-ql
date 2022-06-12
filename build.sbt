@@ -6,10 +6,9 @@ val scala3   = "3.1.2"
 
 val allScalaVersions = List(scala212, scala213, scala3)
 
-scalaVersion := scala213
-
+ThisBuild / scalaVersion := scala213
 ThisBuild / organization := "com.github.vitaliihonta"
-ThisBuild / version := "0.2.0"
+ThisBuild / version      := "0.2.0"
 
 val baseSettings = Seq(
   scalacOptions ++= Seq(
@@ -52,26 +51,25 @@ lazy val root = project
   .in(file("."))
   .settings(baseSettings)
   .settings(
-    name := "scala-ql-root",
+    name            := "scala-ql-root",
     publishArtifact := false
   )
   .aggregate(
     `scala-ql`.projectRefs ++
+      `scala-ql-csv`.projectRefs ++
+      `scala-ql-json`.projectRefs ++
       examples.projectRefs: _*
   )
 
 lazy val examples =
   projectMatrix
     .in(file("examples"))
-    .dependsOn(`scala-ql`)
+    .dependsOn(`scala-ql`, `scala-ql-csv`, `scala-ql-json`)
     .settings(baseSettings)
     .settings(crossCompileSettings)
     .settings(
       publishArtifact := false,
       libraryDependencies ++= Seq(
-        Csv.scalaCsv,
-        Json.circeCore,
-        Json.circeParser
       )
     )
     .jvmPlatform(scalaVersions = allScalaVersions)
@@ -85,26 +83,57 @@ lazy val `scala-ql` =
       libraryDependencies ++= Seq(
         Reflect.izumi,
         Testing.scalatest,
+        Testing.scalacheck
+      ) ++ {
+        CrossVersion.partialVersion(scalaVersion.value) match {
+          case Some((2, n)) if n < 13 =>
+            Seq(
+              Typelevel.spire2_12
+            )
+          case _ =>
+            Seq(
+              Typelevel.spire
+            )
+        }
+      }
+    )
+    .jvmPlatform(scalaVersions = allScalaVersions)
+
+lazy val `scala-ql-json` =
+  projectMatrix
+    .in(file("scala-ql-json"))
+    .settings(baseSettings)
+    .settings(crossCompileSettings)
+    .dependsOn(`scala-ql` % "compile->compile;test->test")
+    .settings(
+      libraryDependencies ++= Seq(
+        Testing.scalatest,
         Testing.scalacheck,
-        Csv.scalaCsv     % Optional,
-        Json.circeCore   % Optional,
-        Json.circeParser % Optional
+        Json.circeCore,
+        Json.circeParser
+      )
+    )
+    .jvmPlatform(scalaVersions = allScalaVersions)
+
+lazy val `scala-ql-csv` =
+  projectMatrix
+    .in(file("scala-ql-csv"))
+    .settings(baseSettings)
+    .settings(crossCompileSettings)
+    .dependsOn(`scala-ql` % "compile->compile;test->test")
+    .settings(
+      libraryDependencies ++= Seq(
+        Testing.scalatest,
+        Testing.scalacheck,
+        Csv.scalaCsv
       ) ++ {
         CrossVersion.partialVersion(scalaVersion.value) match {
           case Some((3, _)) =>
             Seq(
-              Typelevel.spire,
               Macros.magnoliaScala3
-            )
-          case Some((2, n)) if n >= 13 =>
-            Seq(
-              Typelevel.spire,
-              Macros.magnoliaScala2,
-              Macros.scalaMacros.value
             )
           case _ =>
             Seq(
-              Typelevel.spire2_12,
               Macros.magnoliaScala2,
               Macros.scalaMacros.value
             )

@@ -1,7 +1,6 @@
 package scalaql.csv
 
 import scalaql.ScalaqlUnitSpec
-
 import scalaql.*
 import scala.util.Try
 

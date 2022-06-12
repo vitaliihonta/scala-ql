@@ -1,7 +1,6 @@
 package scalaql.json
 
 import scalaql.*
-import scala.util.Try
 import io.circe.Decoder
 
 class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {

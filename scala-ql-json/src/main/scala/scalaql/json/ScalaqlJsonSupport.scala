@@ -1,12 +1,13 @@
 package scalaql.json
 
-import io.circe.parser
-import io.circe.Decoder
-import io.circe.Encoder
 import scalaql.SideEffectWithResource
 import scalaql.syntax.DataSourceReadSupport
 import scalaql.syntax.DataSourceSupport
 import scalaql.syntax.DataSourceWriteSupport
+import io.circe.Decoder
+import io.circe.Encoder
+import io.circe.Json
+import io.circe.parser
 import java.io.StringWriter
 import java.io.Writer
 import java.nio.charset.Charset
@@ -75,17 +76,31 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
       acquireWriter:   => Writer
     )(implicit config: JsonConfig
     ): SideEffectWithResource[Writer, ?, A] = {
-      val basics = SideEffectWithResource.stateless[Writer, A](
+      def basics(writeLine: (Writer, Boolean, Json) => Unit) = SideEffectWithResource[Writer, Boolean, A](
+        initialState = true,
         acquire = () => acquireWriter,
-        release = _.close(),
-        use = (writer, value) => {
-          writer.write(Encoder[A].apply(value).noSpaces)
-          writer.write("\r\n")
+        release = (writer, _) => writer.close(),
+        use = (writer, isFirstRow, value) => {
+          writeLine(writer, isFirstRow, Encoder[A].apply(value))
+          false
         }
       )
 
-      if (config.multiline) basics
-      else basics.beforeAll(_.write("[")).afterAll((writer, _) => writer.write("]"))
+      if (config.multiline) {
+        basics { (writer, _, json) =>
+          writer.write(json.noSpaces)
+          writer.write("\r\n")
+        }
+      } else {
+        basics { (writer, isFirstRow, json) =>
+          if (!isFirstRow) {
+            writer.write(",")
+          }
+          writer.write(json.spaces2)
+        }
+          .beforeAll(_.write("[\r\n"))
+          .afterAll((writer, _) => writer.write("\r\n]"))
+      }
     }
   }
 }
