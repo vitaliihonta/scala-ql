@@ -2,7 +2,6 @@ package com.example
 
 import scalaql.*
 import com.example.Hogwarts.*
-import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 
 object FilesExample extends App {
