@@ -1,0 +1,12 @@
+name: ScalaQL test
+on: [ push ]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Scala
+        uses: olafurpg/setup-scala@v11
+      - name: Compile
+        run: sbt +compile
