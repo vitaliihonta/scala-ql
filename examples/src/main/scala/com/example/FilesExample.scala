@@ -18,7 +18,7 @@ object FilesExample extends App {
 
   query
     .foreach(
-      json.write.file[FacultyStats](Paths.get("examples/out/faculty_stats.json"), StandardCharsets.UTF_8)
+      csv.write.file[FacultyStats](Paths.get("examples/out/faculty_stats.csv"), StandardCharsets.UTF_8)
     )
     .run(
       from(
