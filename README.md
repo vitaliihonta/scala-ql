@@ -1,5 +1,5 @@
 ![Build status](https://github.com/vitaliihonta/scala-ql/actions/workflows/publish.yaml/badge.svg)
-[![scala-ql Scala version support](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql/latest.svg](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql)
+[![scala-ql Scala version support](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql/latest.svg)](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql)
 
 # ScalaQL
 
@@ -13,12 +13,25 @@ which you can then apply to multiple sources and write into multiple sinks.
 - Generating data reports
 - Data exploration
 
+## Install
+
+```sbt
+// Core
+libraryDependencies += "com.github.vitaliihonta" %% "scala-ql" % "<VERSION>"
+
+// CSV support
+libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-csv" % "<VERSION>"
+
+// JSON support
+libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-json" % "<VERSION>"
+```
+
 ## Supported sources/sinks
 
 - Any scala collection
 - CSV/TSV file
 - JSON file (single line / multiline)
-- [TBD] parquet
+- **TODO** parquet
 
 ## Supported operations
 
