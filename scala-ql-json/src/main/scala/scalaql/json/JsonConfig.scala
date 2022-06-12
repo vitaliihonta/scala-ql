@@ -2,9 +2,10 @@ package scalaql.json
 
 case class JsonConfig(multiline: Boolean)
 
-object JsonConfig {
+object JsonConfig extends LowPriorityJsonConfig
 
-  val default: JsonConfig = JsonConfig(
+trait LowPriorityJsonConfig {
+  implicit val default: JsonConfig = JsonConfig(
     multiline = true
   )
 }

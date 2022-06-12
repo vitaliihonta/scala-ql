@@ -1,9 +1,8 @@
-package scalaql.syntax
+package scalaql.sources
 
 import scalaql.SideEffectWithResource
-import java.nio.charset.StandardCharsets
-
 import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.nio.file.OpenOption
 import java.nio.file.Path
 import scala.collection.mutable
@@ -14,6 +13,11 @@ trait DataSourceSupport[Decoder[_], Encoder[_], Config] {
 }
 
 trait DataSourceReadSupport[Decoder[_], Config] {
+  def file[A: Decoder](
+    path:            Path
+  )(implicit config: Config
+  ): Iterable[A] = file(path, encoding = StandardCharsets.UTF_8)
+
   def file[A: Decoder](
     path:            Path,
     encoding:        Charset
@@ -27,6 +31,11 @@ trait DataSourceReadSupport[Decoder[_], Config] {
 }
 
 trait DataSourceWriteSupport[Encoder[_], Config] {
+  def file[A: Encoder](
+    path:            Path
+  )(implicit config: Config
+  ): SideEffectWithResource[?, ?, A] =
+    file(path, encoding = StandardCharsets.UTF_8)
 
   def file[A: Encoder](
     path:            Path,

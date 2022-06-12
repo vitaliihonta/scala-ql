@@ -3,9 +3,9 @@ package scalaql.csv
 import com.github.tototoshi.csv.CSVReader
 import com.github.tototoshi.csv.CSVWriter
 import scalaql.SideEffectWithResource
-import scalaql.syntax.DataSourceReadSupport
-import scalaql.syntax.DataSourceSupport
-import scalaql.syntax.DataSourceWriteSupport
+import scalaql.sources.DataSourceReadSupport
+import scalaql.sources.DataSourceSupport
+import scalaql.sources.DataSourceWriteSupport
 import java.io.StringReader
 import java.io.StringWriter
 import java.nio.charset.Charset
@@ -20,8 +20,8 @@ trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row
   final object read extends DataSourceReadSupport[CsvDecoder.Row, CsvConfig] {
     override def file[A: CsvDecoder.Row](
       path:               Path,
-      encoding:           Charset = StandardCharsets.UTF_8
-    )(implicit csvConfig: CsvConfig = CsvConfig.default
+      encoding:           Charset
+    )(implicit csvConfig: CsvConfig
     ): Iterable[A] =
       readFrom {
         CSVReader.open(path.toFile, encoding.name)(csvConfig.toTototoshi)
@@ -29,7 +29,7 @@ trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row
 
     override def string[A: CsvDecoder.Row](
       content:         String
-    )(implicit config: CsvConfig = CsvConfig.default
+    )(implicit config: CsvConfig
     ): Iterable[A] =
       readFrom {
         CSVReader.open(new StringReader(content))(config.toTototoshi)
@@ -47,7 +47,7 @@ trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row
       path:            Path,
       encoding:        Charset,
       openOptions:     OpenOption*
-    )(implicit config: CsvConfig = CsvConfig.default
+    )(implicit config: CsvConfig
     ): SideEffectWithResource[?, ?, A] =
       writeInto {
         val writer = Files.newBufferedWriter(path, encoding, openOptions: _*)
@@ -56,7 +56,7 @@ trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row
 
     override def string[A: CsvEncoder.Row](
       builder:         mutable.StringBuilder
-    )(implicit config: CsvConfig = CsvConfig.default
+    )(implicit config: CsvConfig
     ): SideEffectWithResource[?, ?, A] = {
       val writer = new StringWriter()
       writeInto {

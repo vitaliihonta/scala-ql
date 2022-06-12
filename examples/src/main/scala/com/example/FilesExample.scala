@@ -16,15 +16,19 @@ object FilesExample extends App {
       .aggregate((_, studentsWithFaculties) => studentsWithFaculties.avgBy { case (student, _) => student.grade })
       .map((FacultyStats.apply _).tupled)
 
+  val studentsPath  = Paths.get("examples/src/main/resources/students.csv")
+  val facultiesPath = Paths.get("examples/src/main/resources/faculties.json")
+  val outPath       = Paths.get("examples/out/faculty_stats.csv")
+
   query
     .foreach(
-      csv.write.file[FacultyStats](Paths.get("examples/out/faculty_stats.csv"), StandardCharsets.UTF_8)
+      csv.write.file[FacultyStats](outPath)
     )
     .run(
       from(
-        csv.read.file[Student](path = Paths.get("examples/src/main/resources/students.csv"))
+        csv.read.file[Student](studentsPath)
       ) & from(
-        json.read.file[Faculty](path = Paths.get("examples/src/main/resources/faculties.json"))
+        json.read.file[Faculty](facultiesPath)
       )
     )
 }

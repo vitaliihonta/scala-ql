@@ -1,13 +1,13 @@
 package scalaql.json
 
 import scalaql.SideEffectWithResource
-import scalaql.syntax.DataSourceReadSupport
-import scalaql.syntax.DataSourceSupport
-import scalaql.syntax.DataSourceWriteSupport
 import io.circe.Decoder
 import io.circe.Encoder
 import io.circe.Json
 import io.circe.parser
+import scalaql.sources.DataSourceReadSupport
+import scalaql.sources.DataSourceSupport
+import scalaql.sources.DataSourceWriteSupport
 import java.io.StringWriter
 import java.io.Writer
 import java.nio.charset.Charset
@@ -23,8 +23,8 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
   final object read extends DataSourceReadSupport[Decoder, JsonConfig] {
     override def file[A: Decoder](
       path:            Path,
-      encoding:        Charset = StandardCharsets.UTF_8
-    )(implicit config: JsonConfig = JsonConfig.default
+      encoding:        Charset
+    )(implicit config: JsonConfig
     ): Iterable[A] =
       readFromSource {
         Source.fromFile(path.toFile, encoding.name)
@@ -32,7 +32,7 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
 
     override def string[A: Decoder](
       content:         String
-    )(implicit config: JsonConfig = JsonConfig.default
+    )(implicit config: JsonConfig
     ): Iterable[A] =
       readFromSource {
         Source.fromString(content)
@@ -55,14 +55,14 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
       path:            Path,
       encoding:        Charset,
       openOptions:     OpenOption*
-    )(implicit config: JsonConfig = JsonConfig.default
+    )(implicit config: JsonConfig
     ): SideEffectWithResource[?, ?, A] = writeInto {
       Files.newBufferedWriter(path, encoding, openOptions: _*)
     }.afterAll((writer, _) => writer.flush())
 
     override def string[A: Encoder](
       builder:         mutable.StringBuilder
-    )(implicit config: JsonConfig = JsonConfig.default
+    )(implicit config: JsonConfig
     ): SideEffectWithResource[?, ?, A] = {
       val writer = new StringWriter()
       writeInto {
