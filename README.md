@@ -1,4 +1,5 @@
-![Build status](https://github.com/vitaliihonta/scala-ql/actions/workflows/test.yaml/badge.svg)
+![Build status](https://github.com/vitaliihonta/scala-ql/actions/workflows/publish.yaml/badge.svg)
+[![scala-ql Scala version support](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql/latest.svg](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql)
 
 # ScalaQL
 

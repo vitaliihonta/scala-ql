@@ -1,5 +1,10 @@
-name: ScalaQL test
-on: [ push ]
+name: Test
+on:
+  pull_request:
+    branches: [ "feature/*" ]
+  push:
+    branches: [ "*" ]
+    tags: [ "*" ]
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -7,7 +12,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Scala
-        uses: olafurpg/setup-scala@v11
+        uses: olafurpg/setup-scala@v13
+      - name: Cache sbt
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.sbt
+            ~/.ivy2/cache
+            ~/.coursier
+          key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
       - name: Compile
         run: sbt +test:compile
       - name: Run tests
