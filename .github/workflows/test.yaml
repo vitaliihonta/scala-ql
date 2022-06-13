@@ -25,4 +25,15 @@ jobs:
       - name: Compile
         run: sbt +test:compile
       - name: Run tests
-        run: sbt +test
+        run: sbt +jacoco
+      - name: Prepare for report
+        run: |
+          export BRANCH_NAME = ${GITHUB_REF##*/}
+          sbt 'set ThisBuild / jacocoCoverallsServiceName := "github-actions"'
+          sbt 'set ThisBuild / jacocoCoverallsBranch := sys.env("BRANCH_NAME")'
+          sbt 'set ThisBuild / jacocoCoverallsRepoToken := sys.env("COVERALLS_REPO_TOKEN")'
+      - name: Upload coverage data to Coveralls
+        run: sbt jacocoCoveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_FLAG_NAME: Scala ${{ matrix.scala }}

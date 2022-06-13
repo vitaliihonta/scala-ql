@@ -55,6 +55,12 @@ val baseProjectSettings = Seq(
       case _            => Seq(Typelevel.kindProjector)
     }
   },
+//  coverageEnabled := {
+//    CrossVersion.partialVersion(scalaVersion.value) match {
+//      case Some((3, _)) => false
+//      case _            => true
+//    }
+//  },
   ideSkipProject.withRank(KeyRanks.Invisible) := scalaVersion.value == scala212
 )
 
@@ -65,7 +71,7 @@ val crossCompileSettings: Seq[Def.Setting[_]] = {
     (config / unmanagedSourceDirectories) += {
       val sourceDir = (config / sourceDirectory).value
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((3, 1))            => sourceDir / "scala-3"
+        case Some((3, _))            => sourceDir / "scala-3"
         case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
         case _                       => sourceDir / "scala-2.13-"
       }
@@ -83,7 +89,11 @@ lazy val root = project
   .settings(
     name           := "scala-ql-root",
     publish / skip := true,
-    publish        := {}
+    publish        := {},
+    jacocoAggregateReportSettings := JacocoReportSettings(
+      title = "Foo Project Coverage",
+      formats = Seq(JacocoReportFormats.ScalaHTML)
+    )
   )
   .aggregate(
     `scala-ql`.projectRefs ++
@@ -101,6 +111,7 @@ lazy val examples =
     .settings(
       publish / skip := true,
       publish        := {},
+//      coverageEnabled := false,
       libraryDependencies ++= Seq(
       )
     )
@@ -139,6 +150,7 @@ lazy val `scala-ql` =
         }
       }
     )
+    .enablePlugins(JacocoCoverallsPlugin)
     .jvmPlatform(scalaVersions = allScalaVersions)
 
 lazy val `scala-ql-json` =
@@ -155,6 +167,7 @@ lazy val `scala-ql-json` =
         Json.circeParser
       )
     )
+    .enablePlugins(JacocoCoverallsPlugin)
     .jvmPlatform(scalaVersions = allScalaVersions)
 
 lazy val `scala-ql-csv` =
@@ -182,4 +195,5 @@ lazy val `scala-ql-csv` =
         }
       }
     )
+    .enablePlugins(JacocoCoverallsPlugin)
     .jvmPlatform(scalaVersions = allScalaVersions)
