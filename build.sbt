@@ -55,13 +55,25 @@ val baseProjectSettings = Seq(
       case _            => Seq(Typelevel.kindProjector)
     }
   },
-//  coverageEnabled := {
-//    CrossVersion.partialVersion(scalaVersion.value) match {
-//      case Some((3, _)) => false
-//      case _            => true
-//    }
-//  },
-  ideSkipProject.withRank(KeyRanks.Invisible) := scalaVersion.value == scala212
+  ideSkipProject := scalaVersion.value == scala212
+)
+
+val coverageSettings = Seq(
+  jacocoCoverallsServiceName := "github-actions",
+  jacocoCoverallsBranch      := sys.env.get("CI_BRANCH"),
+  jacocoCoverallsPullRequest := sys.env.get("GITHUB_EVENT_NAME"),
+  jacocoCoverallsRepoToken   := sys.env.get("COVERALLS_REPO_TOKEN"),
+  jacocoExcludes := Seq(
+    "examples/**",
+    // ignore version-specific sources. Tests are cross-compiled
+    "**/scala-2.13-/**",
+    "**/scala-2.13+/**",
+    "**/scala-3/**"
+  ),
+  jacocoAggregateReportSettings := JacocoReportSettings(
+    title = "ScalaQL Coverage",
+    formats = Seq(JacocoReportFormats.ScalaHTML)
+  )
 )
 
 val baseSettings = baseProjectSettings ++ publishSettings
@@ -85,15 +97,11 @@ val crossCompileSettings: Seq[Def.Setting[_]] = {
 
 lazy val root = project
   .in(file("."))
-  .settings(baseSettings)
+  .settings(baseSettings, coverageSettings)
   .settings(
     name           := "scala-ql-root",
     publish / skip := true,
-    publish        := {},
-    jacocoAggregateReportSettings := JacocoReportSettings(
-      title = "Foo Project Coverage",
-      formats = Seq(JacocoReportFormats.ScalaHTML)
-    )
+    publish        := {}
   )
   .aggregate(
     `scala-ql`.projectRefs ++
@@ -101,6 +109,7 @@ lazy val root = project
       `scala-ql-json`.projectRefs ++
       examples.projectRefs: _*
   )
+  .enablePlugins(JacocoCoverallsPlugin)
 
 lazy val examples =
   projectMatrix
@@ -111,9 +120,6 @@ lazy val examples =
     .settings(
       publish / skip := true,
       publish        := {},
-      jacoco         := {},
-      jacocoCheck    := {},
-      jacocoReport   := {},
       libraryDependencies ++= Seq(
       )
     )
@@ -199,3 +205,14 @@ lazy val `scala-ql-csv` =
     )
     .enablePlugins(JacocoCoverallsPlugin)
     .jvmPlatform(scalaVersions = allScalaVersions)
+
+// MISC
+Global / excludeLintKeys ++= Set(
+  ideSkipProject,
+  jacocoCoverallsServiceName,
+  jacocoCoverallsBranch,
+  jacocoCoverallsPullRequest,
+  jacocoCoverallsRepoToken,
+  jacocoExcludes,
+  jacocoAggregateReportSettings
+)
