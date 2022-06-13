@@ -63,20 +63,11 @@ val coverageSettings = Seq(
   jacocoCoverallsBranch      := sys.env.get("CI_BRANCH"),
   jacocoCoverallsPullRequest := sys.env.get("GITHUB_EVENT_NAME"),
   jacocoCoverallsRepoToken   := sys.env.get("COVERALLS_REPO_TOKEN"),
-  jacocoExcludes := Seq(
-    "examples/**",
-    // ignore version-specific sources. Tests are cross-compiled
-    "**/scala-2.13-/**",
-    "**/scala-2.13+/**",
-    "**/scala-3/**"
-  ),
   jacocoReportSettings := JacocoReportSettings(
     title = "ScalaQL Coverage",
     formats = Seq(JacocoReportFormats.ScalaHTML, JacocoReportFormats.XML)
   )
 )
-// enable uploading coverage to coveralls.io
-enablePlugins(JacocoCoverallsPlugin)
 
 val baseSettings = baseProjectSettings ++ publishSettings
 
@@ -99,7 +90,7 @@ val crossCompileSettings: Seq[Def.Setting[_]] = {
 
 lazy val root = project
   .in(file("."))
-  .settings(baseSettings, coverageSettings)
+  .settings(baseSettings)
   .settings(
     name           := "scala-ql-root",
     publish / skip := true,
@@ -110,6 +101,20 @@ lazy val root = project
       `scala-ql-csv`.projectRefs ++
       `scala-ql-json`.projectRefs ++
       examples.projectRefs: _*
+  )
+  .aggregate(coverage)
+
+lazy val coverage = project
+  .in(file("./.coverage"))
+  .settings(baseSettings, coverageSettings)
+  .settings(
+    publish / skip := true,
+    publish        := {}
+  )
+  .aggregate(
+    `scala-ql`.jvm(scala213),
+    `scala-ql-csv`.jvm(scala213),
+    `scala-ql-json`.jvm(scala213)
   )
 
 lazy val examples =

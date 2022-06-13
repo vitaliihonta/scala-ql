@@ -20,6 +20,8 @@ jobs:
             ~/.coursier
           key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
       - name: Run tests
-        run: sbt +jacoco
+        run: sbt coverage/jacocoAggregate
       - name: Upload test results
         uses: codecov/codecov-action@v2
+        with:
+          directory: ./.coverage/target/
