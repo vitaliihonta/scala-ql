@@ -55,17 +55,29 @@ val baseProjectSettings = Seq(
       case _            => Seq(Typelevel.kindProjector)
     }
   },
-  ideSkipProject.withRank(KeyRanks.Invisible) := scalaVersion.value == scala212
+  ideSkipProject := scalaVersion.value == scala212
 )
 
-val baseSettings = baseProjectSettings ++ publishSettings
+val coverageSettings = Seq(
+//  Keys.fork in org.jacoco.core.
+  jacocoAggregateReportSettings := JacocoReportSettings(
+    title = "ScalaQL Coverage Report",
+    subDirectory = None,
+    thresholds = JacocoThresholds(),
+    formats = Seq(JacocoReportFormats.ScalaHTML, JacocoReportFormats.XML), // note XML formatter
+    fileEncoding = "utf-8"
+  )
+)
+
+val baseSettings    = baseProjectSettings
+val baseLibSettings = baseSettings ++ publishSettings ++ coverageSettings
 
 val crossCompileSettings: Seq[Def.Setting[_]] = {
   def crossVersionSetting(config: Configuration) =
     (config / unmanagedSourceDirectories) += {
       val sourceDir = (config / sourceDirectory).value
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((3, 1))            => sourceDir / "scala-3"
+        case Some((3, _))            => sourceDir / "scala-3"
         case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
         case _                       => sourceDir / "scala-2.13-"
       }
@@ -92,6 +104,19 @@ lazy val root = project
       examples.projectRefs: _*
   )
 
+lazy val coverage = project
+  .in(file("./.coverage"))
+  .settings(baseSettings, coverageSettings)
+  .settings(
+    publish / skip := true,
+    publish        := {}
+  )
+  .aggregate(
+    `scala-ql`.jvm(scala213),
+    `scala-ql-csv`.jvm(scala213),
+    `scala-ql-json`.jvm(scala213)
+  )
+
 lazy val examples =
   projectMatrix
     .in(file("examples"))
@@ -109,7 +134,7 @@ lazy val examples =
 lazy val `scala-ql` =
   projectMatrix
     .in(file("scala-ql"))
-    .settings(baseSettings)
+    .settings(baseLibSettings)
     .settings(crossCompileSettings)
     .settings(
       libraryDependencies ++= Seq(
@@ -144,7 +169,7 @@ lazy val `scala-ql` =
 lazy val `scala-ql-json` =
   projectMatrix
     .in(file("scala-ql-json"))
-    .settings(baseSettings)
+    .settings(baseLibSettings)
     .settings(crossCompileSettings)
     .dependsOn(`scala-ql` % "compile->compile;test->test")
     .settings(
@@ -160,7 +185,7 @@ lazy val `scala-ql-json` =
 lazy val `scala-ql-csv` =
   projectMatrix
     .in(file("scala-ql-csv"))
-    .settings(baseSettings)
+    .settings(baseLibSettings)
     .settings(crossCompileSettings)
     .dependsOn(`scala-ql` % "compile->compile;test->test")
     .settings(
@@ -183,3 +208,9 @@ lazy val `scala-ql-csv` =
       }
     )
     .jvmPlatform(scalaVersions = allScalaVersions)
+
+// MISC
+Global / excludeLintKeys ++= Set(
+  ideSkipProject,
+  jacocoAggregateReportSettings
+)
