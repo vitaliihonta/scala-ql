@@ -20,6 +20,8 @@ jobs:
             ~/.ivy2/cache
             ~/.coursier
           key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
+      - name: Check formatting
+        run: sbt scalafmtCheckAll
       - name: Compile
         run: sbt +test:compile
       - name: Run tests
