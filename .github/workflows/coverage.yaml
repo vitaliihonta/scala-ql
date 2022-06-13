@@ -1,11 +1,11 @@
-name: Test
+name: Build
+
 on:
-  pull_request:
   push:
-    branches: [ "*", !"main" ]
-    tags: [ "*" ]
+    branches: [ 'main', 'feature/coverage' ]
+
 jobs:
-  test:
+  build_java_project:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,9 +20,9 @@ jobs:
             ~/.ivy2/cache
             ~/.coursier
           key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
-      - name: Check formatting
-        run: sbt scalafmtCheckAll
-      - name: Compile
-        run: sbt +test:compile
       - name: Run tests
-        run: sbt +test
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          export CI_BRANCH="${GITHUB_REF#refs/heads/}"
+          sbt +jacoco +jacocoCoveralls
