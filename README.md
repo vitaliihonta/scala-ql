@@ -1,6 +1,6 @@
 ![Build status](https://github.com/vitaliihonta/scala-ql/actions/workflows/publish.yaml/badge.svg)
 [![scala-ql Scala version support](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql/latest.svg)](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql)
-[![Coverage Status](https://coveralls.io/repos/github/vitaliihonta/scala-ql/badge.svg)](https://coveralls.io/github/vitaliihonta/scala-ql)
+
 # ScalaQL
 
 ScalaQL is simple statically typed (and lawful) query DSL for scala.

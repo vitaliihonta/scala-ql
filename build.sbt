@@ -72,7 +72,7 @@ val coverageSettings = Seq(
   ),
   jacocoReportSettings := JacocoReportSettings(
     title = "ScalaQL Coverage",
-    formats = Seq(JacocoReportFormats.ScalaHTML)
+    formats = Seq(JacocoReportFormats.ScalaHTML, JacocoReportFormats.XML)
   )
 )
 // enable uploading coverage to coveralls.io

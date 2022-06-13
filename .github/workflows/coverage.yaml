@@ -20,8 +20,6 @@ jobs:
             ~/.coursier
           key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
       - name: Run tests
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: |
-          export CI_BRANCH="${GITHUB_REF#refs/heads/}"
-          sbt +jacoco +jacocoCoveralls
+        run: sbt +jacoco
+      - name: Upload test results
+        uses: codecov/codecov-action@v2
