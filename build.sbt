@@ -111,7 +111,9 @@ lazy val examples =
     .settings(
       publish / skip := true,
       publish        := {},
-//      coverageEnabled := false,
+      jacoco         := {},
+      jacocoCheck    := {},
+      jacocoReport   := {},
       libraryDependencies ++= Seq(
       )
     )
