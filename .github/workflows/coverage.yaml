@@ -1,11 +1,10 @@
-name: Build
-
+name: Coverage
 on:
   push:
     branches: [ 'main', 'feature/coverage' ]
 
 jobs:
-  build_java_project:
+  coverage:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

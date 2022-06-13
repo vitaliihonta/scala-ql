@@ -70,11 +70,13 @@ val coverageSettings = Seq(
     "**/scala-2.13+/**",
     "**/scala-3/**"
   ),
-  jacocoAggregateReportSettings := JacocoReportSettings(
+  jacocoReportSettings := JacocoReportSettings(
     title = "ScalaQL Coverage",
     formats = Seq(JacocoReportFormats.ScalaHTML)
   )
 )
+// enable uploading coverage to coveralls.io
+enablePlugins(JacocoCoverallsPlugin)
 
 val baseSettings = baseProjectSettings ++ publishSettings
 
@@ -109,7 +111,6 @@ lazy val root = project
       `scala-ql-json`.projectRefs ++
       examples.projectRefs: _*
   )
-  .enablePlugins(JacocoCoverallsPlugin)
 
 lazy val examples =
   projectMatrix
@@ -158,7 +159,6 @@ lazy val `scala-ql` =
         }
       }
     )
-    .enablePlugins(JacocoCoverallsPlugin)
     .jvmPlatform(scalaVersions = allScalaVersions)
 
 lazy val `scala-ql-json` =
@@ -175,7 +175,6 @@ lazy val `scala-ql-json` =
         Json.circeParser
       )
     )
-    .enablePlugins(JacocoCoverallsPlugin)
     .jvmPlatform(scalaVersions = allScalaVersions)
 
 lazy val `scala-ql-csv` =
@@ -203,7 +202,6 @@ lazy val `scala-ql-csv` =
         }
       }
     )
-    .enablePlugins(JacocoCoverallsPlugin)
     .jvmPlatform(scalaVersions = allScalaVersions)
 
 // MISC
