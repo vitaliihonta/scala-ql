@@ -5,12 +5,6 @@ import com.example.Hogwarts.*
 
 object ReportMain extends App {
 
-  case class BySpec(specialization: String, avgGrade: Double)
-
-  case class ByAge(age: Int, grades: List[BySpec])
-
-  case class ByFaculty(faculty: String, grades: List[ByAge])
-
   val query: Query[From[Student], ByFaculty] =
     select[Student]
       .groupBy(_.faculty)
@@ -29,7 +23,8 @@ object ReportMain extends App {
       .map((ByFaculty.apply _).tupled)
       .sortBy(_.faculty)(desc)
 
-  println {
-    query.toList.run(from(students)).mkString("\n")
-  }
+  query
+    .show(truncate = false)
+    .run(from(students))
+
 }

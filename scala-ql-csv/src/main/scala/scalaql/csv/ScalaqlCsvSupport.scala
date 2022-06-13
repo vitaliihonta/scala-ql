@@ -2,7 +2,7 @@ package scalaql.csv
 
 import com.github.tototoshi.csv.CSVReader
 import com.github.tototoshi.csv.CSVWriter
-import scalaql.SideEffectWithResource
+import scalaql.SideEffect
 import scalaql.sources.DataSourceReadSupport
 import scalaql.sources.DataSourceSupport
 import scalaql.sources.DataSourceWriteSupport
@@ -48,7 +48,7 @@ trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row
       encoding:        Charset,
       openOptions:     OpenOption*
     )(implicit config: CsvConfig
-    ): SideEffectWithResource[?, ?, A] =
+    ): SideEffect[?, ?, A] =
       writeInto {
         val writer = Files.newBufferedWriter(path, encoding, openOptions: _*)
         new CSVWriter(writer)(config.toTototoshi)
@@ -57,7 +57,7 @@ trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row
     override def string[A: CsvEncoder.Row](
       builder:         mutable.StringBuilder
     )(implicit config: CsvConfig
-    ): SideEffectWithResource[?, ?, A] = {
+    ): SideEffect[?, ?, A] = {
       val writer = new StringWriter()
       writeInto {
         CSVWriter.open(writer)(config.toTototoshi)
@@ -68,8 +68,8 @@ trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row
 
     private def writeInto[A: CsvEncoder.Row](
       acquireWriter: => CSVWriter
-    ): SideEffectWithResource[CSVWriter, Boolean, A] =
-      SideEffectWithResource[CSVWriter, Boolean, A](
+    ): SideEffect[CSVWriter, Boolean, A] =
+      SideEffect[CSVWriter, Boolean, A](
         initialState = false,
         acquire = () => acquireWriter,
         release = (writer, _) => writer.close(),
