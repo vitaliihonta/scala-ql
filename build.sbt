@@ -59,17 +59,18 @@ val baseProjectSettings = Seq(
 )
 
 val coverageSettings = Seq(
-  jacocoCoverallsServiceName := "github-actions",
-  jacocoCoverallsBranch      := sys.env.get("CI_BRANCH"),
-  jacocoCoverallsPullRequest := sys.env.get("GITHUB_EVENT_NAME"),
-  jacocoCoverallsRepoToken   := sys.env.get("COVERALLS_REPO_TOKEN"),
-  jacocoReportSettings := JacocoReportSettings(
-    title = "ScalaQL Coverage",
-    formats = Seq(JacocoReportFormats.ScalaHTML, JacocoReportFormats.XML)
+//  Keys.fork in org.jacoco.core.
+  jacocoAggregateReportSettings := JacocoReportSettings(
+    title = "ScalaQL Coverage Report",
+    subDirectory = None,
+    thresholds = JacocoThresholds(),
+    formats = Seq(JacocoReportFormats.ScalaHTML, JacocoReportFormats.XML), // note XML formatter
+    fileEncoding = "utf-8"
   )
 )
 
-val baseSettings = baseProjectSettings ++ publishSettings
+val baseSettings    = baseProjectSettings
+val baseLibSettings = baseSettings ++ publishSettings ++ coverageSettings
 
 val crossCompileSettings: Seq[Def.Setting[_]] = {
   def crossVersionSetting(config: Configuration) =
@@ -102,7 +103,6 @@ lazy val root = project
       `scala-ql-json`.projectRefs ++
       examples.projectRefs: _*
   )
-  .aggregate(coverage)
 
 lazy val coverage = project
   .in(file("./.coverage"))
@@ -134,7 +134,7 @@ lazy val examples =
 lazy val `scala-ql` =
   projectMatrix
     .in(file("scala-ql"))
-    .settings(baseSettings)
+    .settings(baseLibSettings)
     .settings(crossCompileSettings)
     .settings(
       libraryDependencies ++= Seq(
@@ -169,7 +169,7 @@ lazy val `scala-ql` =
 lazy val `scala-ql-json` =
   projectMatrix
     .in(file("scala-ql-json"))
-    .settings(baseSettings)
+    .settings(baseLibSettings)
     .settings(crossCompileSettings)
     .dependsOn(`scala-ql` % "compile->compile;test->test")
     .settings(
@@ -185,7 +185,7 @@ lazy val `scala-ql-json` =
 lazy val `scala-ql-csv` =
   projectMatrix
     .in(file("scala-ql-csv"))
-    .settings(baseSettings)
+    .settings(baseLibSettings)
     .settings(crossCompileSettings)
     .dependsOn(`scala-ql` % "compile->compile;test->test")
     .settings(
@@ -212,10 +212,5 @@ lazy val `scala-ql-csv` =
 // MISC
 Global / excludeLintKeys ++= Set(
   ideSkipProject,
-  jacocoCoverallsServiceName,
-  jacocoCoverallsBranch,
-  jacocoCoverallsPullRequest,
-  jacocoCoverallsRepoToken,
-  jacocoExcludes,
   jacocoAggregateReportSettings
 )

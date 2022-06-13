@@ -1,7 +1,7 @@
 name: Coverage
 on:
   push:
-    branches: [ 'main', 'feature/coverage' ]
+    branches: [ 'main' ]
 
 jobs:
   coverage:
@@ -24,4 +24,4 @@ jobs:
       - name: Upload test results
         uses: codecov/codecov-action@v2
         with:
-          directory: ./.coverage/target/
+          directory: ./.coverage
