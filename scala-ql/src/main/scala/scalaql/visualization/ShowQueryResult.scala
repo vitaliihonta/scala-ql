@@ -46,6 +46,8 @@ object ShowQueryResult {
 
             if (state.rowsWritten == 0) {
               state.buffer += row.keys
+              for ((header, i) <- row.keys.zipWithIndex)
+                colWidths(i) = math.max(colWidths(i), stringHalfWidth(header))
             }
             state.buffer += row.values
             state.copy(

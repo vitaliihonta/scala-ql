@@ -6,7 +6,7 @@ import magnolia1.*
 trait ShowAsTableDerivation {
   type Typeclass[T] = ShowAsTable[T]
 
-  def join[T](ctx: CaseClass[ShowAsTable, T]): ShowAsTable[T] = new Typeclass[T] {
+  def join[T](ctx: CaseClass[ShowAsTable, T]): ShowAsTable[T] = new ShowAsTable[T] {
     override def toRow(value: T): Map[String, String] =
       ctx.parameters.foldLeft(Map.empty[String, String]) { (acc, param) =>
         val writtenField = param.typeclass.toRow(param.dereference(value))

@@ -53,14 +53,26 @@ trait LowPriorityShowAsTable0 extends LowPriorityShowAsTable1 {
   implicit val showLocalDate: ShowAsTable.Field[LocalDate]         = ShowAsTable.fieldToString[LocalDate]
   implicit val showLocalDateTime: ShowAsTable.Field[LocalDateTime] = ShowAsTable.fieldToString[LocalDateTime]
 
-  implicit def showFieldList[A: ShowAsTable.Field]: ShowAsTable.Field[List[A]] =
-    ShowAsTable.field[List[A]](_.map(ShowAsTable.Field[A].toField).mkString("[", ", ", "]"))
+  implicit def showFieldIterable[Col[x] <: Iterable[x], A: ShowAsTable.Field]: ShowAsTable.Field[Col[A]] =
+    ShowAsTable.field[Col[A]](_.map(ShowAsTable.Field[A].toField).mkString("[", ", ", "]"))
+
+  implicit def showFieldMap[A: ShowAsTable.Field]: ShowAsTable.Field[Map[String, A]] =
+    ShowAsTable.field[Map[String, A]](_.map { case (k, v) =>
+      val row = ShowAsTable.Field[A].toField(v)
+      s"$k: $row"
+    }.mkString("{", ", ", "}"))
 }
 
 trait LowPriorityShowAsTable1 extends ShowAsTableDerivation {
-  implicit def showList[A: ShowAsTable]: ShowAsTable.Field[List[A]] =
-    ShowAsTable.field[List[A]](
+  implicit def showIterable[Col[x] <: Iterable[x], A: ShowAsTable]: ShowAsTable.Field[Col[A]] =
+    ShowAsTable.field[Col[A]](
       _.map(ShowAsTable[A].toRow(_).map { case (k, v) => s"$k: $v" }.mkString("{", ", ", "}"))
         .mkString("[", ", ", "]")
     )
+
+  implicit def showMap[A: ShowAsTable]: ShowAsTable.Field[Map[String, A]] =
+    ShowAsTable.field[Map[String, A]](_.map { case (k, v) =>
+      val row = ShowAsTable[A].toRow(v).mkString("{", ", ", "}")
+      s"$k: $row"
+    }.mkString("{", ", ", "}"))
 }
