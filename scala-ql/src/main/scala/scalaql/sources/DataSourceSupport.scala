@@ -1,8 +1,16 @@
 package scalaql.sources
 
 import scalaql.SideEffect
+
+import java.io.ByteArrayOutputStream
+import java.io.OutputStreamWriter
+import java.io.Reader
+import java.io.StringReader
+import java.io.StringWriter
+import java.io.Writer
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import java.nio.file.OpenOption
 import java.nio.file.Path
 import scala.collection.mutable
@@ -13,6 +21,11 @@ trait DataSourceSupport[Decoder[_], Encoder[_], Config] {
 }
 
 trait DataSourceReadSupport[Decoder[_], Config] {
+  def read[A: Decoder](
+    reader:          => Reader
+  )(implicit config: Config
+  ): Iterable[A]
+
   def file[A: Decoder](
     path:            Path
   )(implicit config: Config
@@ -22,15 +35,21 @@ trait DataSourceReadSupport[Decoder[_], Config] {
     path:            Path,
     encoding:        Charset
   )(implicit config: Config
-  ): Iterable[A]
+  ): Iterable[A] = read(Files.newBufferedReader(path, encoding))
 
+  // suitable for unit tests
   def string[A: Decoder](
     content:         String
   )(implicit config: Config
-  ): Iterable[A]
+  ): Iterable[A] = read(new StringReader(content))
 }
 
 trait DataSourceWriteSupport[Encoder[_], Config] {
+  def write[A: Encoder](
+    writer:          => Writer
+  )(implicit config: Config
+  ): SideEffect[?, ?, A]
+
   def file[A: Encoder](
     path:            Path
   )(implicit config: Config
@@ -42,10 +61,19 @@ trait DataSourceWriteSupport[Encoder[_], Config] {
     encoding:        Charset,
     openOptions:     OpenOption*
   )(implicit config: Config
-  ): SideEffect[?, ?, A]
+  ): SideEffect[?, ?, A] =
+    write(Files.newBufferedWriter(path, encoding, openOptions: _*))
 
+  // suitable for unit tests
   def string[A: Encoder](
     builder:         mutable.StringBuilder
   )(implicit config: Config
-  ): SideEffect[?, ?, A]
+  ): SideEffect[?, ?, A] = {
+    val baos = new ByteArrayOutputStream()
+    write(new OutputStreamWriter(baos))
+      .onExit {
+        builder.append(new String(baos.toByteArray))
+        baos.close()
+      }
+  }
 }
