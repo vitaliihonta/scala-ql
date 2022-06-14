@@ -23,16 +23,12 @@ import scala.collection.mutable
 trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row, CsvConfig] {
 
   final object read extends DataSourceReadSupport[CsvDecoder.Row, CsvConfig] {
-    override def read[A: CsvDecoder.Row](reader: => Reader)(implicit config: CsvConfig): Iterable[A] = {
-      val csvReader = CSVReader.open(reader)(config.toTototoshi)
-
-      try
-        csvReader.iteratorWithHeaders
-          .map(raw => implicitly[CsvDecoder.Row[A]].read(CsvEntry.Row(raw)))
-          .toList
-      finally
-        reader.close()
-    }
+    override protected def readImpl[A: CsvDecoder.Row](reader: Reader)(implicit config: CsvConfig): Iterable[A] =
+      CSVReader
+        .open(reader)(config.toTototoshi)
+        .iteratorWithHeaders
+        .map(raw => implicitly[CsvDecoder.Row[A]].read(CsvEntry.Row(raw)))
+        .toList
   }
 
   final object write extends DataSourceWriteSupport[CsvEncoder.Row, CsvConfig] {

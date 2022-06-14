@@ -21,10 +21,19 @@ trait DataSourceSupport[Decoder[_], Encoder[_], Config] {
 }
 
 trait DataSourceReadSupport[Decoder[_], Config] {
+
+  /** Implement reading logic here. NOTE - no need to close the reader, it's handled in public methods
+    */
+  protected def readImpl[A: Decoder](reader: Reader)(implicit config: Config): Iterable[A]
+
   def read[A: Decoder](
     reader:          => Reader
   )(implicit config: Config
-  ): Iterable[A]
+  ): Iterable[A] = {
+    val theReader = reader
+    try readImpl[A](theReader)
+    finally theReader.close()
+  }
 
   def file[A: Decoder](
     path:            Path

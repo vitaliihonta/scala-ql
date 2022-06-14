@@ -25,27 +25,23 @@ import scala.io.Source
 trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig] {
 
   final object read extends DataSourceReadSupport[Decoder, JsonConfig] {
-    override def read[A: Decoder](reader: => Reader)(implicit config: JsonConfig): Iterable[A] = {
+    protected def readImpl[A: Decoder](reader: Reader)(implicit config: JsonConfig): Iterable[A] = {
       val bufferedReader = new BufferedReader(reader)
+      if (config.multiline) {
+        bufferedReader
+          .lines()
+          // java lambdas, need types
+          .map[A]((line: String) => parser.decode[A](line).toTry.get)
+          .collect(Collectors.toList[A])
+          .asScala
+          .toList
+      } else {
+        val content = bufferedReader
+          .lines()
+          .collect(Collectors.joining())
 
-      try
-        if (config.multiline) {
-          bufferedReader
-            .lines()
-            // java lambdas, need types
-            .map[A]((line: String) => parser.decode[A](line).toTry.get)
-            .collect(Collectors.toList[A])
-            .asScala
-            .toList
-        } else {
-          val content = bufferedReader
-            .lines()
-            .collect(Collectors.joining())
-
-          parser.decode[List[A]](content).toTry.get
-        }
-      finally
-        reader.close()
+        parser.decode[List[A]](content).toTry.get
+      }
     }
   }
 
