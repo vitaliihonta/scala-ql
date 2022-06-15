@@ -10,6 +10,9 @@ sealed trait AggregationDsl[In, Out] {
 
   def distinct: Aggregation.Aux[In, Set[Out]]
 
+  def distinctBy[B](f:     Out => B): Aggregation.Aux[In, Set[B]]
+  def flatDistinctBy[B](f: Out => Iterable[B]): Aggregation.Aux[In, Set[B]]
+
   def const[B](value: B): Aggregation.Aux[In, B]
 
   def sum(implicit ev: AdditiveMonoid[Out]): Aggregation.Aux[In, Out]
@@ -67,6 +70,12 @@ object AggregationView {
     override def distinct: Aux[A, Set[A]] =
       new Aggregation.Distinct[A]
 
+    override def distinctBy[B](f: A => B): Aux[A, Set[B]] =
+      new Aggregation.DistinctBy[A, B](f)
+
+    override def flatDistinctBy[B](f: A => Iterable[B]): Aux[A, Set[B]] =
+      new Aggregation.FlatDistinctBy[A, B](f)
+
     override def count(p: A => Boolean): Aggregation.Aux[A, Int] =
       new Aggregation.Count[A](p)
 
@@ -113,6 +122,12 @@ object AggregationView {
 
     override def distinct: Aux[A, Set[Out]] =
       delegate.distinct.contramap(project)
+
+    override def distinctBy[B](f: Out => B): Aux[A, Set[B]] =
+      delegate.distinctBy(f).contramap(project)
+
+    override def flatDistinctBy[B](f: Out => Iterable[B]): Aux[A, Set[B]] =
+      delegate.flatDistinctBy(f).contramap(project)
 
     override def const[B](value: B): Aggregation.Aux[A, B] =
       new Aggregation.Const[B](value)
