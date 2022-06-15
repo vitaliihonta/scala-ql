@@ -57,7 +57,7 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
         }
       )
 
-      if (config.multiline) {
+      val result = if (config.multiline) {
         basics { (writer, _, json) =>
           writer.write(json.noSpaces)
           writer.write("\r\n")
@@ -70,6 +70,7 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
           writer.write(json.spaces2)
         }.beforeAll(_.write("[\r\n")).afterAll((writer, _) => writer.write("\r\n]"))
       }
+      result.afterAll((writer, _) => writer.flush())
     }
   }
 }
