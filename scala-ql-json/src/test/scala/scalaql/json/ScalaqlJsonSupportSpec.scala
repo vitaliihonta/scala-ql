@@ -41,6 +41,32 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
       }
     }
 
+    "correctly read single line json" in {
+      implicit val config: json.JsonConfig = json.JsonConfig.default.copy(multiline = false)
+
+      val actualResult = select[Person].toList
+        .run(
+          from(
+            json.read.string[Person](
+              """[
+                |{
+                |   "name" : "vitalii",
+                |   "age" : 24
+                |},
+                |{
+                |   "name" : "john",
+                |   "age" : 100
+                |}
+                |]""".stripMargin
+            )
+          )
+        )
+
+      val expectedResult = List(Person(name = "vitalii", age = 24), Person(name = "john", age = 100))
+
+      assert(actualResult == expectedResult)
+    }
+
     "Correctly read from files" in {
       val path = Files.createTempFile("scala-ql-json", "read-spec")
       writeIntoFile(
