@@ -8,7 +8,7 @@ val allScalaVersions = List(scala212, scala213, scala3)
 
 ThisBuild / scalaVersion  := scala213
 ThisBuild / organization  := "com.github.vitaliihonta"
-ThisBuild / version       := "0.1.0-RC3"
+ThisBuild / version       := "0.1.0"
 ThisBuild / versionScheme := Some("early-semver")
 
 val publishSettings = Seq(
