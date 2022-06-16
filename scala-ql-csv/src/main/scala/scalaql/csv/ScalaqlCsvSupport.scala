@@ -46,6 +46,6 @@ trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row
           writer.writeRow(result.row.values.toList)
           true
         }
-      )
+      ).afterAll((writer, _) => writer.flush())
   }
 }

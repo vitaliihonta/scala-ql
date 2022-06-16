@@ -161,6 +161,55 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       query.toList.run(from(people)) shouldEqual expectedResult
     }
 
+    "correctly process multiple aggregations" in repeated {
+      val people = arbitraryN[Person]
+
+      val query: Query[From[Person], (Profession, Double, Set[Profession], Set[Industry])] = select[Person]
+        .groupBy(_.profession)
+        .aggregate { (profession, person) =>
+          person.avgBy(_.age.toDouble) &&
+          person.distinctBy(_.profession) &&
+          person.flatDistinctBy(_.profession.industries)
+        }
+
+      val expectedResult =
+        people.groupBy(_.profession).map { case (profession, people) =>
+          (
+            profession,
+            people.map(_.age.toDouble).sum / people.size,
+            people.map(_.profession).toSet,
+            people.flatMap(_.profession.industries).toSet
+          )
+        }
+
+      query.toList.run(from(people)) shouldEqual expectedResult
+    }
+
+    "correctly process groupBy with multiple columns" in repeated {
+      val people = arbitraryN[Person]
+
+      val query: Query[From[Person], (Profession, Int, Set[Profession], Double, Int)] = select[Person]
+        .groupBy(_.profession, _.age)
+        .aggregate { case ((profession, age), person) =>
+          person.distinctBy(_.profession) &&
+          person.avgBy(_.age.toDouble) &&
+          person.sumBy(_.age)
+        }
+
+      val expectedResult =
+        people.groupBy(p => (p.profession, p.age)).map { case ((profession, age), people) =>
+          (
+            profession,
+            age,
+            people.map(_.profession).toSet,
+            people.map(_.age.toDouble).sum / people.size,
+            people.map(_.age).sum
+          )
+        }
+
+      query.toList.run(from(people)) shouldEqual expectedResult
+    }
+
     "correctly process simple filterM + map + filter" in repeated {
       val companies = arbitraryN[Company]
       val people    = arbitraryN[Person]

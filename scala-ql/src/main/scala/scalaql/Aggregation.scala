@@ -70,6 +70,18 @@ object Aggregation {
     override def apply(xs: Iterable[A]): Set[A] = xs.toSet
   }
 
+  final class DistinctBy[A, B](f: A => B) extends Aggregation[A] {
+    override type Out = Set[B]
+
+    override def apply(xs: Iterable[A]): Set[B] = xs.map(f).toSet
+  }
+
+  final class FlatDistinctBy[A, B](f: A => Iterable[B]) extends Aggregation[A] {
+    override type Out = Set[B]
+
+    override def apply(xs: Iterable[A]): Set[B] = xs.flatMap(f).toSet
+  }
+
   final class Sum[A](ev: AdditiveMonoid[A]) extends Aggregation[A] {
     override type Out = A
 

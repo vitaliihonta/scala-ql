@@ -4,11 +4,13 @@ import scalaql.SideEffect
 import io.circe.Decoder
 import io.circe.Encoder
 import io.circe.Json
+import io.circe.Printer
 import io.circe.parser
 import scalaql.sources.DataSourceReadSupport
 import scalaql.sources.DataSourceSupport
 import scalaql.sources.DataSourceWriteSupport
-import scala.jdk.CollectionConverters._
+
+import scala.jdk.CollectionConverters.*
 import java.io.BufferedReader
 import java.io.Reader
 import java.io.StringWriter
@@ -57,19 +59,34 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
         }
       )
 
-      if (config.multiline) {
+      val result = if (config.multiline) {
         basics { (writer, _, json) =>
           writer.write(json.noSpaces)
-          writer.write("\r\n")
+          writer.write(config.lineTerminator)
         }
       } else {
+        val printer = Printer(
+          dropNullValues = false,
+          indent = " " * 3,
+          lbraceRight = config.lineTerminator,
+          rbraceLeft = config.lineTerminator,
+          lbracketRight = config.lineTerminator,
+          rbracketLeft = config.lineTerminator,
+          lrbracketsEmpty = config.lineTerminator,
+          arrayCommaRight = config.lineTerminator,
+          objectCommaRight = config.lineTerminator,
+          colonLeft = " ",
+          colonRight = " "
+        )
         basics { (writer, isFirstRow, json) =>
           if (!isFirstRow) {
-            writer.write(",")
+            writer.write(s",${config.lineTerminator}")
           }
-          writer.write(json.spaces2)
-        }.beforeAll(_.write("[\r\n")).afterAll((writer, _) => writer.write("\r\n]"))
+          writer.write(printer.print(json))
+        }.beforeAll(_.write(s"[${config.lineTerminator}"))
+          .afterAll((writer, _) => writer.write(s"${config.lineTerminator}]"))
       }
+      result.afterAll((writer, _) => writer.flush())
     }
   }
 }
