@@ -1,5 +1,5 @@
+[![scala-ql Scala version support](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql/latest-by-scala-version.svg?platform=jvm)](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql)
 ![Build status](https://github.com/vitaliihonta/scala-ql/actions/workflows/publish.yaml/badge.svg)
-[![scala-ql Scala version support](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql/latest.svg)](https://index.scala-lang.org/vitaliihonta/scala-ql/scala-ql)
 [![codecov](https://codecov.io/gh/vitaliihonta/scala-ql/branch/main/graph/badge.svg?token=T8NBC4R360)](https://codecov.io/gh/vitaliihonta/scala-ql)
 
 # ScalaQL
