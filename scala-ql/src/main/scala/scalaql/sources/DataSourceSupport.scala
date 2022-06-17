@@ -1,12 +1,10 @@
 package scalaql.sources
 
 import scalaql.SideEffect
-
 import java.io.ByteArrayOutputStream
 import java.io.OutputStreamWriter
 import java.io.Reader
 import java.io.StringReader
-import java.io.StringWriter
 import java.io.Writer
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
@@ -14,6 +12,7 @@ import java.nio.file.Files
 import java.nio.file.OpenOption
 import java.nio.file.Path
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 
 trait DataSourceSupport[Decoder[_], Encoder[_], Config] {
   val read: DataSourceReadSupport[Decoder, Config]
@@ -45,6 +44,29 @@ trait DataSourceReadSupport[Decoder[_], Config] {
     encoding:        Charset
   )(implicit config: Config
   ): Iterable[A] = read(Files.newBufferedReader(path, encoding))
+
+  def glob[A: Decoder](
+    base:            Path,
+    pattern:         String
+  )(implicit config: Config
+  ): Iterable[A] = glob[A](base, pattern, encoding = StandardCharsets.UTF_8)
+
+  def glob[A: Decoder](
+    base:            Path,
+    pattern:         String,
+    encoding:        Charset
+  )(implicit config: Config
+  ): Iterable[A] = {
+    val dirStream = Files.newDirectoryStream(base, pattern)
+    try
+      dirStream
+        .iterator()
+        .asScala
+        .flatMap(file[A](_, encoding))
+        .toVector
+    finally
+      dirStream.close()
+  }
 
   // suitable for unit tests
   def string[A: Decoder](
