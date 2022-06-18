@@ -8,6 +8,7 @@ import java.io.StringReader
 import java.io.Writer
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import java.nio.file.DirectoryStream
 import java.nio.file.Files
 import java.nio.file.OpenOption
 import java.nio.file.Path
@@ -35,29 +36,30 @@ trait DataSourceReadSupport[Decoder[_], Config] {
   }
 
   def file[A: Decoder](
-    path:            Path
-  )(implicit config: Config
-  ): Iterable[A] = file(path, encoding = StandardCharsets.UTF_8)
-
-  def file[A: Decoder](
     path:            Path,
-    encoding:        Charset
+    encoding:        Charset = StandardCharsets.UTF_8
   )(implicit config: Config
   ): Iterable[A] = read(Files.newBufferedReader(path, encoding))
 
-  def glob[A: Decoder](
-    base:            Path,
-    pattern:         String
+  def directory[A: Decoder](
+    dir:             Path,
+    globPattern:     String = "*",
+    encoding:        Charset = StandardCharsets.UTF_8
   )(implicit config: Config
-  ): Iterable[A] = glob[A](base, pattern, encoding = StandardCharsets.UTF_8)
+  ): Iterable[A] =
+    fromDirectoryStream[A](Files.newDirectoryStream(dir, globPattern), encoding)
 
-  def glob[A: Decoder](
-    base:            Path,
-    pattern:         String,
+  // suitable for unit tests
+  def string[A: Decoder](
+    content:         String
+  )(implicit config: Config
+  ): Iterable[A] = read(new StringReader(content))
+
+  private def fromDirectoryStream[A: Decoder](
+    dirStream:       DirectoryStream[Path],
     encoding:        Charset
   )(implicit config: Config
-  ): Iterable[A] = {
-    val dirStream = Files.newDirectoryStream(base, pattern)
+  ): Iterable[A] =
     try
       dirStream
         .iterator()
@@ -66,13 +68,6 @@ trait DataSourceReadSupport[Decoder[_], Config] {
         .toVector
     finally
       dirStream.close()
-  }
-
-  // suitable for unit tests
-  def string[A: Decoder](
-    content:         String
-  )(implicit config: Config
-  ): Iterable[A] = read(new StringReader(content))
 }
 
 trait DataSourceWriteSupport[Encoder[_], Config] {

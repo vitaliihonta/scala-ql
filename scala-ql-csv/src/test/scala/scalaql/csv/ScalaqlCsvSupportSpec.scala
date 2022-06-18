@@ -65,7 +65,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
       val actualResult = select[Person].toList
         .run(
           from(
-            csv.read.glob[Person](dir, "*")
+            csv.read.directory[Person](dir, globPattern = "*")
           )
         )
 
