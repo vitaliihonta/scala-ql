@@ -67,7 +67,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
       assert(actualResult == expectedResult)
     }
 
-    "Correctly read from files" in {
+    "correctly read from files" in {
       val path = Files.createTempFile("scala-ql-json", "read-spec")
       writeIntoFile(
         path,
@@ -82,6 +82,33 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
           )
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24), Person(name = "john", age = 100))
+      }
+    }
+
+    "correctly read glob from file" in {
+      val dir = Files.createTempDirectory("scala-ql-json")
+      for (i <- 1 to 10) {
+        val file = Files.createTempFile(dir, "scala-ql-json", "read-glob-spec")
+        writeIntoFile(
+          file,
+          s"""|{"name": "vitalii", "age": $i}
+              |{"name": "john", "age": $i}""".stripMargin
+        )
+      }
+
+      val actualResult = select[Person].toList
+        .run(
+          from(
+            json.read.directory[Person](dir, globPattern = "*")
+          )
+        )
+
+      val expectedResult = (1 to 10).flatMap { i =>
+        List(Person(name = "vitalii", age = i), Person(name = "john", age = i))
+      }.toList
+
+      actualResult should contain theSameElementsAs {
+        expectedResult
       }
     }
 
@@ -138,7 +165,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
       assert(actualResult == expectedResult)
     }
 
-    "Correctly write into files" in {
+    "correctly write into files" in {
       val path = Files.createTempFile("scala-json-csv", "write-spec")
 
       select[Person]
