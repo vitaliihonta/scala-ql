@@ -11,41 +11,24 @@ import java.time.LocalDateTime
 import java.util.UUID
 import scala.annotation.tailrec
 
-case class ReaderContext(
-  workbook:               Workbook,
-  evaluateFormulas:       Boolean,
-  headers:                Map[String, Int],
-  cellResolutionStrategy: CellResolutionStrategy,
-  path:                   List[String],
-  currentOffset:          Int) { self =>
-
-  lazy val formulaEvaluator: FormulaEvaluator = workbook.getCreationHelper.createFormulaEvaluator
-
-  def startOffset: Int =
-    cellResolutionStrategy.getStartOffset(headers, path.head, currentOffset)
-
-  def cannotDecodeError(cause: String): IllegalArgumentException =
-    cellResolutionStrategy.cannotDecodeError(path, currentOffset, cause)
-}
-
 case class ReadResult[A](value: A, readCells: Int)
 
 trait ExcelDecoder[A] {
-  def read(row: Row)(implicit ctx: ReaderContext): ReadResult[A]
+  def read(row: Row)(implicit ctx: ExcelContext): ReadResult[A]
 }
 
 trait ExcelSingleCellDecoder[A] extends ExcelDecoder[A] {
   self =>
 
-  def readCell(cell: Cell)(implicit ctx: ReaderContext): A
+  def readCell(cell: Cell)(implicit ctx: ExcelContext): A
 
-  override final def read(row: Row)(implicit ctx: ReaderContext): ReadResult[A] = {
+  override final def read(row: Row)(implicit ctx: ExcelContext): ReadResult[A] = {
     val result = readCell(row.getCell(ctx.startOffset))
     ReadResult(result, readCells = 1)
   }
 
   def map[B](f: A => B): ExcelDecoder.SingleCell[B] = new ExcelSingleCellDecoder[B] {
-    override def readCell(cell: Cell)(implicit ctx: ReaderContext): B = f(self.readCell(cell))
+    override def readCell(cell: Cell)(implicit ctx: ExcelContext): B = f(self.readCell(cell))
   }
 }
 
@@ -57,7 +40,7 @@ object ExcelDecoder extends LowPriorityCellDecoders with ExcelRowDecoderAutoDeri
 }
 
 class DecoderForCellType[A](cellTypes: Set[CellType])(reader: Cell => A) extends ExcelSingleCellDecoder[A] {
-  override def readCell(cell: Cell)(implicit ctx: ReaderContext): A = {
+  override def readCell(cell: Cell)(implicit ctx: ExcelContext): A = {
     @tailrec
     def go(input: Cell): A =
       if (cellTypes contains input.getCellType) reader(input)

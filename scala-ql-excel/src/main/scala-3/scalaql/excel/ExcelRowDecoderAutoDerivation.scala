@@ -8,7 +8,7 @@ trait ExcelRowDecoderAutoDerivation extends ProductDerivation[ExcelDecoder] {
 
   def join[T](ctx: CaseClass[ExcelDecoder, T]): ExcelDecoder[T] = new ExcelDecoder[T] {
 
-    override def read(row: Row)(implicit readerContext: ReaderContext): ReadResult[T] = {
+    override def read(row: Row)(implicit readerContext: ExcelContext): ReadResult[T] = {
       val (values, readTotal) =
         ctx.params.foldLeft(Seq.empty[Any] -> 0) { case ((fields, readCells), param) =>
           val ReadResult(result, read) = param.typeclass.read(row)(

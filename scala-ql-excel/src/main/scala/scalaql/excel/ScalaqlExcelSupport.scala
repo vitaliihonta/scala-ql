@@ -19,7 +19,7 @@ trait ScalaqlExcelSupport extends DataSourceJavaInputStreamReadSupport[ExcelDeco
       val worksheet   = config.choseWorksheet(workbook)
       val rowIterator = worksheet.iterator().asScala
       val headers     = inferHeaders(rowIterator)
-      implicit val ctx: ReaderContext = ReaderContext(
+      implicit val ctx: ExcelContext = ExcelContext(
         workbook,
         config.evaluateFormulas,
         headers,
