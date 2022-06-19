@@ -13,27 +13,27 @@ import java.nio.file.OpenOption
 import java.nio.file.Path
 import scala.collection.mutable
 
-trait DataSourceJavaIOSupport[Decoder[_], Encoder[_], ReadConfig, WriteConfig]
+trait DataSourceJavaIOSupport[Decoder[_], Encoder[_], ReadConfig[_], WriteConfig[_]]
     extends DataSourceSupport[Reader, Writer, Decoder, Encoder, ReadConfig, WriteConfig]
 
-trait DataSourceJavaIOReadSupport[Decoder[_], Config] extends DataSourceReadSupport[Reader, Decoder, Config]
+trait DataSourceJavaIOReadSupport[Decoder[_], Config[_]] extends DataSourceReadSupport[Reader, Decoder, Config]
 
-trait DataSourceJavaIOWriteSupport[Encoder[_], Config] extends DataSourceWriteSupport[Writer, Encoder, Config]
+trait DataSourceJavaIOWriteSupport[Encoder[_], Config[_]] extends DataSourceWriteSupport[Writer, Encoder, Config]
 
-trait DataSourceJavaIOReader[Decoder[_], Config] extends DataSourceReader[Reader, Decoder, Config] {
+trait DataSourceJavaIOReader[Decoder[_], Config[_]] extends DataSourceReader[Reader, Decoder, Config] {
 
   // suitable for unit tests
   def string[A: Decoder](
     content:         String
-  )(implicit config: Config
+  )(implicit config: Config[A]
   ): Iterable[A] = read(new StringReader(content))
 }
 
-trait DataSourceJavaIOWriter[Encoder[_], Config] extends DataSourceWriter[Writer, Encoder, Config] {
+trait DataSourceJavaIOWriter[Encoder[_], Config[_]] extends DataSourceWriter[Writer, Encoder, Config] {
 
   def string[A: Encoder](
     builder:         mutable.StringBuilder
-  )(implicit config: Config
+  )(implicit config: Config[A]
   ): SideEffect[?, ?, A] = {
     val baos = new ByteArrayOutputStream()
     write(new OutputStreamWriter(baos))
@@ -44,7 +44,7 @@ trait DataSourceJavaIOWriter[Encoder[_], Config] extends DataSourceWriter[Writer
   }
 }
 
-trait DataSourceJavaIOReaderFilesSupport[Decoder[_], Config]
+trait DataSourceJavaIOReaderFilesSupport[Decoder[_], Config[_]]
     extends DataSourceReaderFilesSupport[Reader, Decoder, Config] {
   this: DataSourceReader[Reader, Decoder, Config] =>
 
@@ -52,7 +52,7 @@ trait DataSourceJavaIOReaderFilesSupport[Decoder[_], Config]
     Files.newBufferedReader(path, encoding)
 }
 
-trait DataSourceJavaIOWriterFilesSupport[Encoder[_], Config]
+trait DataSourceJavaIOWriterFilesSupport[Encoder[_], Config[_]]
     extends DataSourceWriterFilesSupport[Writer, Encoder, Config] {
   this: DataSourceWriter[Writer, Encoder, Config] =>
 

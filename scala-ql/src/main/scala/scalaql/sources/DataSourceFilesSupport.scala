@@ -9,7 +9,7 @@ import java.nio.file.OpenOption
 import java.nio.file.Path
 import scala.jdk.CollectionConverters.*
 
-trait DataSourceReaderFilesSupport[Source <: AutoCloseable, Decoder[_], Config] {
+trait DataSourceReaderFilesSupport[Source <: AutoCloseable, Decoder[_], Config[_]] {
   this: DataSourceReader[Source, Decoder, Config] =>
 
   protected def openFile(path: Path, encoding: Charset): Source
@@ -17,13 +17,13 @@ trait DataSourceReaderFilesSupport[Source <: AutoCloseable, Decoder[_], Config] 
   def file[A: Decoder](
     path:            Path,
     encoding:        Charset = StandardCharsets.UTF_8
-  )(implicit config: Config
+  )(implicit config: Config[A]
   ): Iterable[A] = read(openFile(path, encoding))
 
   def files[A: Decoder](
     encoding:        Charset = StandardCharsets.UTF_8
   )(files:           Path*
-  )(implicit config: Config
+  )(implicit config: Config[A]
   ): Iterable[A] =
     files.flatMap(file[A](_, encoding))
 
@@ -31,14 +31,14 @@ trait DataSourceReaderFilesSupport[Source <: AutoCloseable, Decoder[_], Config] 
     dir:             Path,
     globPattern:     String = "*",
     encoding:        Charset = StandardCharsets.UTF_8
-  )(implicit config: Config
+  )(implicit config: Config[A]
   ): Iterable[A] =
     fromDirectoryStream[A](Files.newDirectoryStream(dir, globPattern), encoding)
 
   private def fromDirectoryStream[A: Decoder](
     dirStream:       DirectoryStream[Path],
     encoding:        Charset
-  )(implicit config: Config
+  )(implicit config: Config[A]
   ): Iterable[A] =
     try
       dirStream
@@ -50,14 +50,14 @@ trait DataSourceReaderFilesSupport[Source <: AutoCloseable, Decoder[_], Config] 
       dirStream.close()
 }
 
-trait DataSourceWriterFilesSupport[Sink, Encoder[_], Config] {
+trait DataSourceWriterFilesSupport[Sink, Encoder[_], Config[_]] {
   this: DataSourceWriter[Sink, Encoder, Config] =>
 
   protected def openFile(path: Path, encoding: Charset, openOptions: OpenOption*): Sink
 
   def file[A: Encoder](
     path:            Path
-  )(implicit config: Config
+  )(implicit config: Config[A]
   ): SideEffect[?, ?, A] =
     file(path, encoding = StandardCharsets.UTF_8)
 
@@ -65,7 +65,7 @@ trait DataSourceWriterFilesSupport[Sink, Encoder[_], Config] {
     path:            Path,
     encoding:        Charset,
     openOptions:     OpenOption*
-  )(implicit config: Config
+  )(implicit config: Config[A]
   ): SideEffect[?, ?, A] =
     write(openFile(path, encoding, openOptions: _*))
 }

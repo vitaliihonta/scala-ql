@@ -12,10 +12,10 @@ import java.io.Reader
 import scala.jdk.CollectionConverters.*
 
 trait ScalaqlExcelSupport
-    extends DataSourceJavaStreamsSupport[ExcelDecoder, ExcelEncoder, ExcelReadConfig, ExcelWriteConfig] {
+    extends DataSourceJavaStreamsSupport[ExcelDecoder, ExcelEncoder, ExcelReadConfig.Adapt, ExcelWriteConfig] {
   final object read
-      extends DataSourceJavaInputStreamReader[ExcelDecoder, ExcelReadConfig]
-      with DataSourceJavaInputStreamReaderFilesSupport[ExcelDecoder, ExcelReadConfig] {
+      extends DataSourceJavaInputStreamReader[ExcelDecoder, ExcelReadConfig.Adapt]
+      with DataSourceJavaInputStreamReaderFilesSupport[ExcelDecoder, ExcelReadConfig.Adapt] {
 
     protected def readImpl[A: ExcelDecoder](inputStream: InputStream)(implicit config: ExcelReadConfig): Iterable[A] = {
       val workbook    = new XSSFWorkbook(inputStream)
@@ -40,7 +40,7 @@ trait ScalaqlExcelSupport
 
     def write[A: ExcelEncoder](
       sink:            => OutputStream
-    )(implicit config: ExcelWriteConfig
+    )(implicit config: ExcelWriteConfig[A]
     ): SideEffect[?, ?, A] = {
       val headers   = ExcelEncoder[A].headers
       val workbook  = new XSSFWorkbook()

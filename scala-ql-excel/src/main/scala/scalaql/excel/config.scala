@@ -12,7 +12,11 @@ case class ExcelReadConfig(
   cellResolutionStrategy: CellResolutionStrategy,
   worksheetName:          Option[String])
 
-object ExcelReadConfig {
+object ExcelReadConfig extends LowPriorityExcelReadConfig {
+  type Adapt[A] = ExcelReadConfig
+}
+
+trait LowPriorityExcelReadConfig {
   implicit val default: ExcelReadConfig = ExcelReadConfig(
     evaluateFormulas = false,
     choseWorksheet = _.getSheetAt(0),
@@ -21,17 +25,20 @@ object ExcelReadConfig {
   )
 }
 
-// TODO: add styles
-case class ExcelWriteConfig(
+case class ExcelWriteConfig[-A](
   worksheetName: Option[String],
   writeHeaders:  Boolean,
-  naming:        String => String)
+  naming:        String => String,
+  styling:       ExcelStyling[A])
 
-object ExcelWriteConfig {
-  implicit val default: ExcelWriteConfig = ExcelWriteConfig(
+object ExcelWriteConfig extends LowPriorityExcelWriteConfig {}
+
+trait LowPriorityExcelWriteConfig {
+  implicit def default[A](implicit styling: ExcelStyling[A]): ExcelWriteConfig[A] = ExcelWriteConfig[A](
     worksheetName = None,
     writeHeaders = false,
-    naming = Naming.Literal
+    naming = Naming.Literal,
+    styling = styling
   )
 }
 

@@ -212,7 +212,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
 
     "correctly write simple xls with headers" in {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write", "with-headers.xls")
-      implicit val excelConfig: ExcelWriteConfig = ExcelWriteConfig.default.copy(
+      implicit val excelConfig: ExcelWriteConfig[Person] = ExcelWriteConfig.default.copy(
         writeHeaders = true,
         naming = Naming.WithSpacesLowerCase
       )
@@ -231,7 +231,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
 
     "correctly write complex xlsx document with headers" in {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-complex", "with-headers.xls")
-      implicit val excelConfig: ExcelWriteConfig = ExcelWriteConfig.default.copy(
+      implicit val excelConfig: ExcelWriteConfig[DetailedPerson] = ExcelWriteConfig.default.copy(
         writeHeaders = true,
         naming = Naming.WithSpacesLowerCase
       )
@@ -267,7 +267,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly write nested xlsx document with headers" in {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-nested", "with-headers.xls")
 
-      implicit val excelConfig: ExcelWriteConfig = ExcelWriteConfig.default.copy(
+      implicit val excelConfig: ExcelWriteConfig[NestedPerson] = ExcelWriteConfig.default.copy(
         writeHeaders = true,
         naming = Naming.WithSpacesLowerCase
       )
