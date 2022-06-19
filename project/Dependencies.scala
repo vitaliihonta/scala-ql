@@ -23,6 +23,10 @@ object Dependencies {
     val circeParser = "io.circe" %% "circe-parser" % "0.14.1"
   }
 
+  object Excel {
+    val apachePoi = "org.apache.poi" % "poi-ooxml" % "5.2.2"
+  }
+
   object Utils {
     val commonsLang = "org.apache.commons" % "commons-lang3" % "3.12.0"
   }

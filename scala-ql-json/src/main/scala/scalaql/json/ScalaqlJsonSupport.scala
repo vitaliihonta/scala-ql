@@ -6,27 +6,18 @@ import io.circe.Encoder
 import io.circe.Json
 import io.circe.Printer
 import io.circe.parser
-import scalaql.sources.DataSourceReadSupport
-import scalaql.sources.DataSourceSupport
-import scalaql.sources.DataSourceWriteSupport
-
+import scalaql.sources.*
 import scala.jdk.CollectionConverters.*
 import java.io.BufferedReader
 import java.io.Reader
-import java.io.StringWriter
 import java.io.Writer
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.nio.file.OpenOption
-import java.nio.file.Path
 import java.util.stream.Collectors
-import scala.collection.mutable
-import scala.io.Source
 
-trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig] {
+trait ScalaqlJsonSupport extends DataSourceJavaIOSupport[Decoder, Encoder, JsonConfig.Adapt, JsonConfig.Adapt] {
 
-  final object read extends DataSourceReadSupport[Decoder, JsonConfig] {
+  final object read
+      extends DataSourceJavaIOReader[Decoder, JsonConfig.Adapt]
+      with DataSourceJavaIOReaderFilesSupport[Decoder, JsonConfig.Adapt] {
     protected def readImpl[A: Decoder](reader: Reader)(implicit config: JsonConfig): Iterable[A] = {
       val bufferedReader = new BufferedReader(reader)
       if (config.multiline) {
@@ -47,7 +38,10 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
     }
   }
 
-  final object write extends DataSourceWriteSupport[Encoder, JsonConfig] {
+  final object write
+      extends DataSourceJavaIOWriter[Encoder, JsonConfig.Adapt]
+      with DataSourceJavaIOWriterFilesSupport[Encoder, JsonConfig.Adapt] {
+
     override def write[A: Encoder](writer: => Writer)(implicit config: JsonConfig): SideEffect[?, ?, A] = {
       def basics(writeLine: (Writer, Boolean, Json) => Unit) = SideEffect[Writer, Boolean, A](
         initialState = true,

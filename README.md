@@ -27,12 +27,22 @@ libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-csv" % "<VERSION>"
 libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-json" % "<VERSION>"
 ```
 
-## Supported sources/sinks
+## Supported sources
 
 - Any scala collection
 - CSV/TSV file
 - JSON file (single line / multiline)
-- **TODO** parquet
+- Excel
+
+ScalaQL is also able to read from multiple files at once  
+and walking directory (optionally by GLOB pattern)
+
+## Supported sinks
+
+- Any scala collection
+- CSV/TSV file
+- JSON file (single line / multiline)
+- Excel
 
 ## Supported operations
 
@@ -69,9 +79,9 @@ object FilesExample extends App {
       .aggregate((_, studentsWithFaculties) => studentsWithFaculties.avgBy { case (student, _) => student.grade })
       .map((FacultyStats.apply _).tupled)
 
-  val studentsPath  = Paths.get("examples/src/main/resources/students.csv")
+  val studentsPath = Paths.get("examples/src/main/resources/students.csv")
   val facultiesPath = Paths.get("examples/src/main/resources/faculties.json")
-  val outPath       = Paths.get("examples/out/faculty_stats.csv")
+  val outPath = Paths.get("examples/out/faculty_stats.csv")
 
   query
     .foreach(

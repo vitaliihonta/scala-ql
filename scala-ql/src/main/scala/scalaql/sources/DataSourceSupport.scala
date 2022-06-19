@@ -1,105 +1,44 @@
 package scalaql.sources
 
 import scalaql.SideEffect
-import java.io.ByteArrayOutputStream
-import java.io.OutputStreamWriter
-import java.io.Reader
-import java.io.StringReader
-import java.io.Writer
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import java.nio.file.DirectoryStream
-import java.nio.file.Files
-import java.nio.file.OpenOption
-import java.nio.file.Path
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
 
-trait DataSourceSupport[Decoder[_], Encoder[_], Config] {
-  val read: DataSourceReadSupport[Decoder, Config]
-  val write: DataSourceWriteSupport[Encoder, Config]
+trait DataSourceSupport[Source <: AutoCloseable, Sink, Decoder[_], Encoder[_], ReadConfig[_], WriteConfig[_]]
+    extends DataSourceReadSupport[Source, Decoder, ReadConfig]
+    with DataSourceWriteSupport[Sink, Encoder, WriteConfig]
+
+trait DataSourceReadSupport[Source <: AutoCloseable, Decoder[_], Config[_]] {
+  val read: DataSourceReader[Source, Decoder, Config]
 }
 
-trait DataSourceReadSupport[Decoder[_], Config] {
+trait DataSourceWriteSupport[Sink, Encoder[_], Config[_]] {
+  val write: DataSourceWriter[Sink, Encoder, Config]
+}
+
+trait DataSourceReader[Source <: AutoCloseable, Decoder[_], Config[_]] {
 
   /** Implement reading logic here. NOTE - no need to close the reader, it's handled in public methods
     */
-  protected def readImpl[A: Decoder](reader: Reader)(implicit config: Config): Iterable[A]
+  protected def readImpl[A: Decoder](source: Source)(implicit config: Config[A]): Iterable[A]
 
   def read[A: Decoder](
-    reader:          => Reader
-  )(implicit config: Config
+    source:          => Source
+  )(implicit config: Config[A]
   ): Iterable[A] = {
-    val theReader = reader
-    try readImpl[A](theReader)
-    finally theReader.close()
+    val theSource = source
+    try readImpl[A](theSource)
+    finally theSource.close()
   }
-
-  def file[A: Decoder](
-    path:            Path,
-    encoding:        Charset = StandardCharsets.UTF_8
-  )(implicit config: Config
-  ): Iterable[A] = read(Files.newBufferedReader(path, encoding))
-
-  def directory[A: Decoder](
-    dir:             Path,
-    globPattern:     String = "*",
-    encoding:        Charset = StandardCharsets.UTF_8
-  )(implicit config: Config
-  ): Iterable[A] =
-    fromDirectoryStream[A](Files.newDirectoryStream(dir, globPattern), encoding)
-
-  // suitable for unit tests
-  def string[A: Decoder](
-    content:         String
-  )(implicit config: Config
-  ): Iterable[A] = read(new StringReader(content))
-
-  private def fromDirectoryStream[A: Decoder](
-    dirStream:       DirectoryStream[Path],
-    encoding:        Charset
-  )(implicit config: Config
-  ): Iterable[A] =
-    try
-      dirStream
-        .iterator()
-        .asScala
-        .flatMap(file[A](_, encoding))
-        .toVector
-    finally
-      dirStream.close()
 }
 
-trait DataSourceWriteSupport[Encoder[_], Config] {
+trait DataSourceWriter[Sink, Encoder[_], Config[_]] {
   def write[A: Encoder](
-    writer:          => Writer
-  )(implicit config: Config
+    sink:            => Sink
+  )(implicit config: Config[A]
   ): SideEffect[?, ?, A]
 
-  def file[A: Encoder](
-    path:            Path
-  )(implicit config: Config
-  ): SideEffect[?, ?, A] =
-    file(path, encoding = StandardCharsets.UTF_8)
-
-  def file[A: Encoder](
-    path:            Path,
-    encoding:        Charset,
-    openOptions:     OpenOption*
-  )(implicit config: Config
-  ): SideEffect[?, ?, A] =
-    write(Files.newBufferedWriter(path, encoding, openOptions: _*))
-
-  // suitable for unit tests
   def string[A: Encoder](
     builder:         mutable.StringBuilder
-  )(implicit config: Config
-  ): SideEffect[?, ?, A] = {
-    val baos = new ByteArrayOutputStream()
-    write(new OutputStreamWriter(baos))
-      .onExit {
-        builder.append(new String(baos.toByteArray))
-        baos.close()
-      }
-  }
+  )(implicit config: Config[A]
+  ): SideEffect[?, ?, A]
 }
