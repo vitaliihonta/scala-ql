@@ -17,7 +17,8 @@ import java.nio.file.OpenOption
 import java.nio.file.Path
 import scala.collection.mutable
 
-trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder.Row, CsvEncoder.Row, CsvConfig.Adapt, CsvConfig.Adapt] {
+trait ScalaqlCsvSupport
+    extends DataSourceJavaIOSupport[CsvDecoder.Row, CsvEncoder.Row, CsvConfig.Adapt, CsvConfig.Adapt] {
 
   final object read
       extends DataSourceJavaIOReader[CsvDecoder.Row, CsvConfig.Adapt]

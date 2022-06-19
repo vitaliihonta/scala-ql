@@ -8,7 +8,8 @@ import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.TableStyle
 
 trait ExcelStyling[-A] {
-  def cellStyles: Map[String, CellStyle => Unit]
+  def headerStyle(name: String): Option[Styling]
+  def cellStyle(name:   String): Option[Styling]
 }
 
 object ExcelStyling extends LowPriorityExcelStyling {
@@ -16,18 +17,19 @@ object ExcelStyling extends LowPriorityExcelStyling {
 
   def builder[A]: ExcelStylingBuilder[A] = new ExcelStylingBuilder[A]()
 
-  final class Configured[A](base: Map[String, CellStyle => Unit]) extends ExcelStyling[A] {
-    private val noop: CellStyle => Unit = _ => {}
+  final class Configured[A](
+    header: String => Option[Styling],
+    cell:   String => Option[Styling])
+      extends ExcelStyling[A] {
 
-    override val cellStyles: Map[String, CellStyle => Unit] =
-      base.withDefault(_ => noop)
-
-    override def toString(): String = s"ExcelStyling.Configured(keys=${base.keySet})"
+    override def headerStyle(name: String): Option[Styling] = header(name)
+    override def cellStyle(name: String): Option[Styling]   = cell(name)
   }
 }
 
 trait LowPriorityExcelStyling {
-  implicit val NoStyling: ExcelStyling[Any] = new ExcelStyling[Any] {
-    override val cellStyles: Map[String, CellStyle => Unit] = Map.empty
+  implicit lazy val NoStyling: ExcelStyling[Any] = new ExcelStyling[Any] {
+    override def headerStyle(name: String): Option[Styling] = None
+    override def cellStyle(name: String): Option[Styling]   = None
   }
 }

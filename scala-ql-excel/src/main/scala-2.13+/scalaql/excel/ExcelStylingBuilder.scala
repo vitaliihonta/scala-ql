@@ -1,27 +1,66 @@
 package scalaql.excel
 
 import org.apache.poi.ss.usermodel.CellStyle
-
 import scala.language.experimental.macros
 import scala.reflect.macros.TypecheckException
 import scala.reflect.macros.blackbox
 
-class ExcelStylingBuilder[A](styles: Map[String, CellStyle => Unit] = Map.empty) { self =>
+class ExcelStylingBuilder[A](
+  headerStyles: Either[String => Option[Styling], Map[String, Styling]] = Right(Map.empty[String, Styling]),
+  cellStyles:   Map[String, Styling] = Map.empty) { self =>
 
   def build: ExcelStyling[A] =
-    new ExcelStyling.Configured[A](styles)
+    new ExcelStyling.Configured[A](
+      (name: String) => headerStyles.map(_.get(name)).left.map(_.apply(name)).merge,
+      cellStyles.get(_: String)
+    )
 
-  def forField[B](f: A => B, style: CellStyle => Unit): ExcelStylingBuilder[A] =
+  def forAllHeaders(styling: Styling): ExcelStylingBuilder[A] =
+    new ExcelStylingBuilder[A](
+      headerStyles = Left((_: String) => Some(styling)),
+      cellStyles = self.cellStyles
+    )
+
+  def forAllFields(stylings: (String, Styling)*): ExcelStylingBuilder[A] =
+    new ExcelStylingBuilder[A](
+      headerStyles = self.headerStyles,
+      cellStyles = stylings.toMap
+    )
+
+  def forHeader[B](f: A => B, styling: Styling): ExcelStylingBuilder[A] =
+    macro ExcelStylingBuilderMacro.forHeaderImpl[A, B]
+
+  def forField[B](f: A => B, styling: Styling): ExcelStylingBuilder[A] =
     macro ExcelStylingBuilderMacro.forFieldImpl[A, B]
 
-  def addStyle(fieldName: String, style: CellStyle => Unit): ExcelStylingBuilder[A] =
-    new ExcelStylingBuilder[A](self.styles.updated(fieldName, style))
+  def addHeaderStyle(headerName: String, styling: Styling): ExcelStylingBuilder[A] =
+    new ExcelStylingBuilder[A](
+      headerStyles = Right(
+        self.headerStyles.getOrElse(Map.empty[String, Styling]).updated(headerName, styling)
+      ),
+      cellStyles = self.cellStyles
+    )
+
+  def addFieldStyle(fieldName: String, styling: Styling): ExcelStylingBuilder[A] =
+    new ExcelStylingBuilder[A](
+      headerStyles = self.headerStyles,
+      cellStyles = self.cellStyles.updated(fieldName, styling)
+    )
 }
 
 class ExcelStylingBuilderMacro(val c: blackbox.Context) {
   import c.universe.*
 
-  def forFieldImpl[A: WeakTypeTag, B: WeakTypeTag](f: Expr[A => B], style: Expr[CellStyle => Unit]): Tree = {
+  def forHeaderImpl[A: WeakTypeTag, B: WeakTypeTag](f: Expr[A => B], styling: Expr[Styling]): Tree =
+    builderStepImpl[A, B](f)((prefix, fieldName) => q"""$prefix.addHeaderStyle($fieldName, $styling)""")
+
+  def forFieldImpl[A: WeakTypeTag, B: WeakTypeTag](f: Expr[A => B], styling: Expr[Styling]): Tree =
+    builderStepImpl[A, B](f)((prefix, fieldName) => q"""$prefix.addFieldStyle($fieldName, $styling)""")
+
+  private def builderStepImpl[A: WeakTypeTag, B: WeakTypeTag](
+    f:   Expr[A => B]
+  )(use: (Tree, String) => Tree
+  ): Tree = {
     libraryUsageValidityCheck[A]()
 
     val fieldName = extractSelectorField(f.tree)
@@ -30,7 +69,7 @@ class ExcelStylingBuilderMacro(val c: blackbox.Context) {
         error(s"Expected a field selector to be passed (as instance.field1), got $f")
       )
 
-    q"""${c.prefix.tree}.addStyle($fieldName, $style)"""
+    use(c.prefix.tree, fieldName)
   }
 
   private def libraryUsageValidityCheck[A: WeakTypeTag](): Unit = {

@@ -39,7 +39,7 @@ object CsvConfig extends LowPriorityCsvConfig {
     quoting = Quoting.QuoteNone,
     treatEmptyLineAsNil = false
   )
-  
+
   type Adapt[A] = CsvConfig
 }
 

@@ -28,6 +28,7 @@ trait ExcelSingleCellEncoder[A] extends ExcelEncoder[A] { self =>
   def write(row: Row, value: A)(implicit ctx: ExcelWriteContext): WriteResult = {
     val cell = row.createCell(ctx.startOffset)
     writeCell(cell, value)
+    ctx.applyCellStyle(cell)
     WriteResult(cellsWritten = 1)
   }
 

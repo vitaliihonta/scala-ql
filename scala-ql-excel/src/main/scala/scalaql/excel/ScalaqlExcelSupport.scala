@@ -56,8 +56,15 @@ trait ScalaqlExcelSupport
         use = { (_, rowIdx, value) =>
           val idx = if (rowIdx == 0 && config.writeHeaders) {
             val headerRow = worksheet.createRow(0)
-            for ((header, idx) <- headers.zipWithIndex)
-              headerRow.createCell(idx).setCellValue(config.naming(header))
+            for ((header, idx) <- headers.zipWithIndex) {
+              val cell = headerRow.createCell(idx)
+              config.styling.headerStyle(header).foreach { styling =>
+                val cellStyle = workbook.createCellStyle()
+                styling(workbook, cellStyle)
+                cell.setCellStyle(cellStyle)
+              }
+              cell.setCellValue(config.naming(header))
+            }
             rowIdx + 1
           } else rowIdx
 
@@ -66,7 +73,8 @@ trait ScalaqlExcelSupport
             ExcelWriteContext(
               workbook = workbook,
               path = Nil,
-              startOffset = 0
+              startOffset = 0,
+              cellStyle = config.styling.cellStyle
             )
           )
           idx + 1

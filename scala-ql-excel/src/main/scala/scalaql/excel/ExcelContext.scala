@@ -1,7 +1,9 @@
 package scalaql.excel
 
+import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.FormulaEvaluator
 import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.ss.usermodel.Cell
 
 sealed trait ExcelContext {
   def workbook: Workbook
@@ -31,5 +33,14 @@ case class ExcelReadContext(
 case class ExcelWriteContext(
   workbook:    Workbook,
   path:        List[String],
-  startOffset: Int)
-    extends ExcelContext
+  startOffset: Int,
+  cellStyle:   String => Option[Styling])
+    extends ExcelContext {
+
+  def applyCellStyle(cell: Cell): Unit =
+    cellStyle(path.head).foreach { styling =>
+      val style: CellStyle = workbook.createCellStyle()
+      styling(cell.getSheet.getWorkbook, style)
+      cell.setCellStyle(style)
+    }
+}

@@ -5,4 +5,5 @@ project/project
 examples/out/*.json
 examples/out/*.csv
 .coverage/
+scala-ql-excel/src/test/out/*.xls
 scala-ql-excel/src/test/out/*.xlsx

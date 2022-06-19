@@ -1,3 +1,3 @@
 package scalaql
 
-package object excel extends ScalaqlExcelSupport {}
+package object excel extends ScalaqlExcelSupport with StylingSyntax {}

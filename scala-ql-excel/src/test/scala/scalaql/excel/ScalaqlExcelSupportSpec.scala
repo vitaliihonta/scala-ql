@@ -1,7 +1,10 @@
 package scalaql.excel
 
+import org.apache.poi.ss.usermodel.FillPatternType
+import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import scalaql.*
+
 import scala.jdk.CollectionConverters.*
 import java.nio.file.Files
 import java.nio.file.Path
@@ -227,6 +230,45 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
         )
 
       assertWorkbooksEqual(path, Paths.get("scala-ql-excel/src/test/expected/write-with-headers.xls"))
+    }
+
+    "correctly write simple xls with headers and styles" in {
+      val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-styles", "with-headers.xls")
+
+      implicit val personStyling: ExcelStyling[Person] = ExcelStyling
+        .builder[Person]
+        .forAllHeaders(
+          cellStyle
+            .andThen(_.setFillPattern(FillPatternType.SOLID_FOREGROUND))
+            .andThen(_.setFillForegroundColor(IndexedColors.PINK.index))
+        )
+        .forAllFields(
+          "name" -> cellStyle.andThen(_.setRotation(90)),
+          "age" -> cellStyle
+            .andThen(_.setFillPattern(FillPatternType.SOLID_FOREGROUND))
+            .andThen(_.setFillForegroundColor(IndexedColors.BLUE.index))
+        )
+        .build
+
+      println(personStyling)
+
+      implicit val excelConfig: ExcelWriteConfig[Person] = ExcelWriteConfig.default
+        .copy(
+          writeHeaders = true,
+          naming = Naming.WithSpacesLowerCase
+        )
+
+      select[Person]
+        .foreach(
+          excel.write.file[Person](path)
+        )
+        .run(
+          from(
+            List(Person(name = "Vitalii", age = 24), Person(name = "John", age = 100))
+          )
+        )
+
+      assertWorkbooksEqual(path, Paths.get("scala-ql-excel/src/test/expected/write-styles-with-headers.xls"))
     }
 
     "correctly write complex xlsx document with headers" in {
