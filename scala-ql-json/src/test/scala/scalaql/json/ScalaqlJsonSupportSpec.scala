@@ -84,8 +84,36 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
         List(Person(name = "vitalii", age = 24), Person(name = "john", age = 100))
       }
     }
+    "correctly read from multiple files" in {
+      val files = for (i <- 1 to 10) yield {
+        val file = Files.createTempFile("scala-ql-json", "read-files-spec")
+        writeIntoFile(
+          file,
+          s"""|{"name": "vitalii", "age": $i}
+              |{"name": "john", "age": $i}""".stripMargin
+        )
+        file
+      }
 
-    "correctly read glob from file" in {
+      val actualResult = select[Person].toList
+        .run(
+          from(
+            json.read.files[Person]()(
+              files: _*
+            )
+          )
+        )
+
+      val expectedResult = (1 to 10).flatMap { i =>
+        List(Person(name = "vitalii", age = i), Person(name = "john", age = i))
+      }.toList
+
+      actualResult should contain theSameElementsAs {
+        expectedResult
+      }
+    }
+
+    "correctly read glob from directory" in {
       val dir = Files.createTempDirectory("scala-ql-json")
       for (i <- 1 to 10) {
         val file = Files.createTempFile(dir, "scala-ql-json", "read-glob-spec")

@@ -8,8 +8,11 @@ import java.nio.charset.StandardCharsets
 import java.io.Reader
 import scala.jdk.CollectionConverters.*
 
-trait ScalaqlExcelSupport extends DataSourceReadSupport[ExcelDecoder.Row, ExcelConfig] {
-  final object read extends DataSourceReader[ExcelDecoder.Row, ExcelConfig] {
+trait ScalaqlExcelSupport extends DataSourceJavaIOReadSupport[ExcelDecoder.Row, ExcelConfig] {
+  final object read
+      extends DataSourceJavaIOReader[ExcelDecoder.Row, ExcelConfig]
+      with DataSourceReaderFilesSupport[ExcelDecoder.Row, ExcelConfig] {
+
     protected def readImpl[A: ExcelDecoder.Row](reader: Reader)(implicit config: ExcelConfig): Iterable[A] = {
       val workbook                    = new HSSFWorkbook(new ReaderInputStream(reader, StandardCharsets.UTF_8))
       val worksheet                   = config.choseWorksheet(workbook)

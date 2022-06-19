@@ -31,7 +31,37 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
       }
     }
 
-    "correctly read from files" in {
+    "correctly read from multiple file" in {
+      val files = for (i <- 1 to 10) yield {
+        val file = Files.createTempFile("scala-ql-csv", "read-files-spec")
+        writeIntoFile(
+          file,
+          s"""|name,age
+              |vitalii,$i
+              |john,$i""".stripMargin
+        )
+        file
+      }
+
+      val actualResult = select[Person].toList
+        .run(
+          from(
+            csv.read.files[Person]()(
+              files: _*
+            )
+          )
+        )
+
+      val expectedResult = (1 to 10).flatMap { i =>
+        List(Person(name = "vitalii", age = i), Person(name = "john", age = i))
+      }.toList
+
+      actualResult should contain theSameElementsAs {
+        expectedResult
+      }
+    }
+
+    "correctly read from directory" in {
       val path = Files.createTempFile("scala-ql-csv", "read-spec")
       writeIntoFile(
         path,
@@ -50,7 +80,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
       }
     }
 
-    "correctly read glob from file" in {
+    "correctly read glob from directory" in {
       val dir = Files.createTempDirectory("scala-ql-csv")
       for (i <- 1 to 10) {
         val file = Files.createTempFile(dir, "scala-ql-csv", "read-glob-spec")
