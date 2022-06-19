@@ -9,12 +9,24 @@ import java.util.UUID
 
 class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
   case class Person(name: String, age: Int)
+
   case class DetailedPerson(
     id:        UUID,
     name:      String,
     salary:    BigDecimal,
     birthDay:  LocalDate,
     createdAt: LocalDateTime)
+
+  case class DetailedPersonWithFormulas(
+    name:     String,
+    surname:  String,
+    fullName: String)
+
+  case class Names(name: String, surname: String)
+  case class Metadata(id: UUID, createdAt: LocalDateTime)
+
+  case class NestedPerson(names: Names, metadata: Metadata)
+  case class NestedPersonOrderSensitive(metadata: Metadata, names: Names)
 
   "ScalaqlExcelSupport" should {
     "correctly read xlsx document without headers" in {
@@ -51,7 +63,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       val path = Paths.get("scala-ql-excel/src/test/resources/complex-with-headers.xlsx")
 
       implicit val excelConfig: ExcelConfig = ExcelConfig.default.copy(
-        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpaces)
+        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
       )
 
       select[DetailedPerson].toList
@@ -74,6 +86,107 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
             salary = BigDecimal("1005000000000.1"),
             birthDay = LocalDate.of(1922, 6, 19),
             createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+          )
+        )
+      }
+    }
+
+    "correctly read nested xlsx document with headers" in {
+      val path = Paths.get("scala-ql-excel/src/test/resources/nested-with-headers.xlsx")
+
+      implicit val excelConfig: ExcelConfig = ExcelConfig.default.copy(
+        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
+      )
+
+      select[NestedPerson].toList
+        .run(
+          from(
+            excel.read.file[NestedPerson](path)
+          )
+        ) should contain theSameElementsAs {
+        List(
+          NestedPerson(
+            names = Names(
+              name = "Vitalii",
+              surname = "Honta"
+            ),
+            metadata = Metadata(
+              id = UUID.fromString("4ffe9631-2169-4c50-90ff-8818bc28ab3f"),
+              createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+            )
+          ),
+          NestedPerson(
+            names = Names(
+              name = "John",
+              surname = "Doe"
+            ),
+            metadata = Metadata(
+              id = UUID.fromString("304e27cc-f2e2-489a-8fac-4279abcbbefa"),
+              createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+            )
+          )
+        )
+      }
+    }
+
+    "correctly read nested xlsx document without headers" in {
+      val path = Paths.get("scala-ql-excel/src/test/resources/nested-without-headers.xlsx")
+
+      select[NestedPersonOrderSensitive].toList
+        .run(
+          from(
+            excel.read.file[NestedPersonOrderSensitive](path)
+          )
+        ) should contain theSameElementsAs {
+        List(
+          NestedPersonOrderSensitive(
+            metadata = Metadata(
+              id = UUID.fromString("4ffe9631-2169-4c50-90ff-8818bc28ab3f"),
+              createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+            ),
+            names = Names(
+              name = "Vitalii",
+              surname = "Honta"
+            )
+          ),
+          NestedPersonOrderSensitive(
+            metadata = Metadata(
+              id = UUID.fromString("304e27cc-f2e2-489a-8fac-4279abcbbefa"),
+              createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+            ),
+            names = Names(
+              name = "John",
+              surname = "Doe"
+            )
+          )
+        )
+      }
+    }
+
+    "correctly read complex xlsx document with headers and formulas" in {
+      val path = Paths.get("scala-ql-excel/src/test/resources/with-headers-and-formulas.xlsx")
+
+      implicit val excelConfig: ExcelConfig = ExcelConfig.default.copy(
+        evaluateFormulas = true,
+        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
+      )
+
+      select[DetailedPersonWithFormulas].toList
+        .run(
+          from(
+            excel.read.file[DetailedPersonWithFormulas](path)
+          )
+        ) should contain theSameElementsAs {
+        List(
+          DetailedPersonWithFormulas(
+            name = "Vitalii",
+            surname = "Honta",
+            fullName = "Vitalii Honta"
+          ),
+          DetailedPersonWithFormulas(
+            name = "John",
+            surname = "Doe",
+            fullName = "John Doe"
           )
         )
       }

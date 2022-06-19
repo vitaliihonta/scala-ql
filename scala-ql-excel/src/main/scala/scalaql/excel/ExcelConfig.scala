@@ -21,18 +21,30 @@ object ExcelConfig {
 
 sealed trait CellResolutionStrategy {
   def getStartOffset(headers: Map[String, Int], name: String, currentOffset: Int): Int
+
+  def cannotDecodeError(path: List[String], index: Int, cause: String): IllegalArgumentException
 }
 
 object CellResolutionStrategy {
   final object IndexBased extends CellResolutionStrategy {
     override def getStartOffset(headers: Map[String, Int], name: String, currentOffset: Int): Int =
       currentOffset
+
+    override def cannotDecodeError(path: List[String], index: Int, cause: String): IllegalArgumentException =
+      new IllegalArgumentException(s"Cannot decode cell at index $index: $cause")
   }
 
   final case class NameBased(naming: String => String = Naming.Literal) extends CellResolutionStrategy {
     override def getStartOffset(headers: Map[String, Int], name: String, currentOffset: Int): Int = {
       val column = naming(name)
       headers(column)
+    }
+
+    override def cannotDecodeError(path: List[String], index: Int, cause: String): IllegalArgumentException = {
+      val pathStr = path.reverse.map(n => s"`$n`").mkString(".")
+      new IllegalArgumentException(
+        s"Cannot decode cell at path $pathStr: $cause"
+      )
     }
   }
 
@@ -61,8 +73,13 @@ object Naming {
     swapPattern.matcher(partial).replaceAll("$1-$2").toLowerCase
   }
 
-  val WithSpaces: String => String = s => {
+  val WithSpacesLowerCase: String => String  = withSpaces(_.toLowerCase)
+  val WithSpacesCapitalize: String => String = withSpaces(_.capitalize)
+
+  def withSpaces(withCase: String => String): String => String = s => {
     val partial = basePattern.matcher(s).replaceAll("$1 $2")
-    swapPattern.matcher(partial).replaceAll("$1 $2").toLowerCase
+    withCase {
+      swapPattern.matcher(partial).replaceAll("$1 $2")
+    }
   }
 }

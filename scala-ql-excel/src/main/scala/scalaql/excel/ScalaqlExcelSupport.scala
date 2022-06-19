@@ -23,9 +23,11 @@ trait ScalaqlExcelSupport extends DataSourceJavaInputStreamReadSupport[ExcelDeco
         workbook,
         config.evaluateFormulas,
         headers,
-        config.cellResolutionStrategy
+        config.cellResolutionStrategy,
+        path = Nil,
+        currentOffset = 0
       )
-      rowIterator.map(ExcelDecoder[A].read(_, offset = 0)).toVector
+      rowIterator.map(ExcelDecoder[A].read(_).value).toVector
     }
   }
 

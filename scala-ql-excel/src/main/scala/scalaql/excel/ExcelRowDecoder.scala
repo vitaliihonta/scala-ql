@@ -15,12 +15,23 @@ case class ReaderContext(
   workbook:               Workbook,
   evaluateFormulas:       Boolean,
   headers:                Map[String, Int],
-  cellResolutionStrategy: CellResolutionStrategy) {
+  cellResolutionStrategy: CellResolutionStrategy,
+  path:                   List[String],
+  currentOffset:          Int) { self =>
+
   lazy val formulaEvaluator: FormulaEvaluator = workbook.getCreationHelper.createFormulaEvaluator
+
+  def startOffset: Int =
+    cellResolutionStrategy.getStartOffset(headers, path.head, currentOffset)
+
+  def cannotDecodeError(cause: String): IllegalArgumentException =
+    cellResolutionStrategy.cannotDecodeError(path, currentOffset, cause)
 }
 
+case class ReadResult[A](value: A, readCells: Int)
+
 trait ExcelDecoder[A] {
-  def read(row: Row, offset: Int)(implicit ctx: ReaderContext): A
+  def read(row: Row)(implicit ctx: ReaderContext): ReadResult[A]
 }
 
 trait ExcelSingleCellDecoder[A] extends ExcelDecoder[A] {
@@ -28,8 +39,10 @@ trait ExcelSingleCellDecoder[A] extends ExcelDecoder[A] {
 
   def readCell(cell: Cell)(implicit ctx: ReaderContext): A
 
-  override final def read(row: Row, offset: Int)(implicit ctx: ReaderContext): A =
-    readCell(row.getCell(offset))
+  override final def read(row: Row)(implicit ctx: ReaderContext): ReadResult[A] = {
+    val result = readCell(row.getCell(ctx.startOffset))
+    ReadResult(result, readCells = 1)
+  }
 
   def map[B](f: A => B): ExcelDecoder.SingleCell[B] = new ExcelSingleCellDecoder[B] {
     override def readCell(cell: Cell)(implicit ctx: ReaderContext): B = f(self.readCell(cell))
@@ -58,8 +71,8 @@ class DecoderForCellType[A](cellTypes: Set[CellType])(reader: Cell => A) extends
           val allTypes = cellTypes.mkString("[", ", ", "]")
           s"one of $allTypes"
         }
-        throw new IllegalArgumentException(
-          s"Expected $cellTypeStr (evaluate formulas $enabledDisabled) cell, got ${cell.getCellType}"
+        throw ctx.cannotDecodeError(
+          s"expected $cellTypeStr cell (evaluate formulas $enabledDisabled), got ${cell.getCellType}"
         )
       }
 

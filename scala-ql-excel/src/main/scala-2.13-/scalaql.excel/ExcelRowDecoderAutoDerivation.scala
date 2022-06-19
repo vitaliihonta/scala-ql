@@ -9,18 +9,19 @@ trait ExcelRowDecoderAutoDerivation {
 
   def join[T](ctx: CaseClass[ExcelDecoder, T]): ExcelDecoder[T] = new ExcelDecoder[T] {
 
-    override def read(row: Row, offset: Int)(implicit readerContext: ReaderContext): T = {
-      val values = ctx.parameters.zipWithIndex.map { case (param, idx) =>
-        param.typeclass.read(
-          row,
-          readerContext.cellResolutionStrategy.getStartOffset(
-            readerContext.headers,
-            param.label,
-            offset + idx
+    override def read(row: Row)(implicit readerContext: ReaderContext): ReadResult[T] = {
+      val (values, readTotal) =
+        ctx.parameters.foldLeft(Seq.empty[Any] -> 0) { case ((fields, readCells), param) =>
+          val ReadResult(result, read) = param.typeclass.read(row)(
+            readerContext.copy(
+              path = param.label :: readerContext.path,
+              currentOffset = readerContext.currentOffset + readCells
+            )
           )
-        )
-      }
-      ctx.rawConstruct(values)
+          (fields :+ result, readCells + read)
+        }
+
+      ReadResult(ctx.rawConstruct(values), readTotal)
     }
   }
 
