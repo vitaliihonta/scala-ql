@@ -242,9 +242,10 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
             .andThen(_.setFillPattern(FillPatternType.SOLID_FOREGROUND))
             .andThen(_.setFillForegroundColor(IndexedColors.PINK.index))
         )
-        .forAllFields(
-          "name" -> cellStyle.andThen(_.setRotation(90)),
-          "age" -> cellStyle
+        .forField(_.name, cellStyle.andThen(_.setRotation(90)))
+        .forField(
+          _.age,
+          cellStyle
             .andThen(_.setFillPattern(FillPatternType.SOLID_FOREGROUND))
             .andThen(_.setFillForegroundColor(IndexedColors.BLUE.index))
         )
