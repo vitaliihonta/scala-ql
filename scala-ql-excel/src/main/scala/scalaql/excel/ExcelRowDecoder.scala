@@ -11,51 +11,39 @@ import java.time.LocalDateTime
 import java.util.UUID
 import scala.annotation.tailrec
 
-sealed trait ExcelInput
-object ExcelInput {
-  case class CellInput(cell: Cell) extends ExcelInput
-  case class RowInput(row: Row)    extends ExcelInput
-}
-
-case class ReaderContext(workbook: Workbook, evaluateFormulas: Boolean) {
+case class ReaderContext(
+  workbook:               Workbook,
+  evaluateFormulas:       Boolean,
+  headers:                Map[String, Int],
+  cellResolutionStrategy: CellResolutionStrategy) {
   lazy val formulaEvaluator: FormulaEvaluator = workbook.getCreationHelper.createFormulaEvaluator
 }
 
 trait ExcelDecoder[A] {
-  def read(input: ExcelInput)(implicit ctx: ReaderContext): A
+  def read(row: Row, offset: Int)(implicit ctx: ReaderContext): A
 }
 
-trait ExcelCellDecoder[A] extends ExcelDecoder[A] { self =>
+trait ExcelSingleCellDecoder[A] extends ExcelDecoder[A] {
+  self =>
+
   def readCell(cell: Cell)(implicit ctx: ReaderContext): A
 
-  def map[B](f: A => B): ExcelCellDecoder[B] = new ExcelCellDecoder[B] {
+  override final def read(row: Row, offset: Int)(implicit ctx: ReaderContext): A =
+    readCell(row.getCell(offset))
+
+  def map[B](f: A => B): ExcelDecoder.SingleCell[B] = new ExcelSingleCellDecoder[B] {
     override def readCell(cell: Cell)(implicit ctx: ReaderContext): B = f(self.readCell(cell))
   }
-
-  override final def read(input: ExcelInput)(implicit ctx: ReaderContext): A = input match {
-    case ExcelInput.CellInput(cell) => readCell(cell)
-    case _                          => throw new IllegalArgumentException("ExcelCellDecoder expects a cell, got a row")
-  }
 }
 
-trait ExcelRowDecoder[A] extends ExcelDecoder[A] {
-  def readRow(row: Row)(implicit ctx: ReaderContext): A
+object ExcelDecoder extends LowPriorityCellDecoders with ExcelRowDecoderAutoDerivation {
+  def apply[A](implicit ev: ExcelDecoder[A]): ev.type = ev
 
-  override final def read(input: ExcelInput)(implicit ctx: ReaderContext): A = input match {
-    case ExcelInput.RowInput(row) => readRow(row)
-    case _                        => throw new IllegalArgumentException("ExcelRowDecoder expects a row, got a cell")
-  }
+  type SingleCell[A] = ExcelSingleCellDecoder[A]
+  def SingleCell[A](implicit ev: ExcelSingleCellDecoder[A]): ev.type = ev
 }
 
-object ExcelDecoder extends LowPriorityCellDecoders {
-  type Row[A] = ExcelRowDecoder[A]
-  def Row[A](implicit ev: ExcelRowDecoder[A]): ev.type = ev
-
-  type Cell[A] = ExcelCellDecoder[A]
-  def Cell[A](implicit ev: ExcelCellDecoder[A]): ev.type = ev
-}
-
-class DecoderForCellType[A](cellTypes: Set[CellType])(reader: Cell => A) extends ExcelCellDecoder[A] {
+class DecoderForCellType[A](cellTypes: Set[CellType])(reader: Cell => A) extends ExcelSingleCellDecoder[A] {
   override def readCell(cell: Cell)(implicit ctx: ReaderContext): A = {
     @tailrec
     def go(input: Cell): A =
@@ -71,7 +59,7 @@ class DecoderForCellType[A](cellTypes: Set[CellType])(reader: Cell => A) extends
           s"one of $allTypes"
         }
         throw new IllegalArgumentException(
-          s"Expected $cellTypeStr (evaulate formulas $enabledDisabled) cell, got ${cell.getCellType}"
+          s"Expected $cellTypeStr (evaluate formulas $enabledDisabled) cell, got ${cell.getCellType}"
         )
       }
 
@@ -89,37 +77,34 @@ object DecoderForCellType {
 
 trait LowPriorityCellDecoders {
 
-  implicit val stringDecoder: ExcelDecoder.Cell[String] =
+  implicit val stringDecoder: ExcelDecoder.SingleCell[String] =
     DecoderForCellType.single[String](CellType.STRING)(_.getStringCellValue)
 
-  implicit val uuidDecoder: ExcelDecoder.Cell[UUID] =
+  implicit val uuidDecoder: ExcelDecoder.SingleCell[UUID] =
     stringDecoder.map(UUID.fromString)
 
-  implicit val booleanDecoder: ExcelDecoder.Cell[Boolean] =
+  implicit val booleanDecoder: ExcelDecoder.SingleCell[Boolean] =
     DecoderForCellType.single[Boolean](CellType.BOOLEAN)(_.getBooleanCellValue)
 
-  class NumericDecoder[N](convert: Double => N)
-      extends DecoderForCellType[N](Set(CellType.NUMERIC))(c => convert(c.getNumericCellValue))
+  class NumericDecoder[N](convertDouble: Double => N, convertString: String => N)
+      extends DecoderForCellType[N](Set(CellType.NUMERIC, CellType.STRING))(cell =>
+        if (cell.getCellType == CellType.NUMERIC) convertDouble(cell.getNumericCellValue.toLong)
+        else convertString(cell.getStringCellValue)
+      )
 
-  implicit val intDecoder: ExcelDecoder.Cell[Int]       = new NumericDecoder[Int](_.toInt)
-  implicit val longDecoder: ExcelDecoder.Cell[Long]     = new NumericDecoder[Long](_.toLong)
-  implicit val doubleDecoder: ExcelDecoder.Cell[Double] = new NumericDecoder[Double](identity)
+  implicit val intDecoder: ExcelDecoder.SingleCell[Int]       = new NumericDecoder[Int](_.toInt, _.toInt)
+  implicit val longDecoder: ExcelDecoder.SingleCell[Long]     = new NumericDecoder[Long](_.toLong, _.toLong)
+  implicit val doubleDecoder: ExcelDecoder.SingleCell[Double] = new NumericDecoder[Double](identity, _.toDouble)
 
-  implicit val localDateTimeDecoder: ExcelDecoder.Cell[LocalDateTime] =
+  implicit val bigIntDecoder: ExcelDecoder.SingleCell[BigInt] =
+    new NumericDecoder[BigInt](d => BigInt(d.toInt), BigInt(_))
+
+  implicit val bigDecimalDecoder: ExcelDecoder.SingleCell[BigDecimal] =
+    new NumericDecoder[BigDecimal](BigDecimal(_), BigDecimal(_))
+
+  implicit val localDateTimeDecoder: ExcelDecoder.SingleCell[LocalDateTime] =
     DecoderForCellType.single[LocalDateTime](CellType.NUMERIC)(_.getLocalDateTimeCellValue)
 
-  implicit val localDateDecoder: ExcelDecoder.Cell[LocalDate] =
+  implicit val localDateDecoder: ExcelDecoder.SingleCell[LocalDate] =
     localDateTimeDecoder.map(_.toLocalDate)
-
-  implicit val bigIntDecoder: ExcelDecoder.Cell[BigInt] =
-    DecoderForCellType[BigInt](Set(CellType.NUMERIC, CellType.STRING)) { cell =>
-      if (cell.getCellType == CellType.NUMERIC) BigInt(cell.getNumericCellValue.toLong)
-      else BigInt(cell.getStringCellValue)
-    }
-
-  implicit val bigDecimalDecoder: ExcelDecoder.Cell[BigDecimal] =
-    DecoderForCellType[BigDecimal](Set(CellType.NUMERIC, CellType.STRING)) { cell =>
-      if (cell.getCellType == CellType.NUMERIC) BigDecimal(cell.getNumericCellValue)
-      else BigDecimal(cell.getStringCellValue)
-    }
 }

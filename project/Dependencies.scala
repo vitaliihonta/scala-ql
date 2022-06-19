@@ -24,7 +24,7 @@ object Dependencies {
   }
 
   object Excel {
-    val apachePoi = "org.apache.poi" % "poi" % "5.2.2"
+    val apachePoi = "org.apache.poi" % "poi-ooxml" % "5.2.2"
   }
 
   object Utils {

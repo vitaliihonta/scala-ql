@@ -21,7 +21,7 @@ trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder.Row, CsvEncod
 
   final object read
       extends DataSourceJavaIOReader[CsvDecoder.Row, CsvConfig]
-      with DataSourceReaderFilesSupport[CsvDecoder.Row, CsvConfig] {
+      with DataSourceJavaIOReaderFilesSupport[CsvDecoder.Row, CsvConfig] {
     override protected def readImpl[A: CsvDecoder.Row](reader: Reader)(implicit config: CsvConfig): Iterable[A] =
       CSVReader
         .open(reader)(config.toTototoshi)
@@ -32,7 +32,7 @@ trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder.Row, CsvEncod
 
   final object write
       extends DataSourceJavaIOWriter[CsvEncoder.Row, CsvConfig]
-      with DataSourceWriterFilesSupport[CsvEncoder.Row, CsvConfig] {
+      with DataSourceJavaIOWriterFilesSupport[CsvEncoder.Row, CsvConfig] {
 
     override def write[A: CsvEncoder.Row](writer: => Writer)(implicit config: CsvConfig): SideEffect[?, ?, A] =
       SideEffect[CSVWriter, Boolean, A](

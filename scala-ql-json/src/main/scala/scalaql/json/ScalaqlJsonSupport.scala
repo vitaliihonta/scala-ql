@@ -17,7 +17,7 @@ trait ScalaqlJsonSupport extends DataSourceJavaIOSupport[Decoder, Encoder, JsonC
 
   final object read
       extends DataSourceJavaIOReader[Decoder, JsonConfig]
-      with DataSourceReaderFilesSupport[Decoder, JsonConfig] {
+      with DataSourceJavaIOReaderFilesSupport[Decoder, JsonConfig] {
     protected def readImpl[A: Decoder](reader: Reader)(implicit config: JsonConfig): Iterable[A] = {
       val bufferedReader = new BufferedReader(reader)
       if (config.multiline) {
@@ -40,7 +40,7 @@ trait ScalaqlJsonSupport extends DataSourceJavaIOSupport[Decoder, Encoder, JsonC
 
   final object write
       extends DataSourceJavaIOWriter[Encoder, JsonConfig]
-      with DataSourceWriterFilesSupport[Encoder, JsonConfig] {
+      with DataSourceJavaIOWriterFilesSupport[Encoder, JsonConfig] {
 
     override def write[A: Encoder](writer: => Writer)(implicit config: JsonConfig): SideEffect[?, ?, A] = {
       def basics(writeLine: (Writer, Boolean, Json) => Unit) = SideEffect[Writer, Boolean, A](

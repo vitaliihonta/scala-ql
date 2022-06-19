@@ -1,27 +1,53 @@
 package scalaql.excel
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import org.apache.commons.io
-import org.apache.commons.io.input.ReaderInputStream
 import scalaql.sources.*
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.CellType
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.nio.charset.StandardCharsets
+import java.io.InputStream
 import java.io.Reader
 import scala.jdk.CollectionConverters.*
 
-trait ScalaqlExcelSupport extends DataSourceJavaIOReadSupport[ExcelDecoder.Row, ExcelConfig] {
+trait ScalaqlExcelSupport extends DataSourceJavaInputStreamReadSupport[ExcelDecoder, ExcelConfig] {
   final object read
-      extends DataSourceJavaIOReader[ExcelDecoder.Row, ExcelConfig]
-      with DataSourceReaderFilesSupport[ExcelDecoder.Row, ExcelConfig] {
+      extends DataSourceJavaInputStreamReader[ExcelDecoder, ExcelConfig]
+      with DataSourceJavaInputStreamReaderFilesSupport[ExcelDecoder, ExcelConfig] {
 
-    protected def readImpl[A: ExcelDecoder.Row](reader: Reader)(implicit config: ExcelConfig): Iterable[A] = {
-      val workbook                    = new HSSFWorkbook(new ReaderInputStream(reader, StandardCharsets.UTF_8))
-      val worksheet                   = config.choseWorksheet(workbook)
-      implicit val ctx: ReaderContext = ReaderContext(workbook, evaluateFormulas = config.evaluateFormulas)
-      worksheet
-        .iterator()
-        .asScala
-        .map(ExcelDecoder.Row[A].readRow(_))
-        .toVector
+    protected def readImpl[A: ExcelDecoder](inputStream: InputStream)(implicit config: ExcelConfig): Iterable[A] = {
+      val workbook    = new XSSFWorkbook(inputStream)
+      val worksheet   = config.choseWorksheet(workbook)
+      val rowIterator = worksheet.iterator().asScala
+      val headers     = inferHeaders(rowIterator)
+      implicit val ctx: ReaderContext = ReaderContext(
+        workbook,
+        config.evaluateFormulas,
+        headers,
+        config.cellResolutionStrategy
+      )
+      rowIterator.map(ExcelDecoder[A].read(_, offset = 0)).toVector
     }
   }
+
+  private def inferHeaders(rowIterator: Iterator[Row])(implicit config: ExcelConfig): Map[String, Int] =
+    config.cellResolutionStrategy match {
+      case _: CellResolutionStrategy.NameBased =>
+        readHeadersFromRow(rowIterator.next())
+      case _ => Map.empty[String, Int]
+    }
+
+  private def readHeadersFromRow(headersRow: Row): Map[String, Int] =
+    headersRow
+      .iterator()
+      .asScala
+      .zipWithIndex
+      .map { case (cell, idx) =>
+        if (cell.getCellType == CellType.STRING) cell.getStringCellValue -> idx
+        else
+          throw new IllegalArgumentException(
+            s"Name based cell resolution strategy chosen, but first row cells are not strings" +
+              s" (especially cell $idx of type ${cell.getCellType})"
+          )
+      }
+      .toMap
 }
