@@ -4,7 +4,7 @@ import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import scalaql.*
-
+import scalaql.sources.Naming
 import scala.jdk.CollectionConverters.*
 import java.nio.file.Files
 import java.nio.file.Path

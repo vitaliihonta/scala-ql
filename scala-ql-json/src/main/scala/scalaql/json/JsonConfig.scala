@@ -2,9 +2,7 @@ package scalaql.json
 
 case class JsonConfig(multiline: Boolean, lineTerminator: String)
 
-object JsonConfig extends LowPriorityJsonConfig {
-  type Adapt[A] = JsonConfig
-}
+object JsonConfig extends LowPriorityJsonConfig {}
 
 trait LowPriorityJsonConfig {
   implicit val default: JsonConfig = JsonConfig(

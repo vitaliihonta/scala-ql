@@ -25,6 +25,9 @@ libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-csv" % "<VERSION>"
 
 // JSON support
 libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-json" % "<VERSION>"
+
+// Excel support
+libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-excel" % "<VERSION>"
 ```
 
 ## Supported sources
