@@ -13,7 +13,7 @@ import java.io.Reader
 import java.io.Writer
 import java.util.stream.Collectors
 
-trait ScalaqlJsonSupport extends DataSourceJavaIOSupport[Decoder, Encoder, JsonConfig] {
+trait ScalaqlJsonSupport extends DataSourceJavaIOSupport[Decoder, Encoder, JsonConfig, JsonConfig] {
 
   final object read
       extends DataSourceJavaIOReader[Decoder, JsonConfig]

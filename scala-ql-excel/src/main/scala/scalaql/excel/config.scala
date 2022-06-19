@@ -6,20 +6,38 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
 import java.util.regex.Pattern
 
-case class ExcelConfig(
+case class ExcelReadConfig(
   evaluateFormulas:       Boolean,
   choseWorksheet:         Workbook => Sheet,
-  cellResolutionStrategy: CellResolutionStrategy)
+  cellResolutionStrategy: CellResolutionStrategy,
+  worksheetName:          Option[String])
 
-object ExcelConfig {
-  implicit val default: ExcelConfig = ExcelConfig(
+object ExcelReadConfig {
+  implicit val default: ExcelReadConfig = ExcelReadConfig(
     evaluateFormulas = false,
     choseWorksheet = _.getSheetAt(0),
-    cellResolutionStrategy = CellResolutionStrategy.IndexBased
+    cellResolutionStrategy = CellResolutionStrategy.IndexBased,
+    worksheetName = None
+  )
+}
+
+// TODO: add styles
+case class ExcelWriteConfig(
+  worksheetName: Option[String],
+  writeHeaders:  Boolean,
+  naming:        String => String)
+
+object ExcelWriteConfig {
+  implicit val default: ExcelWriteConfig = ExcelWriteConfig(
+    worksheetName = None,
+    writeHeaders = false,
+    naming = Naming.Literal
   )
 }
 
 sealed trait CellResolutionStrategy {
+  def writeHeaders: Boolean
+
   def getStartOffset(headers: Map[String, Int], name: String, currentOffset: Int): Int
 
   def cannotDecodeError(path: List[String], index: Int, cause: String): IllegalArgumentException
@@ -27,6 +45,8 @@ sealed trait CellResolutionStrategy {
 
 object CellResolutionStrategy {
   final object IndexBased extends CellResolutionStrategy {
+    override val writeHeaders: Boolean = false
+
     override def getStartOffset(headers: Map[String, Int], name: String, currentOffset: Int): Int =
       currentOffset
 
@@ -35,6 +55,8 @@ object CellResolutionStrategy {
   }
 
   final case class NameBased(naming: String => String = Naming.Literal) extends CellResolutionStrategy {
+    override val writeHeaders: Boolean = true
+
     override def getStartOffset(headers: Map[String, Int], name: String, currentOffset: Int): Int = {
       val column = naming(name)
       headers(column)

@@ -14,21 +14,21 @@ import scala.annotation.tailrec
 case class ReadResult[A](value: A, readCells: Int)
 
 trait ExcelDecoder[A] {
-  def read(row: Row)(implicit ctx: ExcelContext): ReadResult[A]
+  def read(row: Row)(implicit ctx: ExcelReadContext): ReadResult[A]
 }
 
 trait ExcelSingleCellDecoder[A] extends ExcelDecoder[A] {
   self =>
 
-  def readCell(cell: Cell)(implicit ctx: ExcelContext): A
+  def readCell(cell: Cell)(implicit ctx: ExcelReadContext): A
 
-  override final def read(row: Row)(implicit ctx: ExcelContext): ReadResult[A] = {
+  override final def read(row: Row)(implicit ctx: ExcelReadContext): ReadResult[A] = {
     val result = readCell(row.getCell(ctx.startOffset))
     ReadResult(result, readCells = 1)
   }
 
   def map[B](f: A => B): ExcelDecoder.SingleCell[B] = new ExcelSingleCellDecoder[B] {
-    override def readCell(cell: Cell)(implicit ctx: ExcelContext): B = f(self.readCell(cell))
+    override def readCell(cell: Cell)(implicit ctx: ExcelReadContext): B = f(self.readCell(cell))
   }
 }
 
@@ -40,7 +40,7 @@ object ExcelDecoder extends LowPriorityCellDecoders with ExcelRowDecoderAutoDeri
 }
 
 class DecoderForCellType[A](cellTypes: Set[CellType])(reader: Cell => A) extends ExcelSingleCellDecoder[A] {
-  override def readCell(cell: Cell)(implicit ctx: ExcelContext): A = {
+  override def readCell(cell: Cell)(implicit ctx: ExcelReadContext): A = {
     @tailrec
     def go(input: Cell): A =
       if (cellTypes contains input.getCellType) reader(input)
