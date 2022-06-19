@@ -6,9 +6,9 @@ import io.circe.Encoder
 import io.circe.Json
 import io.circe.Printer
 import io.circe.parser
-import scalaql.sources.DataSourceReadSupport
+import scalaql.sources.DataSourceReader
 import scalaql.sources.DataSourceSupport
-import scalaql.sources.DataSourceWriteSupport
+import scalaql.sources.DataSourceWriter
 
 import scala.jdk.CollectionConverters.*
 import java.io.BufferedReader
@@ -26,7 +26,7 @@ import scala.io.Source
 
 trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig] {
 
-  final object read extends DataSourceReadSupport[Decoder, JsonConfig] {
+  final object read extends DataSourceReader[Decoder, JsonConfig] {
     protected def readImpl[A: Decoder](reader: Reader)(implicit config: JsonConfig): Iterable[A] = {
       val bufferedReader = new BufferedReader(reader)
       if (config.multiline) {
@@ -47,7 +47,7 @@ trait ScalaqlJsonSupport extends DataSourceSupport[Decoder, Encoder, JsonConfig]
     }
   }
 
-  final object write extends DataSourceWriteSupport[Encoder, JsonConfig] {
+  final object write extends DataSourceWriter[Encoder, JsonConfig] {
     override def write[A: Encoder](writer: => Writer)(implicit config: JsonConfig): SideEffect[?, ?, A] = {
       def basics(writeLine: (Writer, Boolean, Json) => Unit) = SideEffect[Writer, Boolean, A](
         initialState = true,

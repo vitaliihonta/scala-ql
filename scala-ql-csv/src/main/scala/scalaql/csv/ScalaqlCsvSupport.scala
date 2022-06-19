@@ -3,9 +3,9 @@ package scalaql.csv
 import com.github.tototoshi.csv.CSVReader
 import com.github.tototoshi.csv.CSVWriter
 import scalaql.SideEffect
-import scalaql.sources.DataSourceReadSupport
+import scalaql.sources.DataSourceReader
 import scalaql.sources.DataSourceSupport
-import scalaql.sources.DataSourceWriteSupport
+import scalaql.sources.DataSourceWriter
 
 import java.io.ByteArrayOutputStream
 import java.io.OutputStreamWriter
@@ -22,7 +22,7 @@ import scala.collection.mutable
 
 trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row, CsvConfig] {
 
-  final object read extends DataSourceReadSupport[CsvDecoder.Row, CsvConfig] {
+  final object read extends DataSourceReader[CsvDecoder.Row, CsvConfig] {
     override protected def readImpl[A: CsvDecoder.Row](reader: Reader)(implicit config: CsvConfig): Iterable[A] =
       CSVReader
         .open(reader)(config.toTototoshi)
@@ -31,7 +31,7 @@ trait ScalaqlCsvSupport extends DataSourceSupport[CsvDecoder.Row, CsvEncoder.Row
         .toList
   }
 
-  final object write extends DataSourceWriteSupport[CsvEncoder.Row, CsvConfig] {
+  final object write extends DataSourceWriter[CsvEncoder.Row, CsvConfig] {
 
     override def write[A: CsvEncoder.Row](writer: => Writer)(implicit config: CsvConfig): SideEffect[?, ?, A] =
       SideEffect[CSVWriter, Boolean, A](

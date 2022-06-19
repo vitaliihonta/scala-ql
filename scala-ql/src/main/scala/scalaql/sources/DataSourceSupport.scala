@@ -15,12 +15,19 @@ import java.nio.file.Path
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
-trait DataSourceSupport[Decoder[_], Encoder[_], Config] {
-  val read: DataSourceReadSupport[Decoder, Config]
-  val write: DataSourceWriteSupport[Encoder, Config]
-}
+trait DataSourceSupport[Decoder[_], Encoder[_], Config]
+    extends DataSourceReadSupport[Decoder, Config]
+    with DataSourceWriteSupport[Encoder, Config]
 
 trait DataSourceReadSupport[Decoder[_], Config] {
+  val read: DataSourceReader[Decoder, Config]
+}
+
+trait DataSourceWriteSupport[Encoder[_], Config] {
+  val write: DataSourceWriter[Encoder, Config]
+}
+
+trait DataSourceReader[Decoder[_], Config] {
 
   /** Implement reading logic here. NOTE - no need to close the reader, it's handled in public methods
     */
@@ -70,7 +77,7 @@ trait DataSourceReadSupport[Decoder[_], Config] {
       dirStream.close()
 }
 
-trait DataSourceWriteSupport[Encoder[_], Config] {
+trait DataSourceWriter[Encoder[_], Config] {
   def write[A: Encoder](
     writer:          => Writer
   )(implicit config: Config
