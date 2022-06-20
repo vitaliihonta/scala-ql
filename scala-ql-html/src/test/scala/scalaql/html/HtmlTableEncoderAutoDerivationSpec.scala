@@ -38,7 +38,7 @@ class HtmlTableEncoderAutoDerivationSpec extends ScalaqlUnitSpec {
   ): String =
     table(
       tr(
-        encoder.headers.map(h => th(ctx.headerStyles(ctx.enterField(h).location))(h))
+        encoder.headers.map(h => th(h))
       ),
       data
     ).toString
@@ -47,10 +47,7 @@ class HtmlTableEncoderAutoDerivationSpec extends ScalaqlUnitSpec {
     "generate correctly html table" in {
       val encoder = HtmlTableEncoder[Person]
       implicit val context: HtmlTableEncoderContext = HtmlTableEncoderContext.initial(
-        head = head(),
         headers = encoder.headers,
-        bodyStyles = Nil,
-        headerStyles = _ => Nil,
         fieldStyles = _ => Nil
       )
 
@@ -73,10 +70,7 @@ class HtmlTableEncoderAutoDerivationSpec extends ScalaqlUnitSpec {
     "generate correctly nested html table" in {
       val encoder = HtmlTableEncoder[PeopleStats]
       implicit val context: HtmlTableEncoderContext = HtmlTableEncoderContext.initial(
-        head = head(),
         headers = encoder.headers,
-        bodyStyles = Nil,
-        headerStyles = _ => Nil,
         fieldStyles = _ => Nil
       )
 

@@ -1,3 +1,3 @@
 package scalaql
 
-package object html
+package object html extends ScalaqlHtmlSupport {}

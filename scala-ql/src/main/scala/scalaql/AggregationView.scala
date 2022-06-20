@@ -1,41 +1,45 @@
 package scalaql
 
-import scalaql.Aggregation.Aux
 import spire.algebra.AdditiveMonoid
 import spire.algebra.Field
 import spire.algebra.MultiplicativeMonoid
 
 sealed trait AggregationDsl[In, Out] {
-  def toList: Aggregation.Aux[In, List[Out]]
+  def toList: Aggregation.Of[In, List[Out]]
 
-  def distinct: Aggregation.Aux[In, Set[Out]]
+  def distinct: Aggregation.Of[In, Set[Out]]
 
-  def distinctBy[B](f:     Out => B): Aggregation.Aux[In, Set[B]]
-  def flatDistinctBy[B](f: Out => Iterable[B]): Aggregation.Aux[In, Set[B]]
+  def distinctBy[B](f:     Out => B): Aggregation.Of[In, Set[B]]
+  def flatDistinctBy[B](f: Out => Iterable[B]): Aggregation.Of[In, Set[B]]
 
-  def const[B](value: B): Aggregation.Aux[In, B]
+  def const[B](value: B): Aggregation.Of[In, B]
 
-  def sum(implicit ev: AdditiveMonoid[Out]): Aggregation.Aux[In, Out]
-  def sumBy[B](f:      Out => B)(implicit ev: AdditiveMonoid[B]): Aggregation.Aux[In, B]
+  def sum(implicit ev: AdditiveMonoid[Out]): Aggregation.Of[In, Out]
+  def sumBy[B](f:      Out => B)(implicit ev: AdditiveMonoid[B]): Aggregation.Of[In, B]
 
-  def product(implicit ev: MultiplicativeMonoid[Out]): Aggregation.Aux[In, Out]
-  def productBy[B](f:      Out => B)(implicit ev: MultiplicativeMonoid[B]): Aggregation.Aux[In, B]
+  def product(implicit ev: MultiplicativeMonoid[Out]): Aggregation.Of[In, Out]
+  def productBy[B](f:      Out => B)(implicit ev: MultiplicativeMonoid[B]): Aggregation.Of[In, B]
 
-  def avg(implicit ev: Field[Out]): Aggregation.Aux[In, Out]
-  def avgBy[B](f:      Out => B)(implicit ev: Field[B]): Aggregation.Aux[In, B]
+  def avg(implicit ev: Field[Out]): Aggregation.Of[In, Out]
+  def avgBy[B](f:      Out => B)(implicit ev: Field[B]): Aggregation.Of[In, B]
 
-  def count(p: Out => Boolean): Aggregation.Aux[In, Int]
+  def count(p: Out => Boolean): Aggregation.Of[In, Int]
 
-  def size: Aggregation.Aux[In, Int] = count(_ => true)
+  def size: Aggregation.Of[In, Int] = count(_ => true)
 
-  def custom[B](f: Iterable[Out] => B): Aggregation.Aux[In, B]
+  def custom[B](f: Iterable[Out] => B): Aggregation.Of[In, B]
+
+  def report[B, U1](
+    group1: Out => B
+  )(agg1:   (B, AggregationView[Out]) => Aggregation.Of[Out, U1]
+  ): Aggregation.Of[In, List[U1]]
 
   def report[B, C, U1, U2](
     split1:        Out => B,
     split2:        Out => C
-  )(mergeCascade1: (B, C, AggregationView[Out]) => Aggregation.Aux[Out, U1]
-  )(mergeCascade2: (B, AggregationView[U1]) => Aggregation.Aux[U1, U2]
-  ): Aggregation.Aux[In, List[U2]]
+  )(mergeCascade1: (B, C, AggregationView[Out]) => Aggregation.Of[Out, U1]
+  )(mergeCascade2: (B, AggregationView[U1]) => Aggregation.Of[U1, U2]
+  ): Aggregation.Of[In, List[U2]]
 }
 
 sealed trait AggregationView[A] extends AggregationDsl[A, A] {
@@ -61,48 +65,54 @@ object AggregationView {
     override def map[B](f: A => B): AggregationViewMapped[A, B] =
       new MappedImpl[A, B](mkChild[B])(f)
 
-    override def const[B](value: B): Aggregation.Aux[A, B] =
+    override def const[B](value: B): Aggregation.Of[A, B] =
       new Aggregation.Const[B](value)
 
-    override def toList: Aggregation.Aux[A, List[A]] =
+    override def toList: Aggregation.Of[A, List[A]] =
       new Aggregation.ToList[A]
 
-    override def distinct: Aux[A, Set[A]] =
+    override def distinct: Aggregation.Of[A, Set[A]] =
       new Aggregation.Distinct[A]
 
-    override def distinctBy[B](f: A => B): Aux[A, Set[B]] =
+    override def distinctBy[B](f: A => B): Aggregation.Of[A, Set[B]] =
       new Aggregation.DistinctBy[A, B](f)
 
-    override def flatDistinctBy[B](f: A => Iterable[B]): Aux[A, Set[B]] =
+    override def flatDistinctBy[B](f: A => Iterable[B]): Aggregation.Of[A, Set[B]] =
       new Aggregation.FlatDistinctBy[A, B](f)
 
-    override def count(p: A => Boolean): Aggregation.Aux[A, Int] =
+    override def count(p: A => Boolean): Aggregation.Of[A, Int] =
       new Aggregation.Count[A](p)
 
-    override def sum(implicit ev: AdditiveMonoid[A]): Aggregation.Aux[A, A] =
+    override def sum(implicit ev: AdditiveMonoid[A]): Aggregation.Of[A, A] =
       new Aggregation.Sum[A](ev)
 
-    override def sumBy[B](f: A => B)(implicit ev: AdditiveMonoid[B]): Aggregation.Aux[A, B] =
+    override def sumBy[B](f: A => B)(implicit ev: AdditiveMonoid[B]): Aggregation.Of[A, B] =
       new Aggregation.SumBy[A, B](f, ev)
 
-    override def product(implicit ev: MultiplicativeMonoid[A]): Aggregation.Aux[A, A] =
+    override def product(implicit ev: MultiplicativeMonoid[A]): Aggregation.Of[A, A] =
       new Aggregation.Product[A](ev)
 
-    override def productBy[B](f: A => B)(implicit ev: MultiplicativeMonoid[B]): Aggregation.Aux[A, B] =
+    override def productBy[B](f: A => B)(implicit ev: MultiplicativeMonoid[B]): Aggregation.Of[A, B] =
       new Aggregation.ProductBy[A, B](f, ev)
 
-    override def avg(implicit ev: Field[A]): Aggregation.Aux[A, A] =
+    override def avg(implicit ev: Field[A]): Aggregation.Of[A, A] =
       new Aggregation.Avg[A](ev)
 
-    override def avgBy[B](f: A => B)(implicit ev: Field[B]): Aggregation.Aux[A, B] =
+    override def avgBy[B](f: A => B)(implicit ev: Field[B]): Aggregation.Of[A, B] =
       new Aggregation.AvgBy[A, B](f, ev)
+
+    override def report[B, U1](
+      group1: A => B
+    )(agg1:   (B, AggregationView[A]) => Aggregation.Of[A, U1]
+    ): Aggregation.Of[A, List[U1]] =
+      new Aggregation.Report1[A, B, U1](mkChild[A])(group1, agg1)
 
     def report[B, C, U1, U2](
       group1: A => B,
       group2: A => C
-    )(agg1:   (B, C, AggregationView[A]) => Aggregation.Aux[A, U1]
-    )(agg2:   (B, AggregationView[U1]) => Aggregation.Aux[U1, U2]
-    ): Aggregation.Aux[A, List[U2]] =
+    )(agg1:   (B, C, AggregationView[A]) => Aggregation.Of[A, U1]
+    )(agg2:   (B, AggregationView[U1]) => Aggregation.Of[U1, U2]
+    ): Aggregation.Of[A, List[U2]] =
       new Aggregation.Report2[A, B, C, U1, U2](mkChild[A], mkChild[U1])(
         group1,
         group2,
@@ -110,58 +120,66 @@ object AggregationView {
         agg2
       )
 
-    override def custom[B](f: Iterable[A] => B): Aggregation.Aux[A, B] =
+    override def custom[B](f: Iterable[A] => B): Aggregation.Of[A, B] =
       new Aggregation.Custom[A, B](f)
   }
 
   private[scalaql] class MappedImpl[A, Out](delegate: AggregationView[Out])(project: A => Out)
       extends AggregationViewMapped[A, Out] {
 
-    override def toList: Aggregation.Aux[A, List[Out]] =
+    override def toList: Aggregation.Of[A, List[Out]] =
       delegate.toList.contramap(project)
 
-    override def distinct: Aux[A, Set[Out]] =
+    override def distinct: Aggregation.Of[A, Set[Out]] =
       delegate.distinct.contramap(project)
 
-    override def distinctBy[B](f: Out => B): Aux[A, Set[B]] =
+    override def distinctBy[B](f: Out => B): Aggregation.Of[A, Set[B]] =
       delegate.distinctBy(f).contramap(project)
 
-    override def flatDistinctBy[B](f: Out => Iterable[B]): Aux[A, Set[B]] =
+    override def flatDistinctBy[B](f: Out => Iterable[B]): Aggregation.Of[A, Set[B]] =
       delegate.flatDistinctBy(f).contramap(project)
 
-    override def const[B](value: B): Aggregation.Aux[A, B] =
+    override def const[B](value: B): Aggregation.Of[A, B] =
       new Aggregation.Const[B](value)
 
-    override def count(p: Out => Boolean): Aggregation.Aux[A, Int] =
+    override def count(p: Out => Boolean): Aggregation.Of[A, Int] =
       delegate.count(p).contramap(project)
 
-    override def sum(implicit ev: AdditiveMonoid[Out]): Aggregation.Aux[A, Out] =
+    override def sum(implicit ev: AdditiveMonoid[Out]): Aggregation.Of[A, Out] =
       delegate.sum.contramap(project)
 
-    override def sumBy[B](f: Out => B)(implicit ev: AdditiveMonoid[B]): Aggregation.Aux[A, B] =
+    override def sumBy[B](f: Out => B)(implicit ev: AdditiveMonoid[B]): Aggregation.Of[A, B] =
       delegate.sumBy(f).contramap(project)
 
-    override def product(implicit ev: MultiplicativeMonoid[Out]): Aggregation.Aux[A, Out] =
+    override def product(implicit ev: MultiplicativeMonoid[Out]): Aggregation.Of[A, Out] =
       delegate.product.contramap(project)
 
-    override def productBy[B](f: Out => B)(implicit ev: MultiplicativeMonoid[B]): Aggregation.Aux[A, B] =
+    override def productBy[B](f: Out => B)(implicit ev: MultiplicativeMonoid[B]): Aggregation.Of[A, B] =
       delegate.productBy(f).contramap(project)
 
-    override def avg(implicit ev: Field[Out]): Aggregation.Aux[A, Out] =
+    override def avg(implicit ev: Field[Out]): Aggregation.Of[A, Out] =
       delegate.avg.contramap(project)
 
-    override def avgBy[B](f: Out => B)(implicit ev: Field[B]): Aggregation.Aux[A, B] =
+    override def avgBy[B](f: Out => B)(implicit ev: Field[B]): Aggregation.Of[A, B] =
       delegate.avgBy(f).contramap(project)
 
-    override def custom[B](f: Iterable[Out] => B): Aggregation.Aux[A, B] =
+    override def custom[B](f: Iterable[Out] => B): Aggregation.Of[A, B] =
       delegate.custom(f).contramap(project)
+
+    override def report[B, U1](
+      group1: Out => B
+    )(agg1:   (B, AggregationView[Out]) => Aggregation.Of[Out, U1]
+    ): Aggregation.Of[A, List[U1]] =
+      delegate
+        .report[B, U1](group1)(agg1)
+        .contramap(project)
 
     override def report[B, C, U1, U2](
       group1: Out => B,
       group2: Out => C
-    )(agg1:   (B, C, AggregationView[Out]) => Aux[Out, U1]
-    )(agg2:   (B, AggregationView[U1]) => Aux[U1, U2]
-    ): Aggregation.Aux[A, List[U2]] =
+    )(agg1:   (B, C, AggregationView[Out]) => Aggregation.Of[Out, U1]
+    )(agg2:   (B, AggregationView[U1]) => Aggregation.Of[U1, U2]
+    ): Aggregation.Of[A, List[U2]] =
       delegate
         .report(group1, group2)(agg1)(agg2)
         .contramap(project)

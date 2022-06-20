@@ -26,7 +26,7 @@ trait HtmlTableEncoderAutoDerivation {
         )
       }.toMap
 
-      val resultValue = tr(fillGapsWithTd(writeContext.headers, encoded))
+      val resultValue = tr(writeContext.getFieldStyles)(fillGapsWithTd(writeContext.headers, encoded))
       HtmlTableEncoder.Result(resultValue, isList = false)
     }
 

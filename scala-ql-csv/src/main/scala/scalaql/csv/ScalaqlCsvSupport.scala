@@ -4,18 +4,8 @@ import com.github.tototoshi.csv.CSVReader
 import com.github.tototoshi.csv.CSVWriter
 import scalaql.SideEffect
 import scalaql.sources.*
-import java.io.ByteArrayOutputStream
-import java.io.OutputStreamWriter
 import java.io.Reader
-import java.io.StringReader
-import java.io.StringWriter
 import java.io.Writer
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.nio.file.OpenOption
-import java.nio.file.Path
-import scala.collection.mutable
 
 trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder, CsvEncoder, λ[a => CsvConfig], λ[a => CsvConfig]] {
 

@@ -1,5 +1,3 @@
 package scalaql.html
 
-class HtmlWriterConfig[A] {
-
-}
+class HtmlWriterConfig[A] {}
