@@ -9,10 +9,10 @@ import scala.reflect.ClassTag
 import scala.util.control.Exception.catching
 
 class CsvDecoderException(msg: String) extends Exception(msg)
-class CsvDecoderAccumulatingException(errors: List[CsvDecoderException])
+class CsvDecoderAccumulatingException(name: String, errors: List[CsvDecoderException])
     extends CsvDecoderException({
-      val errorsStr = errors.map(e => s"( $e )").mkString("\n\t+ ")
-      s"Failed to decode accumulating:\n$errorsStr"
+      val errorsStr = errors.map(e => s"( $e )").mkString("\n\t+ ", "\n\t+ ", "\n")
+      s"Failed to decode $name: $errorsStr"
     })
 
 trait CsvDecoder[A] {
@@ -69,7 +69,7 @@ class FieldDecoderCatchPartiallyApplied[E] private[csv] (private val `dummy`: Bo
   def apply[A](f: String => A)(implicit ctg: ClassTag[E]): CsvDecoder.SingleField[A] =
     CsvDecoder.fieldDecoder[A] { implicit ctx => value =>
       val result = catching(ctg.runtimeClass) either f(value)
-      result.left.map(e => ctx.cannotDecodeError(e.getMessage))
+      result.left.map(e => ctx.cannotDecodeError(e.toString))
     }
 }
 
@@ -77,7 +77,7 @@ trait LowPriorityCsvFieldDecoders extends CsvDecoderAutoDerivation {
   implicit val stringDecoder: CsvDecoder.SingleField[String] = CsvDecoder.fieldDecoder[String](_ => Right(_))
 
   implicit val booleanDecoder: CsvDecoder.SingleField[Boolean] =
-    CsvDecoder.fieldDecodedCatch[IllegalAccessException](_.toBoolean)
+    CsvDecoder.fieldDecodedCatch[IllegalArgumentException](_.toBoolean)
 
   implicit val intDecoder: CsvDecoder.SingleField[Int] =
     CsvDecoder.fieldDecodedCatch[NumberFormatException](_.toInt)
@@ -95,7 +95,7 @@ trait LowPriorityCsvFieldDecoders extends CsvDecoderAutoDerivation {
     CsvDecoder.fieldDecodedCatch[NumberFormatException](BigDecimal(_))
 
   implicit val uuidDecoder: CsvDecoder.SingleField[UUID] =
-    CsvDecoder.fieldDecodedCatch[IllegalAccessException](UUID.fromString)
+    CsvDecoder.fieldDecodedCatch[IllegalArgumentException](UUID.fromString)
 
   implicit val localDateDecoder: CsvDecoder.SingleField[LocalDate] =
     CsvDecoder.fieldDecodedCatch[DateTimeParseException](LocalDate.parse)

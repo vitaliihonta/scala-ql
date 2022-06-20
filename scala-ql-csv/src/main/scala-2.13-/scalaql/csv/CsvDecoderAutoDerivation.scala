@@ -18,7 +18,7 @@ trait CsvDecoderAutoDerivation {
             )
         }
         .left
-        .map(new CsvDecoderAccumulatingException(_))
+        .map(new CsvDecoderAccumulatingException(s"${ctx.typeName.short} (at ${readerContext.pathStr})", _))
   }
 
   implicit def autoDerive[T]: CsvDecoder[T] = macro Magnolia.gen[T]

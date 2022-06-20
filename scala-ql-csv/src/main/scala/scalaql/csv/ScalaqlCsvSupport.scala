@@ -38,7 +38,7 @@ trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder, CsvEncoder, 
       with DataSourceJavaIOWriterFilesSupport[CsvEncoder, λ[a => CsvConfig]] {
 
     override def write[A: CsvEncoder](writer: => Writer)(implicit config: CsvConfig): SideEffect[?, ?, A] = {
-      implicit val initialContext: CsvContext = CsvContext(path = Nil, naming = config.naming)
+      implicit val initialContext: CsvContext = CsvContext.initial(naming = config.naming)
       SideEffect[CSVWriter, Boolean, A](
         initialState = false,
         acquire = () => CSVWriter.open(writer)(config.toTototoshi),
