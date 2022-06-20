@@ -2,7 +2,6 @@ package scalaql.html
 
 import scalaql.ScalaqlUnitSpec
 import scalatags.Text.TypedTag
-
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -34,63 +33,56 @@ class HtmlTableEncoderAutoDerivationSpec extends ScalaqlUnitSpec {
 
   private def renderTable(
     encoder:      HtmlTableEncoder[?]
-  )(data:         List[Map[String, TypedTag[String]]]
+  )(data:         Modifier
   )(implicit ctx: HtmlTableEncoderContext
-  ): TypedTag[String] = {
-    val headersOrder = encoder.headers.zipWithIndex.toMap
+  ): String =
     table(
       tr(
-        encoder.headers.map(h => th(ctx.headerStyles(h))(h))
+        encoder.headers.map(h => th(ctx.headerStyles(ctx.enterField(h).location))(h))
       ),
-      data.map { vs =>
-        tr(
-          vs.toList
-            .sortBy { case (n, _) => headersOrder(n) }
-            .map { case (_, v) => v }
-        )
-      }
-    )
-  }
+      data
+    ).toString
 
   "HtmlTableEncoder" should {
     "generate correctly html table" in {
+      val encoder = HtmlTableEncoder[Person]
       implicit val context: HtmlTableEncoderContext = HtmlTableEncoderContext.initial(
         head = head(),
-        nestingStrategy = NestingStrategy.Flatten,
+        headers = encoder.headers,
         bodyStyles = Nil,
         headerStyles = _ => Nil,
         fieldStyles = _ => Nil
       )
 
-      println {
-        renderTable(HtmlTableEncoder[Person]) {
-          HtmlTableEncoder[Person]
-            .write(
-              Person(
-                id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424712c"),
-                name = "Vitalii",
-                workingExperienceYears = 100500,
-                birthDay = LocalDate.of(1997, 11, 13),
-                createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0),
-                isProgrammer = true
-              )
+      renderTable(encoder) {
+        encoder
+          .write(
+            Person(
+              id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424712c"),
+              name = "Vitalii",
+              workingExperienceYears = 100500,
+              birthDay = LocalDate.of(1997, 11, 13),
+              createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0),
+              isProgrammer = true
             )
-        }
-      }
+          )
+          .value
+      } shouldEqual """<table><tr><th>id</th><th>name</th><th>workingExperienceYears</th><th>birthDay</th><th>createdAt</th><th>isProgrammer</th></tr><tr><td>2769a48d-8fec-4242-81d1-959ae424712c</td><td>Vitalii</td><td>100500</td><td>1997-11-13</td><td>2022-06-15T12:55</td><td>true</td></tr></table>"""
     }
 
     "generate correctly nested html table" in {
+      val encoder = HtmlTableEncoder[PeopleStats]
       implicit val context: HtmlTableEncoderContext = HtmlTableEncoderContext.initial(
         head = head(),
-        nestingStrategy = new NestingStrategy.FillGaps(td()),
+        headers = encoder.headers,
         bodyStyles = Nil,
         headerStyles = _ => Nil,
         fieldStyles = _ => Nil
       )
 
-      println {
-        renderTable(HtmlTableEncoder[PeopleStats]) {
-          HtmlTableEncoder[PeopleStats].write(
+      renderTable(encoder) {
+        encoder
+          .write(
             PeopleStats(
               isProgrammer = true,
               stats = List(
@@ -100,17 +92,36 @@ class HtmlTableEncoderAutoDerivationSpec extends ScalaqlUnitSpec {
                     PersonRecord(
                       id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424712c"),
                       name = "Vitalii",
-                      workingExperienceYears = 100500,
+                      workingExperienceYears = 100498,
                       birthDay = LocalDate.of(1997, 11, 13),
                       createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0)
+                    ),
+                    PersonRecord(
+                      id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424711c"),
+                      name = "Vitali2",
+                      workingExperienceYears = 100502,
+                      birthDay = LocalDate.of(1997, 11, 13),
+                      createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0)
+                    )
+                  )
+                ),
+                PeopleStatsPerIsProgrammer(
+                  avgExperience = 100500,
+                  records = List(
+                    PersonRecord(
+                      id = UUID.fromString("304e27cc-f2e2-489a-8fac-4279abcbbefa"),
+                      name = "John",
+                      workingExperienceYears = 10050,
+                      birthDay = LocalDate.of(1922, 6, 19),
+                      createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
                     )
                   )
                 )
               )
             )
           )
-        }
-      }
+          .value
+      } shouldEqual """<table><tr><th>isProgrammer</th><th>avgExperience</th><th>id</th><th>name</th><th>workingExperienceYears</th><th>birthDay</th><th>createdAt</th></tr><tr><td>true</td><td></td><tr><td></td><td>100500.0</td><tr><td></td><td></td><td>2769a48d-8fec-4242-81d1-959ae424712c</td><td>Vitalii</td><td>100498</td><td>1997-11-13</td><td>2022-06-15T12:55</td></tr><tr><td></td><td></td><td>2769a48d-8fec-4242-81d1-959ae424711c</td><td>Vitali2</td><td>100502</td><td>1997-11-13</td><td>2022-06-15T12:55</td></tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td>100500.0</td><tr><td></td><td></td><td>304e27cc-f2e2-489a-8fac-4279abcbbefa</td><td>John</td><td>10050</td><td>1922-06-19</td><td>2022-06-19T15:00</td></tr><td></td><td></td><td></td><td></td><td></td></tr><td></td><td></td><td></td><td></td><td></td></tr></table>"""
     }
   }
 }
