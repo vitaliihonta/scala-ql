@@ -10,8 +10,6 @@ sealed trait ExcelContext {
   def path: List[String]
 
   lazy val formulaEvaluator: FormulaEvaluator = workbook.getCreationHelper.createFormulaEvaluator
-
-  def startOffset: Int
 }
 
 case class ExcelReadContext(
@@ -23,11 +21,17 @@ case class ExcelReadContext(
   currentOffset:          Int)
     extends ExcelContext {
 
-  override def startOffset: Int =
-    cellResolutionStrategy.getStartOffset(headers, path.head, currentOffset)
+  def startOffset: Either[ExcelDecoderException, Int] =
+    cellResolutionStrategy
+      .getStartOffset(headers, path.head, currentOffset)
+      .toRight(
+        cellResolutionStrategy.unableToFindCell(path, currentOffset)
+      )
 
-  def cannotDecodeError(cause: String): IllegalArgumentException =
+  def cannotDecodeError(cause: String): ExcelDecoderException =
     cellResolutionStrategy.cannotDecodeError(path, currentOffset, cause)
+
+  def pathStr: String = CellResolutionStrategy.pathStr(path)
 }
 
 case class ExcelWriteContext(

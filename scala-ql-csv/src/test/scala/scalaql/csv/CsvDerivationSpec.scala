@@ -119,7 +119,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
       val error = result.swap.getOrElse(???)
       error shouldBe a[CsvDecoderAccumulatingException]
       error.toString shouldBe
-        """scalaql.csv.CsvDecoderAccumulatingException: Failed to decode Person (at root): 
+        """scalaql.csv.CsvDecoderAccumulatingException: Failed to decode Person (at root):
           |	+ ( scalaql.csv.CsvDecoderException: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: xxx )
           |	+ ( scalaql.csv.CsvDecoderException: Cannot decode cell at path `workingExperienceYears`: java.lang.NumberFormatException: For input string: "yyy" )
           |	+ ( scalaql.csv.CsvDecoderException: Cannot decode cell at path `birthDay`: java.time.format.DateTimeParseException: Text 'zzz' could not be parsed at index 0 )
