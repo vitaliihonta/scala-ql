@@ -23,14 +23,6 @@ class ExcelStylingBuilder[A](
       cellStyles = stylings.toMap
     )
 
-  // TODO: implement
-  inline def forHeader[B](f: A => B, styling: Styling): ExcelStylingBuilder[A] =
-    ???
-
-  // TODO: implement
-  inline def forField[B](f: A => B, styling: Styling): ExcelStylingBuilder[A] =
-    ???
-
   def addHeaderStyle(headerName: String, styling: Styling): ExcelStylingBuilder[A] =
     new ExcelStylingBuilder[A](
       headerStyles = Right(
@@ -46,24 +38,40 @@ class ExcelStylingBuilder[A](
     )
 }
 
-private[excel] object ExcelStylingBuilderHelperScala3 {
-  def forHeaderImpl[A, B](
+object ExcelStylingBuilder {
+  extension [A](self: ExcelStylingBuilder[A]) {
+    inline def forHeader[B](f: A => B, styling: Styling): ExcelStylingBuilder[A] =
+      ${ forHeaderImpl[A, B]('self, 'f, 'styling) }
+
+    inline def forField[B](f: A => B, styling: Styling): ExcelStylingBuilder[A] =
+      ${ forFieldImpl[A, B]('self, 'f, 'styling) }
+  }
+
+  def forHeaderImpl[A: Type, B](
     self:    Expr[ExcelStylingBuilder[A]],
     f:       Expr[A => B],
     styling: Expr[Styling]
-  ): Expr[ExcelStylingBuilder[A]] = self
+  )(using Quotes
+  ): Expr[ExcelStylingBuilder[A]] = {
+    val fieldName = Expr(accessorName[A, B](f))
+    '{ $self.addHeaderStyle($fieldName, $styling) }
+  }
 
-  def forFieldImpl[A, B](
+  def forFieldImpl[A: Type, B](
     self:    Expr[ExcelStylingBuilder[A]],
     f:       Expr[A => B],
     styling: Expr[Styling]
-  ): Expr[ExcelStylingBuilder[A]] = self
+  )(using Quotes
+  ): Expr[ExcelStylingBuilder[A]] = {
+    val fieldName = Expr(accessorName[A, B](f))
+    '{ $self.addFieldStyle($fieldName, $styling) }
+  }
 
-  def accessorName[A, B](f: Expr[A => B])(using Quotes): Expr[String] = {
+  def accessorName[A, B](f: Expr[A => B])(using Quotes): String = {
     import quotes.reflect.*
     Expr.betaReduce(f).asTerm.underlying match {
       case Block(List(DefDef(_, _, _, Some(Select(Ident(_), name)))), _) =>
-        Expr(name)
+        name
       case _ =>
         throw new IllegalArgumentException(s"Expected a field selector to be passed (as instance.field1), got $f")
     }

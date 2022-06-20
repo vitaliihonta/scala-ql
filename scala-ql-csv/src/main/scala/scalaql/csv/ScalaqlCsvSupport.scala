@@ -18,11 +18,11 @@ import java.nio.file.Path
 import scala.collection.mutable
 
 trait ScalaqlCsvSupport
-    extends DataSourceJavaIOSupport[CsvDecoder.Row, CsvEncoder.Row, CsvConfig.Adapt, CsvConfig.Adapt] {
+    extends DataSourceJavaIOSupport[CsvDecoder.Row, CsvEncoder.Row, λ[a => CsvConfig], λ[a => CsvConfig]] {
 
   final object read
-      extends DataSourceJavaIOReader[CsvDecoder.Row, CsvConfig.Adapt]
-      with DataSourceJavaIOReaderFilesSupport[CsvDecoder.Row, CsvConfig.Adapt] {
+      extends DataSourceJavaIOReader[CsvDecoder.Row, λ[a => CsvConfig]]
+      with DataSourceJavaIOReaderFilesSupport[CsvDecoder.Row, λ[a => CsvConfig]] {
     override protected def readImpl[A: CsvDecoder.Row](reader: Reader)(implicit config: CsvConfig): Iterable[A] =
       CSVReader
         .open(reader)(config.toTototoshi)
@@ -32,8 +32,8 @@ trait ScalaqlCsvSupport
   }
 
   final object write
-      extends DataSourceJavaIOWriter[CsvEncoder.Row, CsvConfig.Adapt]
-      with DataSourceJavaIOWriterFilesSupport[CsvEncoder.Row, CsvConfig.Adapt] {
+      extends DataSourceJavaIOWriter[CsvEncoder.Row, λ[a => CsvConfig]]
+      with DataSourceJavaIOWriterFilesSupport[CsvEncoder.Row, λ[a => CsvConfig]] {
 
     override def write[A: CsvEncoder.Row](writer: => Writer)(implicit config: CsvConfig): SideEffect[?, ?, A] =
       SideEffect[CSVWriter, Boolean, A](
