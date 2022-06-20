@@ -30,8 +30,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
             "createdAt"              -> "2022-06-15T12:55",
             "isProgrammer"           -> "true"
           )
-        )
-        .value shouldEqual
+        ) shouldEqual Right(
         Person(
           id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424712c"),
           name = "Vitalii",
@@ -40,6 +39,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
           createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0),
           isProgrammer = true
         )
+      )
     }
 
     "provide correct encoders" in {
@@ -55,16 +55,14 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
             createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0),
             isProgrammer = true
           )
-        )
-        .row shouldEqual
-        Map(
-          "id"                     -> "2769a48d-8fec-4242-81d1-959ae424712c",
-          "name"                   -> "Vitalii",
-          "workingExperienceYears" -> "100500",
-          "birthDay"               -> "1997-11-13",
-          "createdAt"              -> "2022-06-15T12:55",
-          "isProgrammer"           -> "true"
-        )
+        ) shouldEqual Map(
+        "id"                     -> "2769a48d-8fec-4242-81d1-959ae424712c",
+        "name"                   -> "Vitalii",
+        "workingExperienceYears" -> "100500",
+        "birthDay"               -> "1997-11-13",
+        "createdAt"              -> "2022-06-15T12:55",
+        "isProgrammer"           -> "true"
+      )
     }
   }
 }

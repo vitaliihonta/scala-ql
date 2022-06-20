@@ -28,7 +28,7 @@ trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder, CsvEncoder, 
       CSVReader
         .open(reader)(config.toTototoshi)
         .iteratorWithHeaders
-        .map(CsvDecoder[A].read(_).value)
+        .map(CsvDecoder[A].read(_).fold[A](throw _, identity[A]))
         .toList
     }
   }
@@ -48,7 +48,7 @@ trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder, CsvEncoder, 
             writer.writeRow(CsvEncoder[A].headers)
           }
           val result = CsvEncoder[A].write(value)
-          writer.writeRow(result.row.values.toList)
+          writer.writeRow(result.values.toList)
           true
         }
       ).afterAll((writer, _) => writer.flush())

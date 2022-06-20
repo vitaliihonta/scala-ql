@@ -4,12 +4,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-case class WriteResult(row: Map[String, String], cellsWritten: Int)
-
 trait CsvEncoder[A] { self =>
   def headers: List[String]
 
-  def write(value: A)(implicit ctx: CsvContext): WriteResult
+  def write(value: A)(implicit ctx: CsvContext): CsvEncoder.Result
 }
 
 trait CsvSingleFieldEncoder[A] extends CsvEncoder[A] { self =>
@@ -17,12 +15,9 @@ trait CsvSingleFieldEncoder[A] extends CsvEncoder[A] { self =>
 
   def writeField(value: A)(implicit ctx: CsvContext): String
 
-  override final def write(value: A)(implicit ctx: CsvContext): WriteResult = {
+  override final def write(value: A)(implicit ctx: CsvContext): CsvEncoder.Result = {
     val result = writeField(value)
-    WriteResult(
-      row = Map(ctx.getFieldName -> result),
-      cellsWritten = 1
-    )
+    Map(ctx.getFieldName -> result)
   }
 
   def contramap[B](f: B => A): CsvEncoder.SingleField[B] = new CsvEncoder.SingleField[B] {
@@ -32,6 +27,8 @@ trait CsvSingleFieldEncoder[A] extends CsvEncoder[A] { self =>
 }
 
 object CsvEncoder extends LowPriorityCsvFieldEncoders {
+  type Result = Map[String, String]
+
   def apply[A](implicit ev: CsvEncoder[A]): ev.type = ev
 
   type SingleField[A] = CsvSingleFieldEncoder[A]
