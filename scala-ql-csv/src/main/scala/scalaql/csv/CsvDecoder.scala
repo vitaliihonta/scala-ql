@@ -11,7 +11,7 @@ class CsvDecoderException(msg: String) extends Exception(msg)
 class CsvDecoderAccumulatingException(name: String, errors: List[CsvDecoderException])
     extends CsvDecoderException({
       val errorsStr = errors.map(e => s"( $e )").mkString("\n\t+ ", "\n\t+ ", "\n")
-      s"Failed to decode $name: $errorsStr"
+      s"Failed to decode $name:$errorsStr"
     })
 
 trait CsvDecoder[A] {

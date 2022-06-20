@@ -23,6 +23,15 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     birthDay:  LocalDate,
     createdAt: LocalDateTime)
 
+  case class DetailedPersonWithMissingFields(
+    id:             UUID,
+    name:           String,
+    salary:         BigDecimal,
+    birthDay:       LocalDate,
+    createdAt:      LocalDateTime,
+    missingBoolean: Boolean,
+    missingString:  String)
+
   case class DetailedPersonWithFormulas(
     name:     String,
     surname:  String,
@@ -34,7 +43,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
   case class NestedPerson(names: Names, metadata: Metadata)
   case class NestedPersonOrderSensitive(metadata: Metadata, names: Names)
 
-  "ScalaqlExcelSupport" should {
+  "ExcelDecoder" should {
     "correctly read xlsx document without headers" in {
       val path = Paths.get("scala-ql-excel/src/test/resources/without-headers.xlsx")
 
@@ -95,6 +104,54 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
           )
         )
       }
+    }
+
+    "correctly read complex xlsx document handling errors" in {
+      val path = Paths.get("scala-ql-excel/src/test/resources/errors-complex-with-headers.xlsx")
+
+      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
+        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
+      )
+
+      val caught = intercept[ExcelDecoderAccumulatingException] {
+        select[DetailedPerson].toList
+          .run(
+            from(
+              excel.read.file[DetailedPerson](path)
+            )
+          )
+      }
+
+      caught.toString shouldBe
+        """scalaql.excel.ExcelDecoderAccumulatingException: Failed to decode DetailedPerson (at root):
+          |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
+          |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
+          |""".stripMargin
+    }
+
+    "correctly read complex xlsx document handling missing cells errors" in {
+      val path = Paths.get("scala-ql-excel/src/test/resources/errors-complex-with-headers.xlsx")
+
+      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
+        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
+      )
+
+      val caught = intercept[ExcelDecoderAccumulatingException] {
+        select[DetailedPersonWithMissingFields].toList
+          .run(
+            from(
+              excel.read.file[DetailedPersonWithMissingFields](path)
+            )
+          )
+      }
+
+      caught.toString shouldEqual
+        """scalaql.excel.ExcelDecoderAccumulatingException: Failed to decode DetailedPersonWithMissingFields (at root):
+          |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
+          |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
+          |	+ ( scalaql.excel.ExcelDecoderException: Unable to find cell at path `missingBoolean` )
+          |	+ ( scalaql.excel.ExcelDecoderException: Unable to find cell at path `missingString` )
+          |""".stripMargin
     }
 
     "correctly read nested xlsx document with headers" in {
@@ -197,7 +254,9 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
         )
       }
     }
+  }
 
+  "ExcelEncoder" should {
     "correctly write simple xls without headers" in {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write", "without-headers.xls")
       select[Person]
@@ -250,8 +309,6 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
             .andThen(_.setFillForegroundColor(IndexedColors.BLUE.index))
         )
         .build
-
-      println(personStyling)
 
       implicit val excelConfig: ExcelWriteConfig[Person] = ExcelWriteConfig.default
         .copy(

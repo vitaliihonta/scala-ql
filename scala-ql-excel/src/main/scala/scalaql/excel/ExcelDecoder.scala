@@ -19,7 +19,7 @@ class ExcelDecoderException(msg: String) extends Exception(msg)
 class ExcelDecoderAccumulatingException(name: String, errors: List[ExcelDecoderException])
     extends ExcelDecoderException({
       val errorsStr = errors.map(e => s"( $e )").mkString("\n\t+ ", "\n\t+ ", "\n")
-      s"Failed to decode $name: $errorsStr"
+      s"Failed to decode $name:$errorsStr"
     })
 
 trait ExcelDecoder[A] {
@@ -43,7 +43,7 @@ trait ExcelSingleCellDecoder[A] extends ExcelDecoder[A] {
   def readCell(cell: Cell)(implicit ctx: ExcelReadContext): Either[ExcelDecoderException, A]
 
   override final def read(row: Row)(implicit ctx: ExcelReadContext): ExcelDecoder.Result[A] = {
-    val result = readCell(row.getCell(ctx.startOffset))
+    val result = ctx.startOffset.flatMap(idx => readCell(row.getCell(idx)))
     result.map(ReadResult(_, readCells = 1))
   }
 
