@@ -1,6 +1,5 @@
 package scalaql.csv
 
-import scalaql.csv.CsvDecoder.Result
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeParseException

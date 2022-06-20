@@ -25,7 +25,7 @@ trait ScalaqlExcelSupport
 
       implicit val ctx: ExcelReadContext = initialContext(workbook, rowIterator)
 
-      rowIterator.map(ExcelDecoder[A].read(_).value).toVector
+      rowIterator.map(ExcelDecoder[A].read(_).fold[A](throw _, _.value)).toVector
     }
 
     private def initialContext(

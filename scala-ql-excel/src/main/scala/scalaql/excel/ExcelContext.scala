@@ -26,8 +26,10 @@ case class ExcelReadContext(
   override def startOffset: Int =
     cellResolutionStrategy.getStartOffset(headers, path.head, currentOffset)
 
-  def cannotDecodeError(cause: String): IllegalArgumentException =
+  def cannotDecodeError(cause: String): ExcelDecoderException =
     cellResolutionStrategy.cannotDecodeError(path, currentOffset, cause)
+
+  def pathStr: String = CellResolutionStrategy.pathStr(path)
 }
 
 case class ExcelWriteContext(

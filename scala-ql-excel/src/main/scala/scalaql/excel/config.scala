@@ -46,18 +46,22 @@ sealed trait CellResolutionStrategy {
 
   def getStartOffset(headers: Map[String, Int], name: String, currentOffset: Int): Int
 
-  def cannotDecodeError(path: List[String], index: Int, cause: String): IllegalArgumentException
+  def cannotDecodeError(path: List[String], index: Int, cause: String): ExcelDecoderException
 }
 
 object CellResolutionStrategy {
+  def pathStr(path: List[String]): String =
+    if (path.isEmpty) "root"
+    else path.reverse.map(n => s"`$n`").mkString(".")
+
   final object IndexBased extends CellResolutionStrategy {
     override val writeHeaders: Boolean = false
 
     override def getStartOffset(headers: Map[String, Int], name: String, currentOffset: Int): Int =
       currentOffset
 
-    override def cannotDecodeError(path: List[String], index: Int, cause: String): IllegalArgumentException =
-      new IllegalArgumentException(s"Cannot decode cell at index $index: $cause")
+    override def cannotDecodeError(path: List[String], index: Int, cause: String): ExcelDecoderException =
+      new ExcelDecoderException(s"Cannot decode cell at index $index: $cause")
   }
 
   final case class NameBased(naming: Naming = Naming.Literal) extends CellResolutionStrategy {
@@ -68,12 +72,10 @@ object CellResolutionStrategy {
       headers(column)
     }
 
-    override def cannotDecodeError(path: List[String], index: Int, cause: String): IllegalArgumentException = {
-      val pathStr = path.reverse.map(n => s"`$n`").mkString(".")
-      new IllegalArgumentException(
-        s"Cannot decode cell at path $pathStr: $cause"
+    override def cannotDecodeError(path: List[String], index: Int, cause: String): ExcelDecoderException =
+      new ExcelDecoderException(
+        s"Cannot decode cell at path ${pathStr(path)}: $cause"
       )
-    }
   }
 
   trait Custom extends CellResolutionStrategy
