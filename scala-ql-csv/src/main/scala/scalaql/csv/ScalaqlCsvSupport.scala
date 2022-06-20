@@ -17,37 +17,41 @@ import java.nio.file.OpenOption
 import java.nio.file.Path
 import scala.collection.mutable
 
-trait ScalaqlCsvSupport
-    extends DataSourceJavaIOSupport[CsvDecoder.Row, CsvEncoder.Row, λ[a => CsvConfig], λ[a => CsvConfig]] {
+trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder, CsvEncoder, λ[a => CsvConfig], λ[a => CsvConfig]] {
 
   final object read
-      extends DataSourceJavaIOReader[CsvDecoder.Row, λ[a => CsvConfig]]
-      with DataSourceJavaIOReaderFilesSupport[CsvDecoder.Row, λ[a => CsvConfig]] {
-    override protected def readImpl[A: CsvDecoder.Row](reader: Reader)(implicit config: CsvConfig): Iterable[A] =
+      extends DataSourceJavaIOReader[CsvDecoder, λ[a => CsvConfig]]
+      with DataSourceJavaIOReaderFilesSupport[CsvDecoder, λ[a => CsvConfig]] {
+
+    override protected def readImpl[A: CsvDecoder](reader: Reader)(implicit config: CsvConfig): Iterable[A] = {
+      implicit val initialContext: CsvContext = CsvContext(path = Nil, naming = config.naming)
       CSVReader
         .open(reader)(config.toTototoshi)
         .iteratorWithHeaders
-        .map(raw => implicitly[CsvDecoder.Row[A]].read(CsvEntry.Row(raw)))
+        .map(CsvDecoder[A].read(_).value)
         .toList
+    }
   }
 
   final object write
-      extends DataSourceJavaIOWriter[CsvEncoder.Row, λ[a => CsvConfig]]
-      with DataSourceJavaIOWriterFilesSupport[CsvEncoder.Row, λ[a => CsvConfig]] {
+      extends DataSourceJavaIOWriter[CsvEncoder, λ[a => CsvConfig]]
+      with DataSourceJavaIOWriterFilesSupport[CsvEncoder, λ[a => CsvConfig]] {
 
-    override def write[A: CsvEncoder.Row](writer: => Writer)(implicit config: CsvConfig): SideEffect[?, ?, A] =
+    override def write[A: CsvEncoder](writer: => Writer)(implicit config: CsvConfig): SideEffect[?, ?, A] = {
+      implicit val initialContext: CsvContext = CsvContext(path = Nil, naming = config.naming)
       SideEffect[CSVWriter, Boolean, A](
         initialState = false,
         acquire = () => CSVWriter.open(writer)(config.toTototoshi),
         release = (writer, _) => writer.close(),
         (writer, writtenHeaders, value) => {
-          val result = implicitly[CsvEncoder.Row[A]].write(value)
           if (!writtenHeaders) {
-            writer.writeRow(result.row.keys.toList)
+            writer.writeRow(CsvEncoder[A].headers)
           }
+          val result = CsvEncoder[A].write(value)
           writer.writeRow(result.row.values.toList)
           true
         }
       ).afterAll((writer, _) => writer.flush())
+    }
   }
 }

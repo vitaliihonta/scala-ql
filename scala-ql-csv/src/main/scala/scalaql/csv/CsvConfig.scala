@@ -1,5 +1,7 @@
 package scalaql.csv
 
+import scalaql.sources.Naming
+
 sealed abstract class Quoting(private[scalaql] val toTototoshi: com.github.tototoshi.csv.Quoting)
     extends Product
     with Serializable
@@ -17,7 +19,8 @@ case class CsvConfig(
   escapeChar:          Char,
   lineTerminator:      String,
   quoting:             Quoting,
-  treatEmptyLineAsNil: Boolean) { self =>
+  treatEmptyLineAsNil: Boolean,
+  naming:              Naming) { self =>
 
   private[scalaql] def toTototoshi: com.github.tototoshi.csv.CSVFormat =
     new com.github.tototoshi.csv.CSVFormat {
@@ -37,7 +40,8 @@ object CsvConfig extends LowPriorityCsvConfig {
     escapeChar = '\\',
     lineTerminator = "\r\n",
     quoting = Quoting.QuoteNone,
-    treatEmptyLineAsNil = false
+    treatEmptyLineAsNil = false,
+    naming = Naming.Literal
   )
 }
 
@@ -48,6 +52,7 @@ trait LowPriorityCsvConfig {
     escapeChar = '"',
     lineTerminator = "\r\n",
     quoting = Quoting.QuoteMinimal,
-    treatEmptyLineAsNil = false
+    treatEmptyLineAsNil = false,
+    naming = Naming.Literal
   )
 }

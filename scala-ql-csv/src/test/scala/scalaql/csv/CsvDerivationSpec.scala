@@ -1,6 +1,7 @@
 package scalaql.csv
 
 import scalaql.ScalaqlUnitSpec
+import scalaql.sources.Naming
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,9 +18,10 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
 
   "CsvDerivation" should {
     "provide correct decoders" in {
+      implicit val context: CsvContext = CsvContext(Nil, Naming.Literal)
 
-      implicitly[CsvDecoder.Row[Person]].readRow(
-        CsvEntry.Row(
+      CsvDecoder[Person]
+        .read(
           Map(
             "id"                     -> "2769a48d-8fec-4242-81d1-959ae424712c",
             "name"                   -> "Vitalii",
@@ -29,18 +31,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
             "isProgrammer"           -> "true"
           )
         )
-      ) shouldEqual Person(
-        id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424712c"),
-        name = "Vitalii",
-        workingExperienceYears = 100500,
-        birthDay = LocalDate.of(1997, 11, 13),
-        createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0),
-        isProgrammer = true
-      )
-    }
-
-    "provide correct encoders" in {
-      implicitly[CsvEncoder.Row[Person]].write(
+        .value shouldEqual
         Person(
           id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424712c"),
           name = "Vitalii",
@@ -49,7 +40,23 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
           createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0),
           isProgrammer = true
         )
-      ) shouldEqual CsvEntry.Row(
+    }
+
+    "provide correct encoders" in {
+      implicit val context: CsvContext = CsvContext(Nil, Naming.Literal)
+
+      CsvEncoder[Person]
+        .write(
+          Person(
+            id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424712c"),
+            name = "Vitalii",
+            workingExperienceYears = 100500,
+            birthDay = LocalDate.of(1997, 11, 13),
+            createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0),
+            isProgrammer = true
+          )
+        )
+        .row shouldEqual
         Map(
           "id"                     -> "2769a48d-8fec-4242-81d1-959ae424712c",
           "name"                   -> "Vitalii",
@@ -58,7 +65,6 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
           "createdAt"              -> "2022-06-15T12:55",
           "isProgrammer"           -> "true"
         )
-      )
     }
   }
 }
