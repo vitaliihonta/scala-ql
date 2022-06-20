@@ -6,20 +6,23 @@ import magnolia1.*
 trait CsvEncoderAutoDerivation {
   type Typeclass[T] = CsvEncoder[T]
 
-  def join[T](ctx: CaseClass[CsvEncoder, T]): CsvEncoder.Row[T] = new CsvEncoder.Row[T] {
-    override def write(value: T): CsvEntry.Row =
-      CsvEntry.Row {
-        ctx.parameters.foldLeft(Map.empty[String, String]) { (row, param) =>
-          val written = param.typeclass.write(param.dereference(value))
-          val field = written match {
-            case e: CsvEntry.Field => e.field
-            case _ =>
-              throw new IllegalArgumentException(s"CsvEncoder doesn't support nested csv for field ${param.label}")
-          }
-          row + (param.label -> field)
-        }
-      }
+  def join[T](ctx: CaseClass[CsvEncoder, T]): CsvEncoder[T] = new CsvEncoder[T] {
+    override def headers: List[String] = ctx.parameters.toList.flatMap { param =>
+      val nestedHeaders = param.typeclass.headers
+      if (nestedHeaders.isEmpty) List(param.label)
+      else nestedHeaders
+    }
+
+    override def write(value: T)(implicit writeContext: CsvContext): CsvEncoder.Result =
+      ctx.parameters.flatMap { param =>
+        param.typeclass
+          .write(param.dereference(value))(
+            writeContext.copy(
+              path = param.label :: writeContext.path
+            )
+          )
+      }.toMap
   }
 
-  implicit def autoDerive[T]: CsvEncoder.Row[T] = macro Magnolia.gen[T]
+  implicit def autoDerive[T]: CsvEncoder[T] = macro Magnolia.gen[T]
 }
