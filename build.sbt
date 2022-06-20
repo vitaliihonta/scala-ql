@@ -102,6 +102,7 @@ lazy val root = project
       `scala-ql-csv`.projectRefs ++
       `scala-ql-json`.projectRefs ++
       `scala-ql-excel`.projectRefs ++
+      `scala-ql-html`.projectRefs ++
       examples.projectRefs: _*
   )
 
@@ -116,7 +117,8 @@ lazy val coverage = project
     `scala-ql`.jvm(scala213),
     `scala-ql-csv`.jvm(scala213),
     `scala-ql-json`.jvm(scala213),
-    `scala-ql-excel`.jvm(scala213)
+    `scala-ql-excel`.jvm(scala213),
+    `scala-ql-html`.jvm(scala213)
   )
 
 lazy val examples =
@@ -126,7 +128,8 @@ lazy val examples =
       `scala-ql`,
       `scala-ql-csv`,
       `scala-ql-json`,
-      `scala-ql-excel`
+      `scala-ql-excel`,
+      `scala-ql-html`
     )
     .settings(baseSettings)
     .settings(crossCompileSettings)
@@ -227,6 +230,33 @@ lazy val `scala-ql-excel` =
         Testing.scalatest,
         Testing.scalacheck,
         Excel.apachePoi
+      ) ++ {
+        CrossVersion.partialVersion(scalaVersion.value) match {
+          case Some((3, _)) =>
+            Seq(
+              Macros.magnoliaScala3
+            )
+          case _ =>
+            Seq(
+              Macros.magnoliaScala2,
+              Macros.scalaMacros.value
+            )
+        }
+      }
+    )
+    .jvmPlatform(scalaVersions = allScalaVersions)
+
+lazy val `scala-ql-html` =
+  projectMatrix
+    .in(file("scala-ql-html"))
+    .settings(baseLibSettings)
+    .settings(crossCompileSettings)
+    .dependsOn(`scala-ql` % "compile->compile;test->test")
+    .settings(
+      libraryDependencies ++= Seq(
+        Testing.scalatest,
+        Testing.scalacheck,
+        Html.scalatags
       ) ++ {
         CrossVersion.partialVersion(scalaVersion.value) match {
           case Some((3, _)) =>

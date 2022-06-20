@@ -27,6 +27,10 @@ object Dependencies {
     val apachePoi = "org.apache.poi" % "poi-ooxml" % "5.2.2"
   }
 
+  object Html {
+    val scalatags = "com.lihaoyi" %% "scalatags" % "0.11.1"
+  }
+
   object Utils {
     val commonsLang = "org.apache.commons" % "commons-lang3" % "3.12.0"
   }
