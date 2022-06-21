@@ -1,3 +1,5 @@
 package scalaql
 
-package object html extends ScalaqlHtmlSupport {}
+import scalaql.utils.EachSyntax
+
+package object html extends ScalaqlHtmlSupport with EachSyntax {}

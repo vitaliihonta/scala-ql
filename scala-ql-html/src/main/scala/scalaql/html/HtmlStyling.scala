@@ -9,6 +9,17 @@ trait HtmlStyling[-A] {
 
 object HtmlStyling extends LowPriorityHtmlStyling {
   def apply[A](implicit ev: HtmlStyling[A]): ev.type = ev
+
+  def builder[A]: HtmlStylingBuilder[A] = new HtmlStylingBuilder[A]()
+
+  final class Configured[A](
+    header: String => List[Modifier],
+    cell:   String => List[Modifier])
+      extends HtmlStyling[A] {
+
+    override def headerStyle(name: String): List[Modifier] = header(name)
+    override def fieldStyle(name: String): List[Modifier]  = cell(name)
+  }
 }
 
 trait LowPriorityHtmlStyling {
