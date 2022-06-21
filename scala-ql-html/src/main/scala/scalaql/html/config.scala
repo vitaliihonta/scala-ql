@@ -8,6 +8,7 @@ case class HtmlTableEncoderConfig[A](
   headTag:  TypedTag[String],
   bodyTag:  TypedTag[String],
   tableTag: TypedTag[String],
+  rowTag:   TypedTag[String],
   naming:   Naming,
   styling:  HtmlStyling[A])
 
@@ -19,6 +20,7 @@ trait LowPriorityHtmlTableEncoderConfig {
       headTag = head(),
       bodyTag = body(),
       tableTag = table(),
+      rowTag = tr(),
       naming = Naming.Literal,
       styling = styling
     )

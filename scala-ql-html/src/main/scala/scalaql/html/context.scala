@@ -1,6 +1,7 @@
 package scalaql.html
 
-import scalatags.Text.Modifier
+import scalatags.Text.{Modifier, TypedTag}
+
 import scala.annotation.tailrec
 
 sealed trait CodecPath {
@@ -8,6 +9,9 @@ sealed trait CodecPath {
   def isIndex: Boolean
   def isField: Boolean
   def parent: CodecPath
+
+  protected[scalaql] def fieldLocation: CodecPath.AtField =
+    sys.error("Library error, please fill a bug ticket")
 
   override def toString: String = CodecPath.render(this)
 }
@@ -23,6 +27,8 @@ object CodecPath {
     override val isRoot  = false
     override val isIndex = false
     override val isField = true
+
+    override val fieldLocation: AtField = this
   }
   case class AtIndex(idx: Int, parent: CodecPath.AtField) extends CodecPath {
     override val isRoot  = false
@@ -48,7 +54,8 @@ object CodecPath {
 case class HtmlTableEncoderContext(
   location:    CodecPath,
   headers:     List[String],
-  fieldStyles: String => List[Modifier]) { self =>
+  fieldStyles: String => List[Modifier],
+  rowTag:      TypedTag[String]) { self =>
 
   def parentLocation: CodecPath = location.parent
 
@@ -58,10 +65,8 @@ case class HtmlTableEncoderContext(
   def enterIndex(idx: Int): HtmlTableEncoderContext =
     copy(location = CodecPath.AtIndex(idx, self.fieldLocation))
 
-  private[html] def fieldLocation: CodecPath.AtField = location match {
-    case x: CodecPath.AtField => x
-    case _                    => sys.error("Library error, please fill a ticket")
-  }
+  private[html] def fieldLocation: CodecPath.AtField =
+    location.fieldLocation
 
   def getFieldStyles: List[Modifier] =
     if (location.isField) fieldStyles(fieldLocation.name)
@@ -73,11 +78,13 @@ case class HtmlTableEncoderContext(
 object HtmlTableEncoderContext {
   def initial(
     headers:     List[String],
-    fieldStyles: String => List[Modifier]
+    fieldStyles: String => List[Modifier],
+    rowTag:      TypedTag[String]
   ): HtmlTableEncoderContext =
     HtmlTableEncoderContext(
       location = CodecPath.Root,
       headers = headers,
-      fieldStyles = fieldStyles
+      fieldStyles = fieldStyles,
+      rowTag = rowTag
     )
 }

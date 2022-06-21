@@ -4,31 +4,77 @@ import scalatags.Text.all.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
+import scala.collection.mutable
+
+class TableRow(cells: mutable.ListBuffer[(String, Modifier)]) {
+  def append(name: String, value: Modifier): this.type = {
+    cells.append(name -> value)
+    this
+  }
+
+  def insert(idx: Int, name: String, value: Modifier): this.type = {
+    cells.insert(idx, name -> value)
+    this
+  }
+
+  def getFieldNames: Set[String] = cells.map { case (n, _) => n }.toSet
+
+  def getCells: List[(String, Modifier)] = cells.toList
+}
+
+object TableRow {
+  def empty: TableRow = new TableRow(mutable.ListBuffer.empty)
+}
+
+class Table(rows: mutable.ListBuffer[TableRow]) {
+  def prepend(row: TableRow): this.type = {
+    rows.prepend(row)
+    this
+  }
+
+  def append(row: TableRow): this.type = {
+    rows.append(row)
+    this
+  }
+
+  def currentRow: TableRow =
+    rows.last
+
+  def getRows: List[List[(String, Modifier)]] = rows.toList.map(_.getCells)
+
+  def foreachRow(f: TableRow => Unit): Unit =
+    rows.foreach(f)
+}
+
+object Table {
+  def empty: Table = new Table(mutable.ListBuffer.empty)
+}
 
 trait HtmlTableEncoder[A] { self =>
   def headers: List[String]
 
-  def write(value: A)(implicit ctx: HtmlTableEncoderContext): HtmlTableEncoder.Result
+  def write(value: A, into: Table)(implicit ctx: HtmlTableEncoderContext): Unit
 
   def contramap[B](transformHeaders: List[String] => List[String])(f: B => A): HtmlTableEncoder[B] =
     new HtmlTableEncoder[B] {
       override def headers: List[String] = transformHeaders(self.headers)
 
-      override def write(value: B)(implicit ctx: HtmlTableEncoderContext): HtmlTableEncoder.Result =
-        self.write(f(value))
+      override def write(value: B, into: Table)(implicit ctx: HtmlTableEncoderContext): Unit =
+        self.write(f(value), into)
     }
 }
 
 object HtmlTableEncoder extends LowPriorityHtmlTableEncoders with HtmlTableEncoderAutoDerivation {
-  case class Result(value: Modifier, isList: Boolean)
 
   def apply[A](implicit ev: HtmlTableEncoder[A]): ev.type = ev
 
   def columnEncoder[A](f: A => String): HtmlTableEncoder[A] = new HtmlTableEncoder[A] {
     override val headers: List[String] = Nil
 
-    override def write(value: A)(implicit ctx: HtmlTableEncoderContext): HtmlTableEncoder.Result =
-      Result(td(ctx.getFieldStyles)(f(value)), isList = false)
+    override def write(value: A, into: Table)(implicit ctx: HtmlTableEncoderContext): Unit = {
+      val cell = td(ctx.getFieldStyles)(f(value))
+      into.currentRow.append(ctx.fieldLocation.name, cell)
+    }
   }
 }
 
@@ -56,13 +102,11 @@ trait LowPriorityHtmlTableEncoders {
     new HtmlTableEncoder[Coll[A]] {
       override val headers: List[String] = HtmlTableEncoder[A].headers
 
-      override def write(values: Coll[A])(implicit ctx: HtmlTableEncoderContext): HtmlTableEncoder.Result = {
-        val value = values.toList.zipWithIndex.map { case (value, idx) =>
-          HtmlTableEncoder[A].write(value)(
+      override def write(values: Coll[A], into: Table)(implicit ctx: HtmlTableEncoderContext): Unit =
+        values.toList.zipWithIndex.foreach { case (value, idx) =>
+          HtmlTableEncoder[A].write(value, into.append(TableRow.empty))(
             ctx.enterIndex(idx)
           )
         }
-        HtmlTableEncoder.Result(value.map(_.value), isList = true)
-      }
     }
 }
