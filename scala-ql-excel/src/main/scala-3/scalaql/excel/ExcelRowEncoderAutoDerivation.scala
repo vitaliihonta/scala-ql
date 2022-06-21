@@ -18,10 +18,11 @@ trait ExcelRowEncoderAutoDerivation extends ProductDerivation[ExcelEncoder] {
       val cellsWritten = ctx.params.foldLeft(0) { (cellsWritten, param) =>
         cellsWritten + param.typeclass
           .write(row, param.deref(value))(
-            writeContext.copy(
-              path = param.label :: writeContext.path,
-              startOffset = writeContext.startOffset + cellsWritten
-            )
+            writeContext
+              .enterField(param.label)
+              .copy(
+                startOffset = writeContext.startOffset + cellsWritten
+              )
           )
           .cellsWritten
       }

@@ -13,13 +13,11 @@ trait CsvEncoderAutoDerivation {
       else nestedHeaders
     }
 
-    override def write(value: T)(implicit writeContext: CsvContext): CsvEncoder.Result =
+    override def write(value: T)(implicit writeContext: CsvWriteContext): CsvEncoder.Result =
       ctx.parameters.flatMap { param =>
         param.typeclass
           .write(param.dereference(value))(
-            writeContext.copy(
-              path = param.label :: writeContext.path
-            )
+            writeContext.enterField(param.label)
           )
       }.toMap
   }

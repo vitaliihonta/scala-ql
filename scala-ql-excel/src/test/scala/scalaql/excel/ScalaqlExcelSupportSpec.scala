@@ -61,7 +61,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       val path = Paths.get("scala-ql-excel/src/test/resources/with-headers.xlsx")
 
       implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        cellResolutionStrategy = CellResolutionStrategy.NameBased()
+        cellResolutionStrategy = CellResolutionStrategy.NameBased
       )
 
       select[Person].toList
@@ -78,7 +78,8 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       val path = Paths.get("scala-ql-excel/src/test/resources/complex-with-headers.xlsx")
 
       implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
+        naming = Naming.WithSpacesLowerCase,
+        cellResolutionStrategy = CellResolutionStrategy.NameBased
       )
 
       select[DetailedPerson].toList
@@ -110,7 +111,8 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       val path = Paths.get("scala-ql-excel/src/test/resources/errors-complex-with-headers.xlsx")
 
       implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
+        naming = Naming.WithSpacesLowerCase,
+        cellResolutionStrategy = CellResolutionStrategy.NameBased
       )
 
       val caught = intercept[ExcelDecoderAccumulatingException] {
@@ -123,7 +125,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       }
 
       caught.toString shouldBe
-        """scalaql.excel.ExcelDecoderAccumulatingException: Failed to decode DetailedPerson (at root):
+        """scalaql.excel.ExcelDecoderAccumulatingException: Failed to decode DetailedPerson (at `root`):
           |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
           |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
           |""".stripMargin
@@ -133,7 +135,8 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       val path = Paths.get("scala-ql-excel/src/test/resources/errors-complex-with-headers.xlsx")
 
       implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
+        naming = Naming.WithSpacesLowerCase,
+        cellResolutionStrategy = CellResolutionStrategy.NameBased
       )
 
       val caught = intercept[ExcelDecoderAccumulatingException] {
@@ -146,7 +149,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       }
 
       caught.toString shouldEqual
-        """scalaql.excel.ExcelDecoderAccumulatingException: Failed to decode DetailedPersonWithMissingFields (at root):
+        """scalaql.excel.ExcelDecoderAccumulatingException: Failed to decode DetailedPersonWithMissingFields (at `root`):
           |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
           |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
           |	+ ( scalaql.excel.ExcelDecoderException: Unable to find cell at path `missingBoolean` )
@@ -158,7 +161,8 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       val path = Paths.get("scala-ql-excel/src/test/resources/nested-with-headers.xlsx")
 
       implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
+        naming = Naming.WithSpacesLowerCase,
+        cellResolutionStrategy = CellResolutionStrategy.NameBased
       )
 
       select[NestedPerson].toList
@@ -231,7 +235,8 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
 
       implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
         evaluateFormulas = true,
-        cellResolutionStrategy = CellResolutionStrategy.NameBased(Naming.WithSpacesLowerCase)
+        naming = Naming.WithSpacesLowerCase,
+        cellResolutionStrategy = CellResolutionStrategy.NameBased
       )
 
       select[DetailedPersonWithFormulas].toList

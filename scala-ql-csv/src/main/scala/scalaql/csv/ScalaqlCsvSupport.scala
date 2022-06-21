@@ -14,7 +14,9 @@ trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder, CsvEncoder, 
       with DataSourceJavaIOReaderFilesSupport[CsvDecoder, λ[a => CsvConfig]] {
 
     override protected def readImpl[A: CsvDecoder](reader: Reader)(implicit config: CsvConfig): Iterable[A] = {
-      implicit val initialContext: CsvContext = CsvContext(path = Nil, naming = config.naming)
+      implicit val initialContext: CsvReadContext = CsvReadContext.initial(
+        naming = config.naming
+      )
       CSVReader
         .open(reader)(config.toTototoshi)
         .iteratorWithHeaders
@@ -28,7 +30,10 @@ trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder, CsvEncoder, 
       with DataSourceJavaIOWriterFilesSupport[CsvEncoder, λ[a => CsvConfig]] {
 
     override def write[A: CsvEncoder](writer: => Writer)(implicit config: CsvConfig): SideEffect[?, ?, A] = {
-      implicit val initialContext: CsvContext = CsvContext.initial(naming = config.naming)
+      implicit val initialContext: CsvWriteContext = CsvWriteContext.initial(
+        headers = CsvEncoder[A].headers,
+        naming = config.naming
+      )
       SideEffect[CSVWriter, Boolean, A](
         initialState = false,
         acquire = () => CSVWriter.open(writer)(config.toTototoshi),

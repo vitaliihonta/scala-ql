@@ -16,7 +16,7 @@ trait HtmlTableEncoderAutoDerivation {
 
     override def write(
       value:                 T,
-      into:                  Table
+      into:                  HtmlTable
     )(implicit writeContext: HtmlTableEncoderContext
     ): Unit =
       ctx.parameters.foreach { param =>

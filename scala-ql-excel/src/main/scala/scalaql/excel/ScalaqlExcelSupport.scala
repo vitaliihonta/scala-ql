@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import scalaql.SideEffect
+import scalaql.sources.columnar.CodecPath
 import java.nio.charset.StandardCharsets
 import java.io.InputStream
 import java.io.OutputStream
@@ -23,23 +24,25 @@ trait ScalaqlExcelSupport
       val worksheet   = config.choseWorksheet(workbook)
       val rowIterator = worksheet.iterator().asScala
 
-      implicit val ctx: ExcelReadContext = initialContext(workbook, rowIterator)
+      implicit val ctx: ExcelReadContext = initialContext(workbook, rowIterator, config.naming)
 
       rowIterator.map(ExcelDecoder[A].read(_).fold[A](throw _, _.value)).toVector
     }
 
     private def initialContext(
       workbook:        XSSFWorkbook,
-      rowIterator:     Iterator[Row]
+      rowIterator:     Iterator[Row],
+      naming:          Naming
     )(implicit config: ExcelReadConfig
     ): ExcelReadContext = {
       val headers = inferHeaders(rowIterator)
       ExcelReadContext(
         workbook = workbook,
+        naming = naming,
         evaluateFormulas = config.evaluateFormulas,
         headers = headers,
         config.cellResolutionStrategy,
-        path = Nil,
+        location = CodecPath.Root,
         currentOffset = 0
       )
     }
@@ -84,7 +87,7 @@ trait ScalaqlExcelSupport
       ExcelEncoder[A].write(row, value)(
         ExcelWriteContext(
           workbook = workbook,
-          path = Nil,
+          location = CodecPath.Root,
           startOffset = 0,
           cellStyle = config.styling.cellStyle
         )
@@ -112,7 +115,7 @@ trait ScalaqlExcelSupport
 
   private def inferHeaders(rowIterator: Iterator[Row])(implicit config: ExcelReadConfig): Map[String, Int] =
     config.cellResolutionStrategy match {
-      case _: CellResolutionStrategy.NameBased =>
+      case CellResolutionStrategy.NameBased =>
         readHeadersFromRow(rowIterator.next())
       case _ => Map.empty[String, Int]
     }

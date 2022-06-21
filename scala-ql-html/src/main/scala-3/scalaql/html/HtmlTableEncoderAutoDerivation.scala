@@ -15,7 +15,7 @@ trait HtmlTableEncoderAutoDerivation extends ProductDerivation[HtmlTableEncoder]
 
     override def write(
       value:                 T,
-      into:                  Table
+      into:                  HtmlTable
     )(implicit writeContext: HtmlTableEncoderContext
     ): Unit =
       ctx.params.foreach { param =>

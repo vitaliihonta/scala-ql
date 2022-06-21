@@ -16,33 +16,33 @@ class CsvDecoderAccumulatingException(name: String, errors: List[CsvDecoderExcep
 
 trait CsvDecoder[A] {
   self =>
-  def read(row: Map[String, String])(implicit ctx: CsvContext): CsvDecoder.Result[A]
+  def read(row: Map[String, String])(implicit ctx: CsvReadContext): CsvDecoder.Result[A]
 
   def map[B](f: A => B): CsvDecoder[B] = new CsvDecoder[B] {
-    override def read(row: Map[String, String])(implicit ctx: CsvContext): CsvDecoder.Result[B] =
+    override def read(row: Map[String, String])(implicit ctx: CsvReadContext): CsvDecoder.Result[B] =
       self.read(row).map(f)
   }
 
   def emap[B](f: A => CsvDecoder.Result[B]): CsvDecoder[B] = new CsvDecoder[B] {
-    override def read(row: Map[String, String])(implicit ctx: CsvContext): CsvDecoder.Result[B] =
+    override def read(row: Map[String, String])(implicit ctx: CsvReadContext): CsvDecoder.Result[B] =
       self.read(row).flatMap(f)
   }
 }
 
 trait CsvSingleFieldDecoder[A] extends CsvDecoder[A] { self =>
-  def readField(value: String)(implicit ctx: CsvContext): CsvDecoder.Result[A]
+  def readField(value: String)(implicit ctx: CsvReadContext): CsvDecoder.Result[A]
 
-  override final def read(row: Map[String, String])(implicit ctx: CsvContext): CsvDecoder.Result[A] =
+  override final def read(row: Map[String, String])(implicit ctx: CsvReadContext): CsvDecoder.Result[A] =
     readField(row(ctx.getFieldName))
 
   override def map[B](f: A => B): CsvDecoder.SingleField[B] = new CsvSingleFieldDecoder[B] {
-    override def readField(value: String)(implicit ctx: CsvContext): CsvDecoder.Result[B] =
+    override def readField(value: String)(implicit ctx: CsvReadContext): CsvDecoder.Result[B] =
       self.readField(value).map(f)
   }
 
   override def emap[B](f: A => CsvDecoder.Result[B]): CsvDecoder.SingleField[B] =
     new CsvSingleFieldDecoder[B] {
-      override def readField(value: String)(implicit ctx: CsvContext): CsvDecoder.Result[B] =
+      override def readField(value: String)(implicit ctx: CsvReadContext): CsvDecoder.Result[B] =
         self.readField(value).flatMap(f)
     }
 }
@@ -55,9 +55,10 @@ object CsvDecoder extends LowPriorityCsvFieldDecoders {
   type SingleField[A] = CsvSingleFieldDecoder[A]
   def SingleField[A](implicit ev: CsvDecoder.SingleField[A]): ev.type = ev
 
-  def fieldDecoder[A](f: CsvContext => String => CsvDecoder.Result[A]): CsvDecoder.SingleField[A] =
+  def fieldDecoder[A](f: CsvReadContext => String => CsvDecoder.Result[A]): CsvDecoder.SingleField[A] =
     new CsvSingleFieldDecoder[A] {
-      override def readField(value: String)(implicit ctx: CsvContext): Either[CsvDecoderException, A] = f(ctx)(value)
+      override def readField(value: String)(implicit ctx: CsvReadContext): Either[CsvDecoderException, A] =
+        f(ctx)(value)
     }
 
   def fieldDecodedCatch[E]: FieldDecoderCatchPartiallyApplied[E] =

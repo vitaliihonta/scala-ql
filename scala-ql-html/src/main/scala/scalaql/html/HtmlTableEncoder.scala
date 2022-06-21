@@ -8,13 +8,13 @@ import java.util.UUID
 trait HtmlTableEncoder[A] { self =>
   def headers: List[String]
 
-  def write(value: A, into: Table)(implicit ctx: HtmlTableEncoderContext): Unit
+  def write(value: A, into: HtmlTable)(implicit ctx: HtmlTableEncoderContext): Unit
 
   def contramap[B](transformHeaders: List[String] => List[String])(f: B => A): HtmlTableEncoder[B] =
     new HtmlTableEncoder[B] {
       override def headers: List[String] = transformHeaders(self.headers)
 
-      override def write(value: B, into: Table)(implicit ctx: HtmlTableEncoderContext): Unit =
+      override def write(value: B, into: HtmlTable)(implicit ctx: HtmlTableEncoderContext): Unit =
         self.write(f(value), into)
     }
 }
@@ -26,7 +26,7 @@ object HtmlTableEncoder extends LowPriorityHtmlTableEncoders with HtmlTableEncod
   def columnEncoder[A](f: A => String): HtmlTableEncoder[A] = new HtmlTableEncoder[A] {
     override val headers: List[String] = Nil
 
-    override def write(value: A, into: Table)(implicit ctx: HtmlTableEncoderContext): Unit = {
+    override def write(value: A, into: HtmlTable)(implicit ctx: HtmlTableEncoderContext): Unit = {
       val cell = ctx.tdTag(ctx.getFieldStyles)(f(value))
       into.currentRow.append(ctx.fieldLocation.name, cell)
     }
@@ -57,9 +57,9 @@ trait LowPriorityHtmlTableEncoders {
     new HtmlTableEncoder[Coll[A]] {
       override val headers: List[String] = HtmlTableEncoder[A].headers
 
-      override def write(values: Coll[A], into: Table)(implicit ctx: HtmlTableEncoderContext): Unit =
+      override def write(values: Coll[A], into: HtmlTable)(implicit ctx: HtmlTableEncoderContext): Unit =
         values.toList.zipWithIndex.foreach { case (value, idx) =>
-          HtmlTableEncoder[A].write(value, into.append(TableRow.empty))(
+          HtmlTableEncoder[A].write(value, into.append(HtmlTableRow.empty))(
             ctx.enterIndex(idx)
           )
         }

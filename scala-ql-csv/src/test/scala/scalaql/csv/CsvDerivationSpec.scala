@@ -22,7 +22,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
 
   "CsvDecoder" should {
     "decode correctly with default config" in {
-      implicit val context: CsvContext = CsvContext.initial(Naming.Literal)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal)
 
       CsvDecoder[Person]
         .read(
@@ -47,7 +47,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "decode correctly with naming" in {
-      implicit val context: CsvContext = CsvContext.initial(Naming.SnakeCase)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.SnakeCase)
 
       CsvDecoder[Person]
         .read(
@@ -72,7 +72,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "decode correctly for nested fields" in {
-      implicit val context: CsvContext = CsvContext.initial(Naming.Literal)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal)
 
       CsvDecoder[NestedPerson]
         .read(
@@ -101,7 +101,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "decode handling errors" in {
-      implicit val context: CsvContext = CsvContext.initial(Naming.Literal)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal)
 
       val result = CsvDecoder[Person]
         .read(
@@ -119,7 +119,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
       val error = result.swap.getOrElse(???)
       error shouldBe a[CsvDecoderAccumulatingException]
       error.toString shouldBe
-        """scalaql.csv.CsvDecoderAccumulatingException: Failed to decode Person (at root):
+        """scalaql.csv.CsvDecoderAccumulatingException: Failed to decode Person (at `root`):
           |	+ ( scalaql.csv.CsvDecoderException: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: xxx )
           |	+ ( scalaql.csv.CsvDecoderException: Cannot decode cell at path `workingExperienceYears`: java.lang.NumberFormatException: For input string: "yyy" )
           |	+ ( scalaql.csv.CsvDecoderException: Cannot decode cell at path `birthDay`: java.time.format.DateTimeParseException: Text 'zzz' could not be parsed at index 0 )
@@ -130,7 +130,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
   "CsvEncoder" should {
 
     "encode correctly with default config" in {
-      implicit val context: CsvContext = CsvContext.initial(Naming.Literal)
+      implicit val context: CsvWriteContext = CsvWriteContext.initial(headers = Nil, Naming.Literal)
 
       CsvEncoder[Person]
         .write(
@@ -153,7 +153,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "encode correctly with naming" in {
-      implicit val context: CsvContext = CsvContext.initial(Naming.SnakeCase)
+      implicit val context: CsvWriteContext = CsvWriteContext.initial(headers = Nil, Naming.SnakeCase)
 
       CsvEncoder[Person]
         .write(
@@ -176,7 +176,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "encode correctly for nested fields" in {
-      implicit val context: CsvContext = CsvContext.initial(Naming.Literal)
+      implicit val context: CsvWriteContext = CsvWriteContext.initial(headers = Nil, Naming.Literal)
 
       CsvEncoder[NestedPerson]
         .write(
