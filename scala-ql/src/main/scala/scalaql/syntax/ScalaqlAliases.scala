@@ -14,5 +14,5 @@ trait ScalaqlAliases {
   final type GroupBy[-A, +B] = A => B
 
   final type Aggregate[-G, -A, +B] =
-    (G, AggregationView[A] @uncheckedVariance) => Aggregation.Aux[A, B @uncheckedVariance]
+    (G, AggregationView[A] @uncheckedVariance) => Aggregation.Of[A, B @uncheckedVariance]
 }

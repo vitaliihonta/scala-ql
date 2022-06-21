@@ -27,7 +27,7 @@ trait LowPriorityExcelReadConfig {
 case class ExcelWriteConfig[-A](
   worksheetName: Option[String],
   writeHeaders:  Boolean,
-  naming:        String => String,
+  naming:        Naming,
   styling:       ExcelStyling[A])
 
 object ExcelWriteConfig extends LowPriorityExcelWriteConfig {}
