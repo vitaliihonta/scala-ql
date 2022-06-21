@@ -25,28 +25,31 @@ trait HtmlTableEncoderAutoDerivation extends ProductDerivation[HtmlTableEncoder]
         )
       }.toMap
 
-      val resultValue = tr(writeContext.getFieldStyles)(fillGapsWithTd(writeContext.headers, encoded))
+      val resultValue = tr(writeContext.getFieldStyles)(fillGapsWithTd(encoded))
       HtmlTableEncoder.Result(resultValue, isList = false)
     }
 
     private def fillGapsWithTd(
-      headers: List[String],
-      result:  Map[String, HtmlTableEncoder.Result]
+      result:                Map[String, HtmlTableEncoder.Result]
+    )(implicit writeContext: HtmlTableEncoderContext
     ): List[Modifier] = {
       val forbiddenFilling = result.collect { case (name, HtmlTableEncoder.Result(_, isList @ true)) =>
         name
       }.toSet
 
-      orderedValues(headers) {
-        headers.zipWithIndex.flatMap { case (h, offset) =>
-          if (!result.contains(h) && !forbiddenFilling(h)) Some((h, offset, td()))
+      orderedValues {
+        writeContext.headers.zipWithIndex.flatMap { case (h, offset) =>
+          if (!result.contains(h) && !forbiddenFilling(h)) Some((h, offset, td(writeContext.fieldStyles(h))()()))
           else None
         } ++ result.zipWithIndex.map { case ((h, v), offset) => (h, offset, v.value) }
       }
     }
 
-    private def orderedValues(headers: List[String])(result: List[(String, Int, Modifier)]): List[Modifier] = {
-      val headersOrder = headers.zipWithIndex.toMap
+    private def orderedValues(
+      result:                List[(String, Int, Modifier)]
+    )(implicit writeContext: HtmlTableEncoderContext
+    ): List[Modifier] = {
+      val headersOrder = writeContext.headers.zipWithIndex.toMap
       result
         .sortBy { case (n, offset, _) => headersOrder.getOrElse(n, offset) }
         .map { case (_, _, v) => v }
