@@ -1,7 +1,6 @@
 package scalaql.html
 
 import scalatags.Text.{Modifier, TypedTag}
-
 import scala.annotation.tailrec
 
 sealed trait CodecPath {
@@ -13,7 +12,19 @@ sealed trait CodecPath {
   protected[scalaql] def fieldLocation: CodecPath.AtField =
     sys.error("Library error, please fill a bug ticket")
 
-  override def toString: String = CodecPath.render(this)
+  override final def toString: String = {
+    @tailrec
+    def go(remaining: CodecPath, acc: List[String]): List[String] =
+      remaining match {
+        case CodecPath.Root => acc
+        case CodecPath.AtField(name, parent) =>
+          go(parent, name :: acc)
+        case CodecPath.AtIndex(idx, parent) =>
+          go(parent, s"[$idx]" :: acc)
+      }
+
+    go(this, acc = Nil).mkString(".")
+  }
 }
 
 object CodecPath {
@@ -35,28 +46,15 @@ object CodecPath {
     override val isIndex = true
     override val isField = false
   }
-
-  def render(path: CodecPath): String = {
-    @tailrec
-    def go(remaining: CodecPath, acc: List[String]): List[String] =
-      remaining match {
-        case CodecPath.Root => acc
-        case CodecPath.AtField(name, parent) =>
-          go(parent, name :: acc)
-        case CodecPath.AtIndex(idx, parent) =>
-          go(parent, s"[$idx]" :: acc)
-      }
-
-    go(path, acc = Nil).mkString(".")
-  }
 }
 
 case class HtmlTableEncoderContext(
   location:    CodecPath,
   headers:     List[String],
+  trTag:       TypedTag[String],
+  thTag:       TypedTag[String],
+  tdTag:       TypedTag[String],
   fieldStyles: String => List[Modifier]) { self =>
-
-  def parentLocation: CodecPath = location.parent
 
   def enterField(name: String): HtmlTableEncoderContext =
     copy(location = CodecPath.AtField(name, self.location))
@@ -70,18 +68,22 @@ case class HtmlTableEncoderContext(
   def getFieldStyles: List[Modifier] =
     if (location.isField) fieldStyles(fieldLocation.name)
     else Nil
-
-  def pathStr: String = location.toString
 }
 
 object HtmlTableEncoderContext {
   def initial(
     headers:     List[String],
-    fieldStyles: String => List[Modifier]
+    fieldStyles: String => List[Modifier],
+    trTag:       TypedTag[String],
+    thTag:       TypedTag[String],
+    tdTag:       TypedTag[String]
   ): HtmlTableEncoderContext =
     HtmlTableEncoderContext(
       location = CodecPath.Root,
       headers = headers,
-      fieldStyles = fieldStyles
+      fieldStyles = fieldStyles,
+      trTag = trTag,
+      thTag = thTag,
+      tdTag = tdTag
     )
 }

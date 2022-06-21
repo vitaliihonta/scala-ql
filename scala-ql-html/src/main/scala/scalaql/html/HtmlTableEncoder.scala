@@ -4,51 +4,6 @@ import scalatags.Text.all.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
-import scala.collection.mutable
-
-class TableRow(cells: mutable.ListBuffer[(String, Modifier)]) {
-  def append(name: String, value: Modifier): this.type = {
-    cells.append(name -> value)
-    this
-  }
-
-  def insert(idx: Int, name: String, value: Modifier): this.type = {
-    cells.insert(idx, name -> value)
-    this
-  }
-
-  def getFieldNames: Set[String] = cells.map { case (n, _) => n }.toSet
-
-  def getCells: List[(String, Modifier)] = cells.toList
-}
-
-object TableRow {
-  def empty: TableRow = new TableRow(mutable.ListBuffer.empty)
-}
-
-class Table(rows: mutable.ListBuffer[TableRow]) {
-  def prepend(row: TableRow): this.type = {
-    rows.prepend(row)
-    this
-  }
-
-  def append(row: TableRow): this.type = {
-    rows.append(row)
-    this
-  }
-
-  def currentRow: TableRow =
-    rows.last
-
-  def getRows: List[List[(String, Modifier)]] = rows.toList.map(_.getCells)
-
-  def foreachRow(f: TableRow => Unit): Unit =
-    rows.foreach(f)
-}
-
-object Table {
-  def empty: Table = new Table(mutable.ListBuffer.empty)
-}
 
 trait HtmlTableEncoder[A] { self =>
   def headers: List[String]
@@ -72,7 +27,7 @@ object HtmlTableEncoder extends LowPriorityHtmlTableEncoders with HtmlTableEncod
     override val headers: List[String] = Nil
 
     override def write(value: A, into: Table)(implicit ctx: HtmlTableEncoderContext): Unit = {
-      val cell = td(ctx.getFieldStyles)(f(value))
+      val cell = ctx.tdTag(ctx.getFieldStyles)(f(value))
       into.currentRow.append(ctx.fieldLocation.name, cell)
     }
   }

@@ -16,7 +16,10 @@ trait ScalaqlHtmlSupport extends DataSourceJavaIOWriteSupport[HtmlTableEncoder, 
     ): SideEffect[?, ?, A] = {
       implicit val initialContext: HtmlTableEncoderContext = HtmlTableEncoderContext.initial(
         headers = HtmlTableEncoder[A].headers,
-        fieldStyles = config.styling.fieldStyle
+        fieldStyles = config.styling.fieldStyle,
+        trTag = config.trTag,
+        thTag = config.thTag,
+        tdTag = config.tdTag
       )
       SideEffect[Writer, Table, A](
         initialState = Table.empty,
@@ -25,19 +28,19 @@ trait ScalaqlHtmlSupport extends DataSourceJavaIOWriteSupport[HtmlTableEncoder, 
           val headers = {
             val row = TableRow.empty
             initialContext.headers.foreach { h =>
-              row.append(h, th(config.styling.headerStyle(h))(h))
+              row.append(h, config.thTag(config.styling.headerStyle(h))(config.naming(h)))
             }
             row
           }
           table.prepend(headers)
           fillGapsIntoTable(table)
-          val document = html(
+          val document = config.htmlTag(
             config.headTag,
             config.bodyTag(
               config.tableTag(
                 table.getRows
                   .map { row =>
-                    config.rowTag(row.map { case (_, mod) => mod })
+                    config.trTag(row.map { case (_, mod) => mod })
                   }
               )
             )
