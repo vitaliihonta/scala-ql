@@ -16,8 +16,7 @@ trait ScalaqlHtmlSupport extends DataSourceJavaIOWriteSupport[HtmlTableEncoder, 
     ): SideEffect[?, ?, A] = {
       implicit val initialContext: HtmlTableEncoderContext = HtmlTableEncoderContext.initial(
         headers = HtmlTableEncoder[A].headers,
-        fieldStyles = config.styling.fieldStyle,
-        rowTag = config.rowTag
+        fieldStyles = config.styling.fieldStyle
       )
       SideEffect[Writer, Table, A](
         initialState = Table.empty,
@@ -66,38 +65,5 @@ trait ScalaqlHtmlSupport extends DataSourceJavaIOWriteSupport[HtmlTableEncoder, 
           }
         }
       }
-
-    // TODO: remove
-    private def fillGapsWithTd(
-      result:                List[(String, Modifier)]
-    )(implicit writeContext: HtmlTableEncoderContext
-    ): List[(String, Modifier)] = {
-      val resultHeaders = result.map(_._1).toSet
-
-      orderedValues {
-        val fillments = writeContext.headers.zipWithIndex.flatMap { case (h, offset) =>
-          if (!resultHeaders.contains(h))
-            Some(
-              (h, offset, td(writeContext.fieldStyles(h)))
-            )
-          else None
-        }
-
-        val fromResults = result.zipWithIndex
-          .map { case ((h, v), idx) => (h, idx, v) }
-
-        fillments ++ fromResults
-      }
-    }
-
-    private def orderedValues(
-      result:                List[(String, Int, Modifier)]
-    )(implicit writeContext: HtmlTableEncoderContext
-    ): List[(String, Modifier)] = {
-      val headersOrder = writeContext.headers.zipWithIndex.toMap
-      result
-        .sortBy { case (n, offset, _) => headersOrder.getOrElse(n, offset) }
-        .map { case (h, _, v) => h -> v }
-    }
   }
 }

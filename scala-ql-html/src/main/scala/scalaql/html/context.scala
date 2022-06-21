@@ -54,8 +54,7 @@ object CodecPath {
 case class HtmlTableEncoderContext(
   location:    CodecPath,
   headers:     List[String],
-  fieldStyles: String => List[Modifier],
-  rowTag:      TypedTag[String]) { self =>
+  fieldStyles: String => List[Modifier]) { self =>
 
   def parentLocation: CodecPath = location.parent
 
@@ -78,13 +77,11 @@ case class HtmlTableEncoderContext(
 object HtmlTableEncoderContext {
   def initial(
     headers:     List[String],
-    fieldStyles: String => List[Modifier],
-    rowTag:      TypedTag[String]
+    fieldStyles: String => List[Modifier]
   ): HtmlTableEncoderContext =
     HtmlTableEncoderContext(
       location = CodecPath.Root,
       headers = headers,
-      fieldStyles = fieldStyles,
-      rowTag = rowTag
+      fieldStyles = fieldStyles
     )
 }
