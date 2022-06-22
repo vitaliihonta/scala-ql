@@ -51,6 +51,18 @@ trait LowPriorityHtmlTableEncoders {
   implicit val localDateTimeColumnDecoder: HtmlTableEncoder[LocalDateTime] =
     toStringColumnEncoder[LocalDateTime]
 
+  implicit def optionEncoder[A: HtmlTableEncoder]: HtmlTableEncoder[Option[A]] =
+    new HtmlTableEncoder[Option[A]] {
+      override val headers: List[String] = HtmlTableEncoder[A].headers
+
+      override def write(values: Option[A], into: HtmlTable)(implicit ctx: HtmlTableEncoderContext): Unit =
+        values.foreach { value =>
+          HtmlTableEncoder[A].write(value, into.appendEmptyRow)(
+            ctx
+          )
+        }
+    }
+
   implicit def iterableEncoder[Coll[x] <: Iterable[x], A](
     implicit encoder: HtmlTableEncoder[A]
   ): HtmlTableEncoder[Coll[A]] =

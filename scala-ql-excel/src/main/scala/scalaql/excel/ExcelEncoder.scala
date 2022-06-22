@@ -105,6 +105,20 @@ trait LowPriorityCellEncoders {
         cell.setCellValue(value)
     }
 
+  implicit def optionEncoder[A: ExcelEncoder]: ExcelEncoder[Option[A]] =
+    new ExcelEncoder[Option[A]] {
+      override val headers: List[String] = ExcelEncoder[A].headers
+
+      override def write(table: ExcelTableApi, value: Option[A])(implicit ctx: ExcelWriteContext): WriteResult = {
+        val result = value.map { value =>
+          ExcelEncoder[A].write(table.appendEmptyRow, value)(
+            ctx
+          )
+        }
+        result.getOrElse(WriteResult(cellsWritten = 0))
+      }
+    }
+
   implicit def iterableEncoder[Coll[x] <: Iterable[x], A](
     implicit encoder: ExcelEncoder[A]
   ): ExcelEncoder[Coll[A]] =
