@@ -50,6 +50,7 @@ and walking directory (optionally by GLOB pattern)
 - CSV/TSV file
 - JSON file (single line / multiline)
 - Excel
+- HTML
 
 ## Supported operations
 
