@@ -44,8 +44,7 @@ object Scala3MacroUtils {
 
   private def getLastField(chain: CallChain): Option[String] =
     for {
-//      _ <- chain.obj
-//      if chain.validFieldCall
+      // TODO: add path validation
       last <- chain.chain.lastOption
     } yield last
 }
