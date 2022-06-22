@@ -1,27 +1,27 @@
 package scalaql.sources.columnar
 
-import scalaql.sources.Naming
+trait TableRowApi[Cell, CellValue] {
+  def append(name: String, cellValue: CellValue): this.type
 
-trait TableRowApi[Cell] {
-  def append(name: String, cell: Cell): this.type
-
-  def insert(idx: Int, name: String, value: Cell): this.type
+  def insert(idx: Int, name: String, value: CellValue): this.type
 
   def getFieldNames: Set[String]
 
   def getCells: List[(String, Cell)]
 }
 
-trait TableApi[Cell, Row <: TableRowApi[Cell]] {
-  def prepend(row: Row): this.type
+trait TableApi[Cell, CellValue, Row <: TableRowApi[Cell, CellValue], RowValue] {
+  def prependEmptyRow: Row
 
-  def append(row: Row): this.type
+  def appendEmptyRow: this.type
+
+  def prepend(row: RowValue): this.type
+
+  def append(row: RowValue): this.type
 
   def currentRow: Row
 
-  def getRows: List[List[(String, Cell)]]
-
-  def foreachRow(f: Row => Unit): Unit
+  def getRows: List[Row]
 }
 
 trait TableApiContext[Self <: TableApiContext[Self]] {
@@ -40,11 +40,11 @@ trait TableApiWriteContext[Self <: TableApiWriteContext[Self]] extends TableApiC
 }
 
 object TableApiFunctions {
-  def fillGapsIntoTable[Cell, Row <: TableRowApi[Cell], Table <: TableApi[Cell, Row]](
-    table:        Table
-  )(fill:         String => Cell
+  def fillGapsIntoTable[Cell, CellValue, Row <: TableRowApi[Cell, CellValue]](
+    table:        TableApi[Cell, CellValue, Row, ?]
+  )(fill:         String => CellValue
   )(implicit ctx: TableApiWriteContext[?]
-  ): Unit = table.foreachRow { row =>
+  ): Unit = table.getRows.foreach { row =>
     val resultHeaders = row.getFieldNames
     ctx.headers.zipWithIndex.foreach { case (h, idx) =>
       if (!resultHeaders.contains(h)) {

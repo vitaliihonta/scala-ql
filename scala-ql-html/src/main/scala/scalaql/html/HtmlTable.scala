@@ -4,7 +4,7 @@ import scalaql.sources.columnar.{TableApi, TableRowApi}
 import scalatags.Text.all.Modifier
 import scala.collection.mutable
 
-class HtmlTableRow(cells: mutable.ListBuffer[(String, Modifier)]) extends TableRowApi[Modifier] {
+class HtmlTableRow(cells: mutable.ListBuffer[(String, Modifier)]) extends TableRowApi[Modifier, Modifier] {
   override def append(name: String, value: Modifier): this.type = {
     cells.append(name -> value)
     this
@@ -20,11 +20,18 @@ class HtmlTableRow(cells: mutable.ListBuffer[(String, Modifier)]) extends TableR
   override def getCells: List[(String, Modifier)] = cells.toList
 }
 
-object HtmlTableRow {
-  def empty: HtmlTableRow = new HtmlTableRow(mutable.ListBuffer.empty)
-}
+class HtmlTable(rows: mutable.ListBuffer[HtmlTableRow])
+    extends TableApi[Modifier, Modifier, HtmlTableRow, HtmlTableRow] {
 
-class HtmlTable(rows: mutable.ListBuffer[HtmlTableRow]) extends TableApi[Modifier, HtmlTableRow] {
+  override def prependEmptyRow: HtmlTableRow = {
+    val row = new HtmlTableRow(mutable.ListBuffer.empty)
+    prepend(row)
+    row
+  }
+
+  override def appendEmptyRow: this.type =
+    append(new HtmlTableRow(mutable.ListBuffer.empty))
+
   override def prepend(row: HtmlTableRow): this.type = {
     rows.prepend(row)
     this
@@ -35,13 +42,12 @@ class HtmlTable(rows: mutable.ListBuffer[HtmlTableRow]) extends TableApi[Modifie
     this
   }
 
+  override def getRows: List[HtmlTableRow] = rows.toList
+
   override def currentRow: HtmlTableRow =
     rows.last
 
-  override def getRows: List[List[(String, Modifier)]] = rows.toList.map(_.getCells)
-
-  override def foreachRow(f: HtmlTableRow => Unit): Unit =
-    rows.foreach(f)
+  def getRowValues: List[List[(String, Modifier)]] = rows.toList.map(_.getCells)
 }
 
 object HtmlTable {

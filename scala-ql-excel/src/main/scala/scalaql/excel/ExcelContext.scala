@@ -5,7 +5,7 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.Cell
 import scalaql.sources.Naming
-import scalaql.sources.columnar.{CodecPath, TableApiContext}
+import scalaql.sources.columnar.{CodecPath, TableApiContext, TableApiWriteContext}
 
 sealed trait ExcelContext {
   def workbook: Workbook
@@ -44,10 +44,11 @@ case class ExcelReadContext(
 
 case class ExcelWriteContext(
   workbook:    Workbook,
+  headers:     List[String],
   location:    CodecPath,
   startOffset: Int,
   cellStyle:   String => Option[Styling])
-    extends TableApiContext[ExcelWriteContext]
+    extends TableApiWriteContext[ExcelWriteContext]
     with ExcelContext { self =>
 
   override def enterField(name: String): ExcelWriteContext =
@@ -62,4 +63,15 @@ case class ExcelWriteContext(
       styling(cell.getSheet.getWorkbook, style)
       cell.setCellStyle(style)
     }
+}
+
+object ExcelWriteContext {
+  def initial(workbook: Workbook, headers: List[String], cellStyle: String => Option[Styling]): ExcelWriteContext =
+    ExcelWriteContext(
+      workbook = workbook,
+      headers = headers,
+      location = CodecPath.Root,
+      startOffset = 0,
+      cellStyle = cellStyle
+    )
 }

@@ -16,7 +16,7 @@ case class WriteResult(cellsWritten: Int)
 trait ExcelEncoder[A] {
   def headers: List[String]
 
-  def write(row: Row, value: A)(implicit ctx: ExcelWriteContext): WriteResult
+  def write(table: ExcelTableApi, value: A)(implicit ctx: ExcelWriteContext): WriteResult
 }
 
 trait ExcelSingleCellEncoder[A] extends ExcelEncoder[A] { self =>
@@ -25,10 +25,17 @@ trait ExcelSingleCellEncoder[A] extends ExcelEncoder[A] { self =>
 
   def writeCell(cell: Cell, value: A)(implicit ctx: ExcelWriteContext): Unit
 
-  def write(row: Row, value: A)(implicit ctx: ExcelWriteContext): WriteResult = {
-    val cell = row.createCell(ctx.startOffset)
-    writeCell(cell, value)
-    ctx.applyCellStyle(cell)
+  def write(table: ExcelTableApi, value: A)(implicit ctx: ExcelWriteContext): WriteResult = {
+    val row = table.currentRow
+    row.insert(
+      ctx.startOffset,
+      ctx.fieldLocation.name,
+      (cell: Cell) => {
+        self.writeCell(cell, value)
+        ctx.applyCellStyle(cell)
+        cell
+      }
+    )
     WriteResult(cellsWritten = 1)
   }
 

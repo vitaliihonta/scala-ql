@@ -59,7 +59,7 @@ trait LowPriorityHtmlTableEncoders {
 
       override def write(values: Coll[A], into: HtmlTable)(implicit ctx: HtmlTableEncoderContext): Unit =
         values.toList.zipWithIndex.foreach { case (value, idx) =>
-          HtmlTableEncoder[A].write(value, into.append(HtmlTableRow.empty))(
+          HtmlTableEncoder[A].write(value, into.appendEmptyRow)(
             ctx.enterIndex(idx)
           )
         }

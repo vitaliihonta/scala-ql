@@ -28,21 +28,20 @@ trait ScalaqlHtmlSupport extends DataSourceJavaIOWriteSupport[HtmlTableEncoder, 
         acquire = () => sink,
         release = { (writer, table) =>
           val headers = {
-            val row = HtmlTableRow.empty
+            val row = table.prependEmptyRow
             initialContext.headers.foreach { h =>
               row.append(h, config.thTag(config.styling.headerStyle(h))(config.naming(h)))
             }
             row
           }
-          table.prepend(headers)
-          TableApiFunctions.fillGapsIntoTable[Modifier, HtmlTableRow, HtmlTable](table)(h =>
+          TableApiFunctions.fillGapsIntoTable[Modifier, Modifier, HtmlTableRow](table)(h =>
             td(initialContext.fieldStyles(h))
           )
           val document = config.htmlTag(
             config.headTag,
             config.bodyTag(
               config.tableTag(
-                table.getRows
+                table.getRowValues
                   .map { row =>
                     config.trTag(row.map { case (_, mod) => mod })
                   }
@@ -54,7 +53,7 @@ trait ScalaqlHtmlSupport extends DataSourceJavaIOWriteSupport[HtmlTableEncoder, 
           writer.close()
         },
         use = { (_, into, value) =>
-          HtmlTableEncoder[A].write(value, into.append(HtmlTableRow.empty))
+          HtmlTableEncoder[A].write(value, into.appendEmptyRow)
           into
         }
       )

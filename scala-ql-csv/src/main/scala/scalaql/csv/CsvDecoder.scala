@@ -102,4 +102,10 @@ trait LowPriorityCsvFieldDecoders extends CsvDecoderAutoDerivation {
 
   implicit val localDateTimeDecoder: CsvDecoder.SingleField[LocalDateTime] =
     CsvDecoder.fieldDecodedCatch[DateTimeParseException](LocalDateTime.parse)
+
+  implicit def optionDecoder[A: CsvDecoder.SingleField]: CsvDecoder.SingleField[Option[A]] =
+    CsvDecoder.fieldDecoder { implicit ctx => row =>
+      if (row.isEmpty) Right(None)
+      else CsvDecoder.SingleField[A].readField(row).map(Some(_))
+    }
 }
