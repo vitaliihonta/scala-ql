@@ -104,4 +104,20 @@ trait LowPriorityCellEncoders {
       override def writeCell(cell: Cell, value: LocalDate)(implicit ctx: ExcelWriteContext): Unit =
         cell.setCellValue(value)
     }
+
+  implicit def iterableEncoder[Coll[x] <: Iterable[x], A](
+    implicit encoder: ExcelEncoder[A]
+  ): ExcelEncoder[Coll[A]] =
+    new ExcelEncoder[Coll[A]] {
+      override val headers: List[String] = ExcelEncoder[A].headers
+
+      override def write(table: ExcelTableApi, values: Coll[A])(implicit ctx: ExcelWriteContext): WriteResult = {
+        val results = values.toList.zipWithIndex.map { case (value, idx) =>
+          ExcelEncoder[A].write(table.appendEmptyRow, value)(
+            ctx.enterIndex(idx)
+          )
+        }
+        results.headOption.getOrElse(WriteResult(cellsWritten = 0))
+      }
+    }
 }
