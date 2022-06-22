@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.CellStyle
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import scalaql.utils.BaseTypeCheckedBuilder
+import scala.util.Try
 
 class ExcelStylingBuilder[A](
   headerStyles: Either[String => Option[Styling], Map[String, Styling]] = Right(Map.empty[String, Styling]),
@@ -11,8 +12,8 @@ class ExcelStylingBuilder[A](
 
   def build: ExcelStyling[A] =
     new ExcelStyling.Configured[A](
-      (name: String) => headerStyles.map(_.get(name)).left.map(_.apply(name)).merge,
-      cellStyles.get(_: String)
+      (name: String) => headerStyles.map(hs => Try(hs(name)).toOption).left.map(_.apply(name)).merge,
+      (name: String) => Try(cellStyles(name)).toOption
     )
 
   def forAllHeaders(styling: Styling): ExcelStylingBuilder[A] =
@@ -32,6 +33,18 @@ class ExcelStylingBuilder[A](
 
   def forField[B](f: A => B, styling: Styling): ExcelStylingBuilder[A] =
     macro ExcelStylingBuilderMacro.forFieldImpl[A, B]
+
+  def withDefaultForFields(styling: Styling): ExcelStylingBuilder[A] =
+    new ExcelStylingBuilder[A](
+      headerStyles = self.headerStyles,
+      cellStyles = cellStyles.withDefaultValue(styling)
+    )
+
+  def withDefaultForHeaders(styling: Styling): ExcelStylingBuilder[A] =
+    new ExcelStylingBuilder[A](
+      headerStyles = self.headerStyles.map(_.withDefaultValue(styling)),
+      cellStyles = self.cellStyles
+    )
 
   def addHeaderStyle(headerName: String, styling: Styling): ExcelStylingBuilder[A] =
     new ExcelStylingBuilder[A](

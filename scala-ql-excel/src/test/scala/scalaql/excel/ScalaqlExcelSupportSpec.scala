@@ -439,37 +439,53 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly write nested xlsx document with headers" in {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-nested", "with-headers.xls")
 
-      implicit val excelConfig: ExcelWriteConfig[NestedPerson] = ExcelWriteConfig.default.copy(
+      implicit val styling: ExcelStyling[NestedPersonOption] = ExcelStyling
+        .builder[NestedPersonOption]
+        .forAllHeaders(
+          cellStyle
+            .andThen(_.setFillPattern(FillPatternType.SOLID_FOREGROUND))
+            .andThen(_.setFillForegroundColor(IndexedColors.PINK.index))
+        )
+        .forField(_.names.name, cellStyle.andThen(_.setRotation(90)))
+        .forField(_.names.surname, cellStyle.andThen(_.setRotation(-90)))
+        .forField(
+          _.metadata.each.id,
+          cellStyle
+            .andThen(_.setFillPattern(FillPatternType.SOLID_FOREGROUND))
+            .andThen(_.setFillForegroundColor(IndexedColors.BLUE.index))
+        )
+        .build
+
+      implicit val excelConfig: ExcelWriteConfig[NestedPersonOption] = ExcelWriteConfig.default.copy(
         writeHeaders = true,
         naming = Naming.WithSpacesLowerCase
       )
 
-      select[NestedPerson]
+      select[NestedPersonOption]
         .foreach(
-          excel.write.file[NestedPerson](path)
+          excel.write.file[NestedPersonOption](path)
         )
         .run(
           from(
             List(
-              NestedPerson(
+              NestedPersonOption(
                 names = Names(
                   name = "Vitalii",
                   surname = "Honta"
                 ),
-                metadata = Metadata(
-                  id = UUID.fromString("4ffe9631-2169-4c50-90ff-8818bc28ab3f"),
-                  createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+                metadata = Some(
+                  Metadata(
+                    id = UUID.fromString("4ffe9631-2169-4c50-90ff-8818bc28ab3f"),
+                    createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+                  )
                 )
               ),
-              NestedPerson(
+              NestedPersonOption(
                 names = Names(
                   name = "John",
                   surname = "Doe"
                 ),
-                metadata = Metadata(
-                  id = UUID.fromString("304e27cc-f2e2-489a-8fac-4279abcbbefa"),
-                  createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
-                )
+                metadata = None
               )
             )
           )

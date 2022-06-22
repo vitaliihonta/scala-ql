@@ -3,6 +3,7 @@ package scalaql.html
 import scalatags.Text.all.*
 import scala.quoted.*
 import scalaql.utils.Scala3MacroUtils
+import scala.util.Try
 
 class HtmlStylingBuilder[A](
   headerStyles: Either[String => List[Modifier], Map[String, List[Modifier]]] = Right(
@@ -12,8 +13,9 @@ class HtmlStylingBuilder[A](
 
   def build: HtmlStyling[A] =
     new HtmlStyling.Configured[A](
-      (name: String) => headerStyles.map(_.getOrElse(name, Nil)).left.map(_.apply(name)).merge,
-      fieldStyles.getOrElse(_: String, Nil)
+      (name: String) =>
+        Try(headerStyles.map(_.apply(name))).toOption.map(_.left.map(_.apply(name)).merge).toList.flatten,
+      (name: String) => Try(fieldStyles(name)).toOption.toList.flatten
     )
 
   def forAllHeaders(styling: List[Modifier]): HtmlStylingBuilder[A] =
@@ -32,6 +34,12 @@ class HtmlStylingBuilder[A](
     new HtmlStylingBuilder[A](
       headerStyles = self.headerStyles,
       fieldStyles = fieldStyles.withDefaultValue(styling)
+    )
+
+  def withDefaultForHeaders(styling: List[Modifier]): HtmlStylingBuilder[A] =
+    new HtmlStylingBuilder[A](
+      headerStyles = self.headerStyles.map(_.withDefaultValue(styling)),
+      fieldStyles = self.fieldStyles
     )
 
   def addHeaderStyle(headerName: String, styling: List[Modifier]): HtmlStylingBuilder[A] =

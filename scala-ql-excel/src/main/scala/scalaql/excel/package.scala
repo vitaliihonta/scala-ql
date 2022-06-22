@@ -1,3 +1,5 @@
 package scalaql
 
-package object excel extends ScalaqlExcelSupport with StylingSyntax {}
+import scalaql.utils.EachSyntax
+
+package object excel extends ScalaqlExcelSupport with StylingSyntax with EachSyntax {}
