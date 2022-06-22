@@ -2,8 +2,8 @@ package scalaql.excel
 
 import org.apache.poi.ss.usermodel.CellStyle
 import scala.language.experimental.macros
-import scala.reflect.macros.TypecheckException
 import scala.reflect.macros.blackbox
+import scalaql.utils.BaseTypeCheckedBuilder
 
 class ExcelStylingBuilder[A](
   headerStyles: Either[String => Option[Styling], Map[String, Styling]] = Right(Map.empty[String, Styling]),
@@ -48,7 +48,9 @@ class ExcelStylingBuilder[A](
     )
 }
 
-class ExcelStylingBuilderMacro(val c: blackbox.Context) {
+class ExcelStylingBuilderMacro(override val c: blackbox.Context)
+    extends BaseTypeCheckedBuilder[ExcelStylingBuilder](c)("excel") {
+
   import c.universe.*
 
   def forHeaderImpl[A: WeakTypeTag, B: WeakTypeTag](f: Expr[A => B], styling: Expr[Styling]): Tree =
@@ -57,56 +59,4 @@ class ExcelStylingBuilderMacro(val c: blackbox.Context) {
   def forFieldImpl[A: WeakTypeTag, B: WeakTypeTag](f: Expr[A => B], styling: Expr[Styling]): Tree =
     builderStepImpl[A, B](f)((prefix, fieldName) => q"""$prefix.addFieldStyle($fieldName, $styling)""")
 
-  private def builderStepImpl[A: WeakTypeTag, B: WeakTypeTag](
-    f:   Expr[A => B]
-  )(use: (Tree, String) => Tree
-  ): Tree = {
-    libraryUsageValidityCheck[A]()
-
-    val fieldName = extractSelectorField(f.tree)
-      .map(_.toString)
-      .getOrElse(
-        error(s"Expected a field selector to be passed (as instance.field1), got $f")
-      )
-
-    use(c.prefix.tree, fieldName)
-  }
-
-  private def libraryUsageValidityCheck[A: WeakTypeTag](): Unit = {
-    if (!(c.prefix.tree.tpe =:= weakTypeOf[ExcelStylingBuilder[A]])) {
-      error("Invalid library usage! Refer to documentation")
-    }
-    val A           = weakTypeOf[A].dealias
-    val tpe         = A.typeSymbol
-    val isCaseClass = tpe.isClass && tpe.asClass.isCaseClass
-    if (!isCaseClass) {
-      error(s"Expected $A to be a case class")
-    }
-  }
-
-  private def extractSelectorField(t: Tree): Option[TermName] =
-    t match {
-      case q"(${vd: ValDef}) => ${idt: Ident}.${fieldName: TermName}" if vd.name == idt.name =>
-        Some(fieldName)
-      case _ =>
-        None
-    }
-
-  private def error(message: String): Nothing = c.abort(c.enclosingPosition, message)
-
-  private def debugEnabled: Boolean =
-    sys.props
-      .get("scala-ql-excel.debug.macro")
-      .flatMap(str => scala.util.Try(str.toBoolean).toOption)
-      .getOrElse(false)
-
-  implicit class Debugged[A](self: A) {
-
-    def debugged(msg: String): A = {
-      if (debugEnabled) {
-        println(s"$msg: $self")
-      }
-      self
-    }
-  }
 }

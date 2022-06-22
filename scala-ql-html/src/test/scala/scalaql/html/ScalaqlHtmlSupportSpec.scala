@@ -18,6 +18,10 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
     createdAt:              LocalDateTime,
     isProgrammer:           Boolean)
 
+  case class Names(name: String, surname: String)
+  case class Metadata(id: UUID, createdAt: LocalDateTime)
+  case class NestedPersonOption(names: Names, metadata: Option[Metadata])
+
   case class PeopleStats(
     isProgrammer: Boolean,
     stats:        List[PeopleStatsPerIsProgrammer])
@@ -67,6 +71,43 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
 
       resultBuilder.toString shouldEqual
         """<html><head></head><body><table><tr><th>id</th><th>name</th><th>workingExperienceYears</th><th>birthDay</th><th>createdAt</th><th>isProgrammer</th></tr><tr><td>4ffe9631-2169-4c50-90ff-8818bc28ab3f</td><td>Vitalii</td><td>100500</td><td>1997-11-13</td><td>2022-06-19T15:00</td><td>true</td></tr><tr><td>304e27cc-f2e2-489a-8fac-4279abcbbefa</td><td>John</td><td>2000</td><td>1922-06-19</td><td>2022-06-19T15:00</td><td>true</td></tr></table></body></html>"""
+    }
+
+    "write nested html with options correctly" in {
+      val resultBuilder = new mutable.StringBuilder
+
+      select[NestedPersonOption]
+        .foreach(
+          html.write.string[NestedPersonOption](resultBuilder)
+        )
+        .run(
+          from(
+            List(
+              NestedPersonOption(
+                names = Names(
+                  name = "Vitalii",
+                  surname = "Honta"
+                ),
+                metadata = Some(
+                  Metadata(
+                    id = UUID.fromString("4ffe9631-2169-4c50-90ff-8818bc28ab3f"),
+                    createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+                  )
+                )
+              ),
+              NestedPersonOption(
+                names = Names(
+                  name = "John",
+                  surname = "Doe"
+                ),
+                metadata = None
+              )
+            )
+          )
+        )
+
+      resultBuilder.toString shouldEqual
+        """<html><head></head><body><table><tr><th>name</th><th>surname</th><th>id</th><th>createdAt</th></tr><tr><td>Vitalii</td><td>Honta</td><td>4ffe9631-2169-4c50-90ff-8818bc28ab3f</td><td>2022-06-19T15:00</td></tr><tr><td>John</td><td>Doe</td><td></td><td></td></tr></table></body></html>"""
     }
 
     "write nested html correctly" in {

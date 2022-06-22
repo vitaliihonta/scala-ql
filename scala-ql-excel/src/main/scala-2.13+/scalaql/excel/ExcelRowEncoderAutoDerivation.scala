@@ -15,14 +15,15 @@ trait ExcelRowEncoderAutoDerivation {
         else nestedHeaders
       }
 
-    override def write(row: Row, value: T)(implicit writeContext: ExcelWriteContext): WriteResult = {
+    override def write(value: T, into: ExcelTableApi)(implicit writeContext: ExcelWriteContext): WriteResult = {
       val cellsWritten = ctx.parameters.foldLeft(0) { (cellsWritten, param) =>
         cellsWritten + param.typeclass
-          .write(row, param.dereference(value))(
-            writeContext.copy(
-              path = param.label :: writeContext.path,
-              startOffset = writeContext.startOffset + cellsWritten
-            )
+          .write(param.dereference(value), into)(
+            writeContext
+              .enterField(param.label)
+              .copy(
+                startOffset = writeContext.startOffset + cellsWritten
+              )
           )
           .cellsWritten
       }

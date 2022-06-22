@@ -2,7 +2,9 @@ package scalaql.html
 
 import scalaql.SideEffect
 import scalaql.sources.*
+import scalaql.sources.columnar.TableApiFunctions
 import scalatags.Text.all.*
+
 import java.io.Writer
 
 trait ScalaqlHtmlSupport extends DataSourceJavaIOWriteSupport[HtmlTableEncoder, HtmlTableEncoderConfig] {
@@ -21,24 +23,25 @@ trait ScalaqlHtmlSupport extends DataSourceJavaIOWriteSupport[HtmlTableEncoder, 
         thTag = config.thTag,
         tdTag = config.tdTag
       )
-      SideEffect[Writer, Table, A](
-        initialState = Table.empty,
+      SideEffect[Writer, HtmlTable, A](
+        initialState = HtmlTable.empty,
         acquire = () => sink,
         release = { (writer, table) =>
           val headers = {
-            val row = TableRow.empty
+            val row = table.prependEmptyRow
             initialContext.headers.foreach { h =>
               row.append(h, config.thTag(config.styling.headerStyle(h))(config.naming(h)))
             }
             row
           }
-          table.prepend(headers)
-          fillGapsIntoTable(table)
+          TableApiFunctions.fillGapsIntoTable[Modifier, Modifier, HtmlTableRow](table)(h =>
+            td(initialContext.fieldStyles(h))
+          )
           val document = config.htmlTag(
             config.headTag,
             config.bodyTag(
               config.tableTag(
-                table.getRows
+                table.getRowValues
                   .map { row =>
                     config.trTag(row.map { case (_, mod) => mod })
                   }
@@ -50,23 +53,10 @@ trait ScalaqlHtmlSupport extends DataSourceJavaIOWriteSupport[HtmlTableEncoder, 
           writer.close()
         },
         use = { (_, into, value) =>
-          HtmlTableEncoder[A].write(value, into.append(TableRow.empty))
+          HtmlTableEncoder[A].write(value, into.appendEmptyRow)
           into
         }
       )
     }
-
-    private def fillGapsIntoTable(
-      table:                 Table
-    )(implicit writeContext: HtmlTableEncoderContext
-    ): Unit =
-      table.foreachRow { row =>
-        val resultHeaders = row.getFieldNames
-        writeContext.headers.zipWithIndex.foreach { case (h, idx) =>
-          if (!resultHeaders.contains(h)) {
-            row.insert(idx, h, td(writeContext.fieldStyles(h)))
-          }
-        }
-      }
   }
 }

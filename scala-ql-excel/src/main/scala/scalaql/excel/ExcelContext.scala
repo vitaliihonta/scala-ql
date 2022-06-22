@@ -4,47 +4,92 @@ import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.FormulaEvaluator
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.Cell
+import scalaql.excel
+import scalaql.sources.Naming
+import scalaql.sources.columnar.{CodecPath, TableApiContext, TableApiWriteContext}
 
 sealed trait ExcelContext {
   def workbook: Workbook
-  def path: List[String]
+  def location: CodecPath
 
   lazy val formulaEvaluator: FormulaEvaluator = workbook.getCreationHelper.createFormulaEvaluator
 }
 
 case class ExcelReadContext(
   workbook:               Workbook,
+  naming:                 Naming,
   evaluateFormulas:       Boolean,
   headers:                Map[String, Int],
   cellResolutionStrategy: CellResolutionStrategy,
-  path:                   List[String],
+  location:               CodecPath,
   currentOffset:          Int)
-    extends ExcelContext {
+    extends TableApiContext[ExcelReadContext]
+    with ExcelContext { self =>
+
+  override def enterField(name: String): ExcelReadContext =
+    copy(location = CodecPath.AtField(name, self.location))
+
+  override def enterIndex(idx: Int): ExcelReadContext =
+    copy(location = CodecPath.AtIndex(idx, self.fieldLocation))
 
   def startOffset: Either[ExcelDecoderException, Int] =
     cellResolutionStrategy
-      .getStartOffset(headers, path.head, currentOffset)
+      .getStartOffset(headers, location, naming, currentOffset)
       .toRight(
-        cellResolutionStrategy.unableToFindCell(path, currentOffset)
+        fieldNotFoundError
       )
 
-  def cannotDecodeError(cause: String): ExcelDecoderException =
-    cellResolutionStrategy.cannotDecodeError(path, currentOffset, cause)
+  def cannotDecodeError(cause: String): ExcelDecoderException.CannotDecode =
+    new ExcelDecoderException.CannotDecode(location, cause)
 
-  def pathStr: String = CellResolutionStrategy.pathStr(path)
+  def fieldNotFoundError: ExcelDecoderException.FieldNotFound =
+    new ExcelDecoderException.FieldNotFound(location)
+
+  def accumulatingError(name: String, errors: List[ExcelDecoderException]): ExcelDecoderException.Accumulating = {
+    def flatten(errors: List[ExcelDecoderException], acc: List[ExcelDecoderException]): List[ExcelDecoderException] =
+      errors match {
+        case Nil => acc
+        case (head: ExcelDecoderException.Accumulating) :: tail =>
+          flatten(tail, flatten(head.errors, Nil) ::: acc)
+        case head :: tail =>
+          flatten(tail, head :: acc)
+      }
+
+    val flattened = flatten(errors, Nil).reverse
+    new ExcelDecoderException.Accumulating(name, flattened)
+  }
 }
 
 case class ExcelWriteContext(
   workbook:    Workbook,
-  path:        List[String],
+  headers:     List[String],
+  location:    CodecPath,
   startOffset: Int,
   cellStyle:   String => Option[Styling])
-    extends ExcelContext {
+    extends TableApiWriteContext[ExcelWriteContext]
+    with ExcelContext { self =>
+
+  override def enterField(name: String): ExcelWriteContext =
+    copy(location = CodecPath.AtField(name, self.location))
+
+  override def enterIndex(idx: Int): ExcelWriteContext =
+    copy(location = CodecPath.AtIndex(idx, self.fieldLocation))
 
   def applyCellStyle(cell: Cell): Unit =
-    cellStyle(path.head).foreach { styling =>
+    cellStyle(location.fieldLocation.name).foreach { styling =>
       val style: CellStyle = workbook.createCellStyle()
       styling(cell.getSheet.getWorkbook, style)
       cell.setCellStyle(style)
     }
+}
+
+object ExcelWriteContext {
+  def initial(workbook: Workbook, headers: List[String], cellStyle: String => Option[Styling]): ExcelWriteContext =
+    ExcelWriteContext(
+      workbook = workbook,
+      headers = headers,
+      location = CodecPath.Root,
+      startOffset = 0,
+      cellStyle = cellStyle
+    )
 }

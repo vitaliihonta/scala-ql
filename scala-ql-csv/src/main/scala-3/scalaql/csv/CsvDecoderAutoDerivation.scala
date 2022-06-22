@@ -6,18 +6,16 @@ import magnolia1.*
 trait CsvDecoderAutoDerivation extends ProductDerivation[CsvDecoder] {
 
   def join[T](ctx: CaseClass[CsvDecoder, T]): CsvDecoder[T] = new CsvDecoder[T] {
-    override def read(row: Map[String, String])(implicit readerContext: CsvContext): CsvDecoder.Result[T] =
+    override def read(row: Map[String, String])(implicit readerContext: CsvReadContext): CsvDecoder.Result[T] =
       ctx
         .constructEither { param =>
           param.typeclass
             .read(row)(
-              readerContext.copy(
-                path = param.label :: readerContext.path
-              )
+              readerContext.enterField(param.label)
             )
         }
         .left
-        .map(new CsvDecoderAccumulatingException(s"${ctx.typeInfo.short} (at ${readerContext.pathStr})", _))
+        .map(readerContext.accumulatingError(s"${ctx.typeInfo.short} (at `${readerContext.location}`)", _))
   }
 
   inline given autoDerive[T](using Mirror.Of[T]): CsvDecoder[T] = derived[T]

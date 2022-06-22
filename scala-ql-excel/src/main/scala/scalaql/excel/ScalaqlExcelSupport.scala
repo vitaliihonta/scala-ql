@@ -1,11 +1,15 @@
 package scalaql.excel
 
 import scalaql.sources.*
-import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.{Cell, Row}
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import scalaql.SideEffect
+import scalaql.excel.ExcelTableApi.ConfigureCell
+import scalaql.sources.columnar.CodecPath
+import scalaql.sources.columnar.TableApiFunctions
+
 import java.nio.charset.StandardCharsets
 import java.io.InputStream
 import java.io.OutputStream
@@ -23,23 +27,25 @@ trait ScalaqlExcelSupport
       val worksheet   = config.choseWorksheet(workbook)
       val rowIterator = worksheet.iterator().asScala
 
-      implicit val ctx: ExcelReadContext = initialContext(workbook, rowIterator)
+      implicit val ctx: ExcelReadContext = initialContext(workbook, rowIterator, config.naming)
 
       rowIterator.map(ExcelDecoder[A].read(_).fold[A](throw _, _.value)).toVector
     }
 
     private def initialContext(
       workbook:        XSSFWorkbook,
-      rowIterator:     Iterator[Row]
+      rowIterator:     Iterator[Row],
+      naming:          Naming
     )(implicit config: ExcelReadConfig
     ): ExcelReadContext = {
       val headers = inferHeaders(rowIterator)
       ExcelReadContext(
         workbook = workbook,
+        naming = naming,
         evaluateFormulas = config.evaluateFormulas,
         headers = headers,
         config.cellResolutionStrategy,
-        path = Nil,
+        location = CodecPath.Root,
         currentOffset = 0
       )
     }
@@ -55,37 +61,51 @@ trait ScalaqlExcelSupport
     ): SideEffect[?, ?, A] = {
       val workbook  = new XSSFWorkbook()
       val worksheet = workbook.createSheet(config.worksheetName.getOrElse("Default"))
+      val table     = new ExcelTableApi(worksheet, ExcelEncoder[A].headers)
       SideEffect[OutputStream, Int, A](
         initialState = 0,
         acquire = () => sink,
         release = { (os, _) =>
+          implicit val writeContext: ExcelWriteContext = ExcelWriteContext.initial(
+            workbook = workbook,
+            headers = ExcelEncoder[A].headers,
+            cellStyle = config.styling.cellStyle
+          )
+          TableApiFunctions.fillGapsIntoTable[Cell, ConfigureCell, ExcelTableRowApi](table)(header =>
+            (cell: Cell) => {
+              config.styling.cellStyle(header).foreach { styling =>
+                val cellStyle = workbook.createCellStyle()
+                styling(workbook, cellStyle)
+                cell.setCellStyle(cellStyle)
+              }
+              cell.setBlank()
+              cell
+            }
+          )
           workbook.write(os)
           os.flush()
           os.close()
         },
-        use = { (_, rowIdx, value) => writeRow[A](workbook, worksheet, rowIdx, value) }
+        use = { (_, rowIdx, value) => writeRow[A](workbook, table, rowIdx, value) }
       )
     }
 
     private def writeRow[A: ExcelEncoder](
       workbook:        XSSFWorkbook,
-      worksheet:       XSSFSheet,
+      table:           ExcelTableApi,
       rowIdx:          Int,
       value:           A
     )(implicit config: ExcelWriteConfig[A]
     ): Int = {
       val idx = if (rowIdx == 0 && config.writeHeaders) {
-        writeHeaders[A](workbook, worksheet)
+        writeHeaders[A](workbook, table)
         rowIdx + 1
       } else rowIdx
 
-      val row = worksheet.createRow(idx)
-
-      ExcelEncoder[A].write(row, value)(
-        ExcelWriteContext(
+      ExcelEncoder[A].write(value, table.appendEmptyRow)(
+        ExcelWriteContext.initial(
           workbook = workbook,
-          path = Nil,
-          startOffset = 0,
+          headers = ExcelEncoder[A].headers,
           cellStyle = config.styling.cellStyle
         )
       )
@@ -95,24 +115,30 @@ trait ScalaqlExcelSupport
 
   private def writeHeaders[A: ExcelEncoder](
     workbook:        XSSFWorkbook,
-    worksheet:       XSSFSheet
+    table:           ExcelTableApi
   )(implicit config: ExcelWriteConfig[A]
   ): Unit = {
-    val headerRow = worksheet.createRow(0)
-    for ((header, idx) <- ExcelEncoder[A].headers.zipWithIndex) {
-      val cell = headerRow.createCell(idx)
-      config.styling.headerStyle(header).foreach { styling =>
-        val cellStyle = workbook.createCellStyle()
-        styling(workbook, cellStyle)
-        cell.setCellStyle(cellStyle)
-      }
-      cell.setCellValue(config.naming(header))
-    }
+    table.appendEmptyRow
+    val headerRow = table.currentRow
+    for ((header, idx) <- ExcelEncoder[A].headers.zipWithIndex)
+      headerRow.insert(
+        idx,
+        header,
+        (cell: Cell) => {
+          config.styling.headerStyle(header).foreach { styling =>
+            val cellStyle = workbook.createCellStyle()
+            styling(workbook, cellStyle)
+            cell.setCellStyle(cellStyle)
+          }
+          cell.setCellValue(config.naming(header))
+          cell
+        }
+      )
   }
 
   private def inferHeaders(rowIterator: Iterator[Row])(implicit config: ExcelReadConfig): Map[String, Int] =
     config.cellResolutionStrategy match {
-      case _: CellResolutionStrategy.NameBased =>
+      case CellResolutionStrategy.NameBased =>
         readHeadersFromRow(rowIterator.next())
       case _ => Map.empty[String, Int]
     }

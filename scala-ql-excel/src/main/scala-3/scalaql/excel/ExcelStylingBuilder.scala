@@ -1,6 +1,7 @@
 package scalaql.excel
 
 import scala.quoted.*
+import scalaql.utils.Scala3MacroUtils
 
 class ExcelStylingBuilder[A](
   headerStyles: Either[String => Option[Styling], Map[String, Styling]] = Right(Map.empty[String, Styling]),
@@ -53,7 +54,7 @@ object ExcelStylingBuilder {
     styling: Expr[Styling]
   )(using Quotes
   ): Expr[ExcelStylingBuilder[A]] = {
-    val fieldName = Expr(accessorName[A, B](f))
+    val fieldName = Expr(Scala3MacroUtils.accessorName[A, B](f))
     '{ $self.addHeaderStyle($fieldName, $styling) }
   }
 
@@ -63,17 +64,7 @@ object ExcelStylingBuilder {
     styling: Expr[Styling]
   )(using Quotes
   ): Expr[ExcelStylingBuilder[A]] = {
-    val fieldName = Expr(accessorName[A, B](f))
+    val fieldName = Expr(Scala3MacroUtils.accessorName[A, B](f))
     '{ $self.addFieldStyle($fieldName, $styling) }
-  }
-
-  def accessorName[A, B](f: Expr[A => B])(using Quotes): String = {
-    import quotes.reflect.*
-    Expr.betaReduce(f).asTerm.underlying match {
-      case Block(List(DefDef(_, _, _, Some(Select(Ident(_), name)))), _) =>
-        name
-      case _ =>
-        throw new IllegalArgumentException(s"Expected a field selector to be passed (as instance.field1), got $f")
-    }
   }
 }

@@ -1,6 +1,5 @@
-package scalaql.html
+package scalaql.sources.columnar
 
-import scalatags.Text.{Modifier, TypedTag}
 import scala.annotation.tailrec
 
 sealed trait CodecPath {
@@ -12,7 +11,7 @@ sealed trait CodecPath {
   protected[scalaql] def fieldLocation: CodecPath.AtField =
     sys.error("Library error, please fill a bug ticket")
 
-  override final def toString: String = {
+  override def toString: String = {
     @tailrec
     def go(remaining: CodecPath, acc: List[String]): List[String] =
       remaining match {
@@ -33,6 +32,7 @@ object CodecPath {
     override val isIndex           = false
     override val isField           = false
     override val parent: CodecPath = this
+    override def toString: String  = "root"
   }
   case class AtField(name: String, parent: CodecPath) extends CodecPath {
     override val isRoot  = false
@@ -46,44 +46,4 @@ object CodecPath {
     override val isIndex = true
     override val isField = false
   }
-}
-
-case class HtmlTableEncoderContext(
-  location:    CodecPath,
-  headers:     List[String],
-  trTag:       TypedTag[String],
-  thTag:       TypedTag[String],
-  tdTag:       TypedTag[String],
-  fieldStyles: String => List[Modifier]) { self =>
-
-  def enterField(name: String): HtmlTableEncoderContext =
-    copy(location = CodecPath.AtField(name, self.location))
-
-  def enterIndex(idx: Int): HtmlTableEncoderContext =
-    copy(location = CodecPath.AtIndex(idx, self.fieldLocation))
-
-  private[html] def fieldLocation: CodecPath.AtField =
-    location.fieldLocation
-
-  def getFieldStyles: List[Modifier] =
-    if (location.isField) fieldStyles(fieldLocation.name)
-    else Nil
-}
-
-object HtmlTableEncoderContext {
-  def initial(
-    headers:     List[String],
-    fieldStyles: String => List[Modifier],
-    trTag:       TypedTag[String],
-    thTag:       TypedTag[String],
-    tdTag:       TypedTag[String]
-  ): HtmlTableEncoderContext =
-    HtmlTableEncoderContext(
-      location = CodecPath.Root,
-      headers = headers,
-      fieldStyles = fieldStyles,
-      trTag = trTag,
-      thTag = thTag,
-      tdTag = tdTag
-    )
 }

@@ -7,21 +7,21 @@ import java.util.UUID
 trait CsvEncoder[A] { self =>
   def headers: List[String]
 
-  def write(value: A)(implicit ctx: CsvContext): CsvEncoder.Result
+  def write(value: A)(implicit ctx: CsvWriteContext): CsvEncoder.Result
 }
 
 trait CsvSingleFieldEncoder[A] extends CsvEncoder[A] { self =>
   override val headers: List[String] = Nil
 
-  def writeField(value: A)(implicit ctx: CsvContext): String
+  def writeField(value: A)(implicit ctx: CsvWriteContext): String
 
-  override final def write(value: A)(implicit ctx: CsvContext): CsvEncoder.Result = {
+  override final def write(value: A)(implicit ctx: CsvWriteContext): CsvEncoder.Result = {
     val result = writeField(value)
     Map(ctx.getFieldName -> result)
   }
 
   def contramap[B](f: B => A): CsvEncoder.SingleField[B] = new CsvEncoder.SingleField[B] {
-    override def writeField(value: B)(implicit ctx: CsvContext): String =
+    override def writeField(value: B)(implicit ctx: CsvWriteContext): String =
       self.writeField(f(value))
   }
 }
@@ -35,7 +35,7 @@ object CsvEncoder extends LowPriorityCsvFieldEncoders {
   def SingleField[A](implicit ev: CsvEncoder.SingleField[A]): ev.type = ev
 
   def fieldEncoder[A](f: A => String): CsvEncoder.SingleField[A] = new CsvSingleFieldEncoder[A] {
-    override def writeField(value: A)(implicit ctx: CsvContext): String = f(value)
+    override def writeField(value: A)(implicit ctx: CsvWriteContext): String = f(value)
   }
 }
 
@@ -52,4 +52,12 @@ trait LowPriorityCsvFieldEncoders extends CsvEncoderAutoDerivation {
   implicit val uuidEncoder: CsvEncoder.SingleField[UUID]                   = toStringEncoder[UUID]
   implicit val localDateEncoder: CsvEncoder.SingleField[LocalDate]         = toStringEncoder[LocalDate]
   implicit val localDateTimeEncoder: CsvEncoder.SingleField[LocalDateTime] = toStringEncoder[LocalDateTime]
+
+  implicit def optionDecoder[A: CsvEncoder]: CsvEncoder[Option[A]] =
+    new CsvEncoder[Option[A]] {
+      override def headers: List[String] = CsvEncoder[A].headers
+
+      override def write(value: Option[A])(implicit ctx: CsvWriteContext): CsvEncoder.Result =
+        value.fold(ifEmpty = Map.empty[String, String])(CsvEncoder[A].write(_))
+    }
 }
