@@ -5,6 +5,9 @@ import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.FormulaEvaluator
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Workbook
+import scalaql.excel
+import scalaql.excel.ExcelDecoder.Result
+import scalaql.sources.columnar.CodecPath
 import scala.util.control.Exception.catching
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -15,12 +18,24 @@ import scala.annotation.tailrec
 
 case class ReadResult[+A](value: A, readCells: Int)
 
-class ExcelDecoderException(msg: String) extends Exception(msg)
-class ExcelDecoderAccumulatingException(name: String, errors: List[ExcelDecoderException])
-    extends ExcelDecoderException({
-      val errorsStr = errors.map(e => s"( $e )").mkString("\n\t+ ", "\n\t+ ", "\n")
-      s"Failed to decode $name:$errorsStr"
-    })
+abstract class ExcelDecoderException(msg: String) extends Exception(msg)
+object ExcelDecoderException {
+  class CannotDecode(location: CodecPath, cause: String)
+      extends ExcelDecoderException(
+        s"Cannot decode cell at path `$location`: $cause"
+      )
+
+  class FieldNotFound(location: CodecPath)
+      extends ExcelDecoderException(
+        s"Field not found at path `$location`"
+      )
+
+  class Accumulating(name: String, val errors: List[ExcelDecoderException])
+      extends ExcelDecoderException({
+        val errorsStr = errors.map(e => s"( $e )").mkString("\n\t+ ", "\n\t+ ", "\n")
+        s"Failed to decode $name:$errorsStr"
+      })
+}
 
 trait ExcelDecoder[A] {
   self =>
@@ -40,12 +55,18 @@ trait ExcelDecoder[A] {
 trait ExcelSingleCellDecoder[A] extends ExcelDecoder[A] {
   self =>
 
+  def supportsBlankOrEmpty: Boolean = false
+
   def readCell(cell: Cell)(implicit ctx: ExcelReadContext): Either[ExcelDecoderException, A]
 
-  override final def read(row: Row)(implicit ctx: ExcelReadContext): ExcelDecoder.Result[A] = {
-    val result = ctx.startOffset.flatMap(idx => readCell(row.getCell(idx)))
-    result.map(ReadResult(_, readCells = 1))
-  }
+  override final def read(row: Row)(implicit ctx: ExcelReadContext): ExcelDecoder.Result[A] =
+    ctx.startOffset.flatMap { idx =>
+      Option(row.getCell(idx))
+        .filter(ableToDecode)
+        .toRight(ctx.fieldNotFoundError)
+        .flatMap(readCell(_))
+        .map(ReadResult(_, readCells = 1))
+    }
 
   override def map[B](f: A => B): ExcelDecoder.SingleCell[B] = new ExcelSingleCellDecoder[B] {
     override def readCell(cell: Cell)(implicit ctx: ExcelReadContext): Either[ExcelDecoderException, B] =
@@ -57,6 +78,11 @@ trait ExcelSingleCellDecoder[A] extends ExcelDecoder[A] {
       override def readCell(cell: Cell)(implicit ctx: ExcelReadContext): Either[ExcelDecoderException, B] =
         self.readCell(cell).flatMap(f)
     }
+
+  private def ableToDecode(cell: Cell): Boolean =
+    if (cell.getCellType == CellType.BLANK) supportsBlankOrEmpty
+    else if (cell.getCellType == CellType.STRING && cell.getStringCellValue.isEmpty) supportsBlankOrEmpty
+    else true
 }
 
 object ExcelDecoder extends LowPriorityCellDecoders with ExcelRowDecoderAutoDerivation {
@@ -69,13 +95,17 @@ object ExcelDecoder extends LowPriorityCellDecoders with ExcelRowDecoderAutoDeri
 }
 
 class DecoderForCellType[A](
-  cellTypes: Set[CellType]
-)(reader:    ExcelReadContext => Cell => Either[ExcelDecoderException, A])
+  cellTypes:        Set[CellType],
+  withBlankOrEmpty: Boolean
+)(reader:           ExcelReadContext => Cell => Either[ExcelDecoderException, A])
     extends ExcelSingleCellDecoder[A] {
+
+  override val supportsBlankOrEmpty: Boolean = withBlankOrEmpty
+
   override def readCell(cell: Cell)(implicit ctx: ExcelReadContext): Either[ExcelDecoderException, A] = {
     @tailrec
     def go(input: Cell): Either[ExcelDecoderException, A] =
-      if (cellTypes contains input.getCellType) reader(ctx)(input)
+      if ((cellTypes contains input.getCellType) || supportsBlankOrEmpty) reader(ctx)(input)
       else if (input.getCellType == CellType.FORMULA && ctx.evaluateFormulas)
         go(ctx.formulaEvaluator.evaluateInCell(input))
       else {
@@ -99,34 +129,38 @@ class DecoderForCellType[A](
 
 object DecoderForCellType {
   def apply[A](
-    cellTypes: Set[CellType]
-  )(reader:    ExcelReadContext => Cell => Either[ExcelDecoderException, A]
+    cellTypes:        Set[CellType],
+    withBlankOrEmpty: Boolean = false
+  )(reader:           ExcelReadContext => Cell => Either[ExcelDecoderException, A]
   ): DecoderForCellType[A] =
-    new DecoderForCellType[A](cellTypes)(reader)
+    new DecoderForCellType[A](cellTypes, withBlankOrEmpty)(reader)
 
   def single[A](
-    cellType: CellType
-  )(reader:   ExcelReadContext => Cell => Either[ExcelDecoderException, A]
+    cellType:         CellType,
+    withBlankOrEmpty: Boolean = false
+  )(reader:           ExcelReadContext => Cell => Either[ExcelDecoderException, A]
   ): DecoderForCellType[A] =
-    new DecoderForCellType[A](Set(cellType))(reader)
+    new DecoderForCellType[A](Set(cellType), withBlankOrEmpty)(reader)
 
   def singleSafe[A](
-    cellType: CellType
-  )(reader:   Cell => A
+    cellType:         CellType,
+    withBlankOrEmpty: Boolean = false
+  )(reader:           Cell => A
   ): DecoderForCellType[A] =
-    new DecoderForCellType[A](Set(cellType))(_ => cell => Right(reader(cell)))
+    new DecoderForCellType[A](Set(cellType), withBlankOrEmpty)(_ => cell => Right(reader(cell)))
 
   def catching[E]: CellDecoderCatchPartiallyApplied[E] = new CellDecoderCatchPartiallyApplied[E]()
 }
 
 class CellDecoderCatchPartiallyApplied[E] private[excel] (private val `dummy`: Boolean = true) extends AnyVal {
   def apply[A](
-    first:        CellType,
-    rest:         CellType*
-  )(f:            Cell => A
-  )(implicit ctg: ClassTag[E]
+    withBlankOrEmpty: Boolean,
+    first:            CellType,
+    rest:             CellType*
+  )(f:                Cell => A
+  )(implicit ctg:     ClassTag[E]
   ): ExcelDecoder.SingleCell[A] =
-    DecoderForCellType[A]((first +: rest).toSet) { implicit ctx => cell =>
+    DecoderForCellType[A]((first +: rest).toSet, withBlankOrEmpty) { implicit ctx => cell =>
       val result = catching(ctg.runtimeClass) either f(cell)
       result.left.map(e => ctx.cannotDecodeError(e.toString))
     }
@@ -135,18 +169,23 @@ class CellDecoderCatchPartiallyApplied[E] private[excel] (private val `dummy`: B
 trait LowPriorityCellDecoders {
 
   implicit val stringDecoder: ExcelDecoder.SingleCell[String] =
-    DecoderForCellType.singleSafe[String](CellType.STRING)(_.getStringCellValue)
+    DecoderForCellType.singleSafe[String](CellType.STRING, withBlankOrEmpty = true)(_.getStringCellValue)
 
   implicit val uuidDecoder: ExcelDecoder.SingleCell[UUID] =
-    DecoderForCellType.catching[IllegalArgumentException](CellType.STRING)(cell =>
-      UUID.fromString(cell.getStringCellValue)
-    )
+    DecoderForCellType.catching[IllegalArgumentException](
+      withBlankOrEmpty = false,
+      CellType.STRING
+    )(cell => UUID.fromString(cell.getStringCellValue))
 
   implicit val booleanDecoder: ExcelDecoder.SingleCell[Boolean] =
     DecoderForCellType.singleSafe[Boolean](CellType.BOOLEAN)(_.getBooleanCellValue)
 
   def numericDecoder[N](convertDouble: Double => N, convertString: String => N): ExcelDecoder.SingleCell[N] =
-    DecoderForCellType.catching[NumberFormatException](CellType.NUMERIC, CellType.STRING) { cell =>
+    DecoderForCellType.catching[NumberFormatException](
+      withBlankOrEmpty = false,
+      CellType.NUMERIC,
+      CellType.STRING
+    ) { cell =>
       if (cell.getCellType == CellType.NUMERIC) convertDouble(cell.getNumericCellValue.toLong)
       else convertString(cell.getStringCellValue)
     }
@@ -173,4 +212,15 @@ trait LowPriorityCellDecoders {
 
   implicit val localDateDecoder: ExcelDecoder.SingleCell[LocalDate] =
     localDateTimeDecoder.map(_.toLocalDate)
+
+  implicit def optionDecoder[A: ExcelDecoder]: ExcelDecoder[Option[A]] = new ExcelDecoder[Option[A]] {
+    override def read(row: Row)(implicit ctx: ExcelReadContext): ExcelDecoder.Result[Option[A]] =
+      ExcelDecoder[A].read(row) match {
+        case Left(_: ExcelDecoderException.FieldNotFound) => Right(ReadResult(None, readCells = 0))
+        case Left(acc: ExcelDecoderException.Accumulating)
+            if acc.errors.forall(_.isInstanceOf[ExcelDecoderException.FieldNotFound]) =>
+          Right(ReadResult(None, readCells = 0))
+        case other => other.map(rs => ReadResult(Some(rs.value), rs.readCells))
+      }
+  }
 }

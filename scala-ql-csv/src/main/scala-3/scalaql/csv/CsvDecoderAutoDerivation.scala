@@ -15,7 +15,7 @@ trait CsvDecoderAutoDerivation extends ProductDerivation[CsvDecoder] {
             )
         }
         .left
-        .map(new CsvDecoderAccumulatingException(s"${ctx.typeInfo.short} (at `${readerContext.location}`)", _))
+        .map(readerContext.accumulatingError(s"${ctx.typeInfo.short} (at `${readerContext.location}`)", _))
   }
 
   inline given autoDerive[T](using Mirror.Of[T]): CsvDecoder[T] = derived[T]

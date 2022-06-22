@@ -111,7 +111,7 @@ trait LowPriorityCellEncoders {
 
       override def write(table: ExcelTableApi, value: Option[A])(implicit ctx: ExcelWriteContext): WriteResult = {
         val result = value.map { value =>
-          ExcelEncoder[A].write(table.appendEmptyRow, value)(
+          ExcelEncoder[A].write(table, value)(
             ctx
           )
         }

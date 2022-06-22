@@ -52,4 +52,12 @@ trait LowPriorityCsvFieldEncoders extends CsvEncoderAutoDerivation {
   implicit val uuidEncoder: CsvEncoder.SingleField[UUID]                   = toStringEncoder[UUID]
   implicit val localDateEncoder: CsvEncoder.SingleField[LocalDate]         = toStringEncoder[LocalDate]
   implicit val localDateTimeEncoder: CsvEncoder.SingleField[LocalDateTime] = toStringEncoder[LocalDateTime]
+
+  implicit def optionDecoder[A: CsvEncoder]: CsvEncoder[Option[A]] =
+    new CsvEncoder[Option[A]] {
+      override def headers: List[String] = CsvEncoder[A].headers
+
+      override def write(value: Option[A])(implicit ctx: CsvWriteContext): CsvEncoder.Result =
+        value.fold(ifEmpty = Map.empty[String, String])(CsvEncoder[A].write(_))
+    }
 }

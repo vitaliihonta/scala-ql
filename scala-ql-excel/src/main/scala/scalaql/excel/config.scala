@@ -48,10 +48,6 @@ sealed trait CellResolutionStrategy {
   def writeHeaders: Boolean
 
   def getStartOffset(headers: Map[String, Int], location: CodecPath, naming: Naming, currentOffset: Int): Option[Int]
-
-  def cannotDecodeError(location: CodecPath, index: Int, cause: String): ExcelDecoderException
-
-  def unableToFindCell(location: CodecPath, index: Int): ExcelDecoderException
 }
 
 object CellResolutionStrategy {
@@ -66,12 +62,6 @@ object CellResolutionStrategy {
       currentOffset: Int
     ): Option[Int] =
       Some(currentOffset)
-
-    override def cannotDecodeError(location: CodecPath, index: Int, cause: String): ExcelDecoderException =
-      new ExcelDecoderException(s"Cannot decode cell at index [$index]: $cause")
-
-    override def unableToFindCell(location: CodecPath, index: Int): ExcelDecoderException =
-      new ExcelDecoderException(s"Unable to find cell at index [$index]")
   }
 
   final object NameBased extends CellResolutionStrategy {
@@ -86,13 +76,5 @@ object CellResolutionStrategy {
       val column = naming(location.fieldLocation.name)
       headers.get(column)
     }
-
-    override def cannotDecodeError(location: CodecPath, index: Int, cause: String): ExcelDecoderException =
-      new ExcelDecoderException(
-        s"Cannot decode cell at path `$location`: $cause"
-      )
-
-    override def unableToFindCell(location: CodecPath, index: Int): ExcelDecoderException =
-      new ExcelDecoderException(s"Unable to find cell at path `$location`")
   }
 }

@@ -51,7 +51,7 @@ trait ExcelRowDecoderAutoDerivation {
       } else {
         val errors = readAllResult.collect { case Left(e) => e }.toList
         Left(
-          new ExcelDecoderAccumulatingException(s"${ctx.typeName.short} (at `${readerContext.location}`)", errors)
+          readerContext.accumulatingError(s"${ctx.typeName.short} (at `${readerContext.location}`)", errors)
         )
       }
     }

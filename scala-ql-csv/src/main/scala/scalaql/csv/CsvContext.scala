@@ -7,10 +7,25 @@ case class CsvReadContext(location: CodecPath, naming: Naming) extends TableApiC
   def getFieldName: String =
     naming(location.fieldLocation.name)
 
-  def cannotDecodeError(cause: String): CsvDecoderException =
-    new CsvDecoderException(
-      s"Cannot decode cell at path `$location`: $cause"
-    )
+  def cannotDecodeError(cause: String): CsvDecoderException.CannotDecode =
+    new CsvDecoderException.CannotDecode(location, cause)
+
+  def fieldNotFoundError: CsvDecoderException.FieldNotFound =
+    new CsvDecoderException.FieldNotFound(location)
+
+  def accumulatingError(name: String, errors: List[CsvDecoderException]): CsvDecoderException.Accumulating = {
+    def flatten(errors: List[CsvDecoderException], acc: List[CsvDecoderException]): List[CsvDecoderException] =
+      errors match {
+        case Nil => acc
+        case (head: CsvDecoderException.Accumulating) :: tail =>
+          flatten(tail, flatten(head.errors, Nil) ::: acc)
+        case head :: tail =>
+          flatten(tail, head :: acc)
+      }
+
+    val flattened = flatten(errors, Nil).reverse
+    new CsvDecoderException.Accumulating(name, flattened)
+  }
 
   override def enterField(name: String): CsvReadContext =
     copy(location = CodecPath.AtField(name, location))

@@ -40,13 +40,18 @@ trait ScalaqlCsvSupport extends DataSourceJavaIOSupport[CsvDecoder, CsvEncoder, 
         release = (writer, _) => writer.close(),
         (writer, writtenHeaders, value) => {
           if (!writtenHeaders) {
-            writer.writeRow(CsvEncoder[A].headers)
+            writer.writeRow(initialContext.headers)
           }
           val result = CsvEncoder[A].write(value)
-          writer.writeRow(result.values.toList)
+          writer.writeRow(alignWithHeaders(initialContext.headers, result))
           true
         }
       ).afterAll((writer, _) => writer.flush())
     }
+
+    private def alignWithHeaders(headers: List[String], values: Map[String, String]): List[String] =
+      headers.map { header =>
+        values.getOrElse(header, "")
+      }
   }
 }

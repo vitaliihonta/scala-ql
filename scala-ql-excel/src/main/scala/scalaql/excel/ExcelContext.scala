@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.FormulaEvaluator
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.Cell
+import scalaql.excel
 import scalaql.sources.Naming
 import scalaql.sources.columnar.{CodecPath, TableApiContext, TableApiWriteContext}
 
@@ -35,11 +36,28 @@ case class ExcelReadContext(
     cellResolutionStrategy
       .getStartOffset(headers, location, naming, currentOffset)
       .toRight(
-        cellResolutionStrategy.unableToFindCell(location, currentOffset)
+        fieldNotFoundError
       )
 
-  def cannotDecodeError(cause: String): ExcelDecoderException =
-    cellResolutionStrategy.cannotDecodeError(location, currentOffset, cause)
+  def cannotDecodeError(cause: String): ExcelDecoderException.CannotDecode =
+    new ExcelDecoderException.CannotDecode(location, cause)
+
+  def fieldNotFoundError: ExcelDecoderException.FieldNotFound =
+    new ExcelDecoderException.FieldNotFound(location)
+
+  def accumulatingError(name: String, errors: List[ExcelDecoderException]): ExcelDecoderException.Accumulating = {
+    def flatten(errors: List[ExcelDecoderException], acc: List[ExcelDecoderException]): List[ExcelDecoderException] =
+      errors match {
+        case Nil => acc
+        case (head: ExcelDecoderException.Accumulating) :: tail =>
+          flatten(tail, flatten(head.errors, Nil) ::: acc)
+        case head :: tail =>
+          flatten(tail, head :: acc)
+      }
+
+    val flattened = flatten(errors, Nil).reverse
+    new ExcelDecoderException.Accumulating(name, flattened)
+  }
 }
 
 case class ExcelWriteContext(

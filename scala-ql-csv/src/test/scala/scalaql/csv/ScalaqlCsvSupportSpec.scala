@@ -6,11 +6,17 @@ import scalaql.*
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.{LocalDate, LocalDateTime}
+import java.util.UUID
 import scala.collection.mutable
 import scala.util.Try
 
 class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
   case class Person(name: String, age: Int)
+
+  case class PersonInfo(name: String, workingExperienceYears: Int, birthDay: LocalDate, isProgrammer: Boolean)
+  case class Metadata(id: UUID, createdAt: LocalDateTime)
+  case class NestedPersonOption(info: PersonInfo, metadata: Option[Metadata])
 
   "ScalaqlCsvSupport" should {
     "correctly read simple csv" in {
@@ -29,6 +35,50 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24))
       }
+    }
+
+    "correctly read nested csv with options" in {
+      implicit val config: CsvConfig = CsvConfig.default.copy()
+      val sb                         = new mutable.StringBuilder
+      val actualResult = select[NestedPersonOption].toList
+        .run(
+          from(
+            csv.read.string[NestedPersonOption](
+              """name,workingExperienceYears,birthDay,isProgrammer,id,createdAt
+                |Vitalii,100500,1997-11-13,true,2769a48d-8fec-4242-81d1-959ae424712c,2022-06-15T12:55
+                |John,2000,1922-07-16,true,,
+                |""".stripMargin
+            )
+          )
+        )
+
+      val expectedResult = List(
+        NestedPersonOption(
+          metadata = Some(
+            Metadata(
+              id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424712c"),
+              createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0)
+            )
+          ),
+          info = PersonInfo(
+            name = "Vitalii",
+            workingExperienceYears = 100500,
+            birthDay = LocalDate.of(1997, 11, 13),
+            isProgrammer = true
+          )
+        ),
+        NestedPersonOption(
+          metadata = None,
+          info = PersonInfo(
+            name = "John",
+            workingExperienceYears = 2000,
+            birthDay = LocalDate.of(1922, 7, 16),
+            isProgrammer = true
+          )
+        )
+      )
+
+      assert(actualResult == expectedResult)
     }
 
     "correctly read from multiple file" in {
@@ -151,6 +201,54 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
           |""".stripMargin.replace("\n", "\r\n")
 
       assert(readFromFile(path) == expectedResult)
+    }
+
+    "correctly write nested csv with options" in {
+      implicit val config: CsvConfig = CsvConfig.default.copy()
+      val sb                         = new mutable.StringBuilder
+      select[NestedPersonOption]
+        .foreach(
+          csv.write.string[NestedPersonOption](sb)
+        )
+        .run(
+          from(
+            List(
+              NestedPersonOption(
+                metadata = Some(
+                  Metadata(
+                    id = UUID.fromString("2769a48d-8fec-4242-81d1-959ae424712c"),
+                    createdAt = LocalDateTime.of(2022, 6, 15, 12, 55, 0)
+                  )
+                ),
+                info = PersonInfo(
+                  name = "Vitalii",
+                  workingExperienceYears = 100500,
+                  birthDay = LocalDate.of(1997, 11, 13),
+                  isProgrammer = true
+                )
+              ),
+              NestedPersonOption(
+                metadata = None,
+                info = PersonInfo(
+                  name = "John",
+                  workingExperienceYears = 2000,
+                  birthDay = LocalDate.of(1922, 7, 16),
+                  isProgrammer = true
+                )
+              )
+            )
+          )
+        )
+
+      val expectedResult =
+        """name,workingExperienceYears,birthDay,isProgrammer,id,createdAt
+          |Vitalii,100500,1997-11-13,true,2769a48d-8fec-4242-81d1-959ae424712c,2022-06-15T12:55
+          |John,2000,1922-07-16,true,,
+          |""".stripMargin.replace("\n", "\r\n")
+
+      val actualResult = sb.toString
+
+      assert(actualResult == expectedResult)
     }
   }
 

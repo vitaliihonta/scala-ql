@@ -41,6 +41,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
   case class Metadata(id: UUID, createdAt: LocalDateTime)
 
   case class NestedPerson(names: Names, metadata: Metadata)
+  case class NestedPersonOption(names: Names, metadata: Option[Metadata])
   case class NestedPersonOrderSensitive(metadata: Metadata, names: Names)
 
   case class PersonWithProfession(
@@ -98,6 +99,44 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       }
     }
 
+    "correctly read nested xlsx document with options and headers" in {
+      val path = Paths.get("scala-ql-excel/src/test/resources/nested-options-with-headers.xls")
+
+      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
+        naming = Naming.WithSpacesLowerCase,
+        cellResolutionStrategy = CellResolutionStrategy.NameBased
+      )
+
+      select[NestedPersonOption].toList
+        .run(
+          from(
+            excel.read.file[NestedPersonOption](path)
+          )
+        ) should contain theSameElementsAs {
+        List(
+          NestedPersonOption(
+            names = Names(
+              name = "Vitalii",
+              surname = "Honta"
+            ),
+            metadata = Some(
+              Metadata(
+                id = UUID.fromString("4ffe9631-2169-4c50-90ff-8818bc28ab3f"),
+                createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+              )
+            )
+          ),
+          NestedPersonOption(
+            names = Names(
+              name = "John",
+              surname = "Doe"
+            ),
+            metadata = None
+          )
+        )
+      }
+    }
+
     "correctly read complex xlsx document with headers" in {
       val path = Paths.get("scala-ql-excel/src/test/resources/complex-with-headers.xlsx")
 
@@ -139,7 +178,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
         cellResolutionStrategy = CellResolutionStrategy.NameBased
       )
 
-      val caught = intercept[ExcelDecoderAccumulatingException] {
+      val caught = intercept[ExcelDecoderException.Accumulating] {
         select[DetailedPerson].toList
           .run(
             from(
@@ -149,9 +188,9 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       }
 
       caught.toString shouldBe
-        """scalaql.excel.ExcelDecoderAccumulatingException: Failed to decode DetailedPerson (at `root`):
-          |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
-          |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
+        """scalaql.excel.ExcelDecoderException$Accumulating: Failed to decode DetailedPerson (at `root`):
+          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
+          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
           |""".stripMargin
     }
 
@@ -163,7 +202,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
         cellResolutionStrategy = CellResolutionStrategy.NameBased
       )
 
-      val caught = intercept[ExcelDecoderAccumulatingException] {
+      val caught = intercept[ExcelDecoderException.Accumulating] {
         select[DetailedPersonWithMissingFields].toList
           .run(
             from(
@@ -173,11 +212,11 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       }
 
       caught.toString shouldEqual
-        """scalaql.excel.ExcelDecoderAccumulatingException: Failed to decode DetailedPersonWithMissingFields (at `root`):
-          |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
-          |	+ ( scalaql.excel.ExcelDecoderException: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
-          |	+ ( scalaql.excel.ExcelDecoderException: Unable to find cell at path `missingBoolean` )
-          |	+ ( scalaql.excel.ExcelDecoderException: Unable to find cell at path `missingString` )
+        """scalaql.excel.ExcelDecoderException$Accumulating: Failed to decode DetailedPersonWithMissingFields (at `root`):
+          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
+          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
+          |	+ ( scalaql.excel.ExcelDecoderException$FieldNotFound: Field not found at path `missingBoolean` )
+          |	+ ( scalaql.excel.ExcelDecoderException$FieldNotFound: Field not found at path `missingString` )
           |""".stripMargin
     }
 
@@ -437,6 +476,49 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
         )
 
       assertWorkbooksEqual(path, Paths.get("scala-ql-excel/src/test/expected/write-nested-with-headers.xls"))
+      deleteFile(path)
+    }
+
+    "correctly write nested xlsx document with options and headers" in {
+      val path =
+        Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-nested-options", "with-headers.xls")
+
+      implicit val excelConfig: ExcelWriteConfig[NestedPersonOption] = ExcelWriteConfig.default.copy(
+        writeHeaders = true,
+        naming = Naming.WithSpacesLowerCase
+      )
+
+      select[NestedPersonOption]
+        .foreach(
+          excel.write.file[NestedPersonOption](path)
+        )
+        .run(
+          from(
+            List(
+              NestedPersonOption(
+                names = Names(
+                  name = "Vitalii",
+                  surname = "Honta"
+                ),
+                metadata = Some(
+                  Metadata(
+                    id = UUID.fromString("4ffe9631-2169-4c50-90ff-8818bc28ab3f"),
+                    createdAt = LocalDateTime.of(2022, 6, 19, 15, 0)
+                  )
+                )
+              ),
+              NestedPersonOption(
+                names = Names(
+                  name = "John",
+                  surname = "Doe"
+                ),
+                metadata = None
+              )
+            )
+          )
+        )
+
+      assertWorkbooksEqual(path, Paths.get("scala-ql-excel/src/test/expected/write-nested-options-with-headers.xls"))
       deleteFile(path)
     }
 
