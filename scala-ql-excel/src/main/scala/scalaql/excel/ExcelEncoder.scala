@@ -16,22 +16,22 @@ case class WriteResult(cellsWritten: Int)
 trait ExcelEncoder[A] {
   def headers: List[String]
 
-  def write(table: ExcelTableApi, value: A)(implicit ctx: ExcelWriteContext): WriteResult
+  def write(value: A, into: ExcelTableApi)(implicit ctx: ExcelWriteContext): WriteResult
 }
 
 trait ExcelSingleCellEncoder[A] extends ExcelEncoder[A] { self =>
 
   override val headers: List[String] = Nil
 
-  def writeCell(cell: Cell, value: A)(implicit ctx: ExcelWriteContext): Unit
+  def writeCell(value: A, cell: Cell)(implicit ctx: ExcelWriteContext): Unit
 
-  def write(table: ExcelTableApi, value: A)(implicit ctx: ExcelWriteContext): WriteResult = {
-    val row = table.currentRow
+  def write(value: A, into: ExcelTableApi)(implicit ctx: ExcelWriteContext): WriteResult = {
+    val row = into.currentRow
     row.insert(
       ctx.startOffset,
       ctx.fieldLocation.name,
       (cell: Cell) => {
-        self.writeCell(cell, value)
+        self.writeCell(value, cell)
         ctx.applyCellStyle(cell)
         cell
       }
@@ -40,8 +40,8 @@ trait ExcelSingleCellEncoder[A] extends ExcelEncoder[A] { self =>
   }
 
   def contramap[B](f: B => A): ExcelEncoder.SingleCell[B] = new ExcelSingleCellEncoder[B] {
-    override def writeCell(cell: Cell, value: B)(implicit ctx: ExcelWriteContext): Unit =
-      self.writeCell(cell, f(value))
+    override def writeCell(value: B, cell: Cell)(implicit ctx: ExcelWriteContext): Unit =
+      self.writeCell(f(value), cell)
   }
 }
 
@@ -55,7 +55,7 @@ trait LowPriorityCellEncoders {
 
   implicit val stringEncoder: ExcelEncoder.SingleCell[String] =
     new ExcelSingleCellEncoder[String] {
-      override def writeCell(cell: Cell, value: String)(implicit ctx: ExcelWriteContext): Unit =
+      override def writeCell(value: String, cell: Cell)(implicit ctx: ExcelWriteContext): Unit =
         cell.setCellValue(value)
     }
 
@@ -64,12 +64,12 @@ trait LowPriorityCellEncoders {
 
   implicit val booleanEncoder: ExcelEncoder.SingleCell[Boolean] =
     new ExcelSingleCellEncoder[Boolean] {
-      override def writeCell(cell: Cell, value: Boolean)(implicit ctx: ExcelWriteContext): Unit =
+      override def writeCell(value: Boolean, cell: Cell)(implicit ctx: ExcelWriteContext): Unit =
         cell.setCellValue(value)
     }
 
   class NumericEncoder[N](toDouble: N => Double) extends ExcelSingleCellEncoder[N] {
-    override def writeCell(cell: Cell, value: N)(implicit ctx: ExcelWriteContext): Unit =
+    override def writeCell(value: N, cell: Cell)(implicit ctx: ExcelWriteContext): Unit =
       cell.setCellValue(toDouble(value))
   }
 
@@ -79,7 +79,7 @@ trait LowPriorityCellEncoders {
 
   implicit val bigIntEncoder: ExcelEncoder.SingleCell[BigInt] =
     new ExcelSingleCellEncoder[BigInt] {
-      override def writeCell(cell: Cell, value: BigInt)(implicit ctx: ExcelWriteContext): Unit =
+      override def writeCell(value: BigInt, cell: Cell)(implicit ctx: ExcelWriteContext): Unit =
         if (value.isValidLong)
           cell.setCellValue(value.toLong)
         else cell.setCellValue(value.toString)
@@ -87,7 +87,7 @@ trait LowPriorityCellEncoders {
 
   implicit val bigDecimalEncoder: ExcelEncoder.SingleCell[BigDecimal] =
     new ExcelSingleCellEncoder[BigDecimal] {
-      override def writeCell(cell: Cell, value: BigDecimal)(implicit ctx: ExcelWriteContext): Unit =
+      override def writeCell(value: BigDecimal, cell: Cell)(implicit ctx: ExcelWriteContext): Unit =
         if (value.isExactDouble)
           cell.setCellValue(value.toDouble)
         else cell.setCellValue(value.toString)
@@ -95,13 +95,13 @@ trait LowPriorityCellEncoders {
 
   implicit val localDateTimeEncoder: ExcelEncoder.SingleCell[LocalDateTime] =
     new ExcelSingleCellEncoder[LocalDateTime] {
-      override def writeCell(cell: Cell, value: LocalDateTime)(implicit ctx: ExcelWriteContext): Unit =
+      override def writeCell(value: LocalDateTime, cell: Cell)(implicit ctx: ExcelWriteContext): Unit =
         cell.setCellValue(value)
     }
 
   implicit val localDateEncoder: ExcelEncoder.SingleCell[LocalDate] =
     new ExcelSingleCellEncoder[LocalDate] {
-      override def writeCell(cell: Cell, value: LocalDate)(implicit ctx: ExcelWriteContext): Unit =
+      override def writeCell(value: LocalDate, cell: Cell)(implicit ctx: ExcelWriteContext): Unit =
         cell.setCellValue(value)
     }
 
@@ -109,9 +109,9 @@ trait LowPriorityCellEncoders {
     new ExcelEncoder[Option[A]] {
       override val headers: List[String] = ExcelEncoder[A].headers
 
-      override def write(table: ExcelTableApi, value: Option[A])(implicit ctx: ExcelWriteContext): WriteResult = {
+      override def write(value: Option[A], into: ExcelTableApi)(implicit ctx: ExcelWriteContext): WriteResult = {
         val result = value.map { value =>
-          ExcelEncoder[A].write(table, value)(
+          ExcelEncoder[A].write(value, into)(
             ctx
           )
         }
@@ -125,9 +125,9 @@ trait LowPriorityCellEncoders {
     new ExcelEncoder[Coll[A]] {
       override val headers: List[String] = ExcelEncoder[A].headers
 
-      override def write(table: ExcelTableApi, values: Coll[A])(implicit ctx: ExcelWriteContext): WriteResult = {
+      override def write(values: Coll[A], into: ExcelTableApi)(implicit ctx: ExcelWriteContext): WriteResult = {
         val results = values.toList.zipWithIndex.map { case (value, idx) =>
-          ExcelEncoder[A].write(table.appendEmptyRow, value)(
+          ExcelEncoder[A].write(value, into.appendEmptyRow)(
             ctx.enterIndex(idx)
           )
         }

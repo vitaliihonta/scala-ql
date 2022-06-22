@@ -102,7 +102,7 @@ trait ScalaqlExcelSupport
         rowIdx + 1
       } else rowIdx
 
-      ExcelEncoder[A].write(table.appendEmptyRow, value)(
+      ExcelEncoder[A].write(value, table.appendEmptyRow)(
         ExcelWriteContext.initial(
           workbook = workbook,
           headers = ExcelEncoder[A].headers,

@@ -14,10 +14,10 @@ trait ExcelRowEncoderAutoDerivation extends ProductDerivation[ExcelEncoder] {
         else nestedHeaders
       }
 
-    override def write(table: ExcelTableApi, value: T)(implicit writeContext: ExcelWriteContext): WriteResult = {
+    override def write(value: T, into: ExcelTableApi)(implicit writeContext: ExcelWriteContext): WriteResult = {
       val cellsWritten = ctx.params.foldLeft(0) { (cellsWritten, param) =>
         cellsWritten + param.typeclass
-          .write(table, param.deref(value))(
+          .write(param.deref(value), into)(
             writeContext
               .enterField(param.label)
               .copy(
