@@ -35,8 +35,7 @@ val publishSettings = Seq(
       url = new URL("https://github.com/vitaliihonta")
     )
   ),
-  sonatypeCredentialHost := "s01.oss.sonatype.org",
-  sonatypeRepository     := "https://s01.oss.sonatype.org/service/local"
+  sonatypeCredentialHost := "s01.oss.sonatype.org"
 )
 
 val baseProjectSettings = Seq(
