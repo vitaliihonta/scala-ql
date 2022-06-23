@@ -24,6 +24,15 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         while (step.check() && outputs.hasNext)
           step.next(outputs.next())
 
+      case query: Query.Accumulate[In, mid, s, Out] =>
+        var state = query.initialState
+        interpret[In, mid](in, query.source) {
+          Step.always[mid] { elem =>
+            state = query.modifyState(state, elem)
+          }
+        }
+        query.getResults(state).foreach(step.next)
+
       case query: Query.UnionQuery[In, Out] =>
         import query.*
         interpret[In, Out](in, left)(step)

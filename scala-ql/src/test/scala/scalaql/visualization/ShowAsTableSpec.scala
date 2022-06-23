@@ -165,6 +165,9 @@ class ShowAsTableSpec extends ScalaqlUnitSpec {
                     "cyphers" -> List(
                       Metadata("favorite", "RSA"),
                       Metadata("worst", "Cesar")
+                    ),
+                    "languages" -> List(
+                      Metadata("favorite", "scala")
                     )
                   )
                 )
@@ -174,13 +177,13 @@ class ShowAsTableSpec extends ScalaqlUnitSpec {
       }
 
       result shouldBe
-        """+-------+---+-------------------------------------------------------------------------+
-          \|name   |age|metadata                                                                 |
-          \+-------+---+-------------------------------------------------------------------------+
-          \|Vitalii|24 |{langs: [{key: functional, value: scala}, {key: dynamic, value: python}]}|
-          \|Alice  |30 |{colleagues: [{key: best, value: Bob}]}                                  |
-          \|Bob    |21 |{cyphers: [{key: favorite, value: RSA}, {key: worst, value: Cesar}]}     |
-          \+-------+---+-------------------------------------------------------------------------+
+        """+-------+---+--------------------------------------------------------------------------------------------------------------------+
+          \|name   |age|metadata                                                                                                            |
+          \+-------+---+--------------------------------------------------------------------------------------------------------------------+
+          \|Vitalii|24 |[{langs: [{key: functional, value: scala}, {key: dynamic, value: python}]}]                                         |
+          \|Alice  |30 |[{colleagues: [{key: best, value: Bob}]}]                                                                           |
+          \|Bob    |21 |[{cyphers: [{key: favorite, value: RSA}, {key: worst, value: Cesar}]}, {languages: [{key: favorite, value: scala}]}]|
+          \+-------+---+--------------------------------------------------------------------------------------------------------------------+
           \
           \""".stripMargin('\\')
     }

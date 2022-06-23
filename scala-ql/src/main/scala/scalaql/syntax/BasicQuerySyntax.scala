@@ -19,9 +19,6 @@ final class BasicQuerySyntax[In, Out](private val self: Query[In, Out]) extends 
   def exists(p: Out => Boolean): QueryResult[In, Boolean] =
     find(p).map(_.nonEmpty)
 
-  def foreach(f: Out => Unit): QueryResult[In, Unit] =
-    new QueryResult.ForeachWithResource(self, SideEffect.simple(f))
-
-  def foreach[R, S](sideEffect: SideEffect[R, S, Out]): QueryResult[In, Unit] =
-    new QueryResult.ForeachWithResource(self, sideEffect)
+  def foreach(f: => (Out => Unit)): QueryResult[In, Unit] =
+    new QueryResult.Foreach(self, () => f)
 }

@@ -1,10 +1,8 @@
 package scalaql.syntax
 
-import scalaql.QueryResult
-import scalaql.Query
-import scalaql.forbiddenInheritance
+import scalaql.{Query, QueryResult, forbiddenInheritance}
+import scalaql.describe.Describe
 import scalaql.visualization.ShowAsTable
-
 import scala.language.implicitConversions
 
 @forbiddenInheritance
@@ -30,4 +28,7 @@ trait ScalaqlSyntax extends ScalaqlAliases with ScalaqlDsl with OrderingSyntax {
 
   final implicit def ShowSyntax[In, Out: ShowAsTable](self: Query[In, Out]): ShowSyntax[In, Out] =
     new ShowSyntax[In, Out](self)
+
+  final implicit def DescribeSyntax[In, Out: Describe](self: Query[In, Out]): DescribeSyntax[In, Out] =
+    new DescribeSyntax[In, Out](self)
 }
