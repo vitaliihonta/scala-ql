@@ -2,6 +2,9 @@ package scalaql
 
 import scalaql.fixture.*
 
+import java.util.concurrent.atomic.AtomicInteger
+import scala.collection.mutable
+
 class BaseLineSpec extends ScalaqlUnitSpec {
   case class PeopleStats(profession: Profession, avgAge: Double)
 
@@ -63,7 +66,43 @@ class BaseLineSpec extends ScalaqlUnitSpec {
     }
 
     "correctly process foreach multiple times" in repeated {
-      assert(true)
+      val people = arbitraryN[Person]
+
+      val counter = new AtomicInteger()
+
+      val released = new AtomicInteger()
+
+      val capturedNames = mutable.ListBuffer.empty[String]
+
+      val query = select[Person]
+        .foreach(
+          SideEffect[mutable.ListBuffer[String], AtomicInteger, Person](
+            initialState = new AtomicInteger(),
+            acquire = () => mutable.ListBuffer.empty,
+            release = (buffer, c) => {
+              released.incrementAndGet()
+              capturedNames ++= buffer
+              counter.addAndGet(c.get())
+            },
+            use = (r, s, a) => {
+              r.append(a.name)
+              s.incrementAndGet()
+              s
+            }
+          )
+        )
+
+      query.run(from(people))
+
+      counter.get() shouldBe people.size
+      released.get() shouldBe 1
+      capturedNames.toList shouldBe people.map(_.name)
+
+      query.run(from(people))
+
+      counter.get() shouldBe people.size * 2
+      released.get() shouldBe 2
+      capturedNames.toList shouldBe people.map(_.name) ++ people.map(_.name)
     }
 
     "correctly process simple map + filter + sort" in repeated {

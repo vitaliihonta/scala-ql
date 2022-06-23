@@ -13,7 +13,7 @@ object FlatMapMain extends App {
   } yield (student, faculty)
 
   query
-    .foreach(println(_))
+    .foreach { case (student, faculty) => println(s"student=$student faculty=$faculty") }
     .run(
       from(students) & from(faculties)
     )

@@ -24,31 +24,6 @@ class ShowAsTableSpec extends ScalaqlUnitSpec {
   import scalaql.visualization.ShowAsTableSpec.*
 
   "show" should {
-    "propagate exceptions" in {
-      implicit val showPerson: ShowAsTable[Person] = new ShowAsTable[Person] {
-        override def headers: List[String] = List("name", "age")
-
-        override def write(value: Person, into: ShowTable)(implicit ctx: ShowAsTableContext): Unit =
-          sys.error("BOOOM!")
-      }
-
-      val error = intercept[RuntimeException] {
-        select[Person]
-          .show(truncate = false)
-          .run(
-            from(
-              List(
-                Person("Vitalii", 24),
-                Person("Alice", 30),
-                Person("Bob", 21)
-              )
-            )
-          )
-      }
-
-      error.getMessage shouldBe "BOOOM!"
-    }
-
     "correctly render simple table" in {
       val result = captureConsoleOut {
         select[Person]

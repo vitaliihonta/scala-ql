@@ -5,34 +5,39 @@ final class SideEffect[R, S, A] private (
   private var acquireResource:   () => R,
   private var releaseResource:   (R, S) => Unit,
   private var useResource:       (R, S, A) => S,
-  private var capturedException: Throwable) { self =>
+  private var capturedException: Throwable)
+    extends AutoCloseable
+    with (A => Unit) { self =>
 
-  def acquire(): R               = acquireResource()
-  def release(resource: R): Unit = releaseResource(resource, state)
+  private lazy val resource = acquireResource()
 
-  def use(resource: R, value: A): this.type =
+  override def close(): Unit = releaseResource(resource, state)
+
+  override def apply(value: A): Unit = {
+    val _ = resource // touch the resource to capture initialization error
     if (capturedException != null) {
       throw capturedException
-    } else
-      try {
-        val newState = useResource(resource, state, value)
-        self.state = newState
-        self
-      } catch {
+    } else {
+      try
+        self.state = useResource(resource, state, value)
+      catch {
         case e: Throwable =>
-          capturedException = e
-          self
+          self.capturedException = e
+          throw e
       }
+    }
+  }
 
   def beforeAll(f: R => Unit): this.type = {
     val previousAcquire = self.acquireResource
     self.acquireResource = () => {
-      val resource = previousAcquire()
-      try f(resource)
+      val r = previousAcquire()
+      try f(r)
       catch {
-        case e: Throwable => self.capturedException = e
+        case e: Throwable =>
+          self.capturedException = e
       }
-      resource
+      r
     }
     self
   }
@@ -62,7 +67,6 @@ object SideEffect {
   private val noopAcquire: () => Unit         = () => ()
   private val noopRelease: (Any, Any) => Unit = (_, _) => ()
 
-  type Simple[A]          = SideEffect[Unit, Unit, A]
   type Stateless[R, A]    = SideEffect[R, Unit, A]
   type Resourceless[S, A] = SideEffect[Unit, S, A]
 
@@ -77,15 +81,6 @@ object SideEffect {
       acquireResource = acquire,
       releaseResource = release,
       useResource = use,
-      capturedException = null
-    )
-
-  def simple[A](f: A => Unit): SideEffect.Simple[A] =
-    new SideEffect[Unit, Unit, A](
-      state = (),
-      acquireResource = noopAcquire,
-      releaseResource = noopRelease,
-      useResource = (_, _, a) => f(a),
       capturedException = null
     )
 
