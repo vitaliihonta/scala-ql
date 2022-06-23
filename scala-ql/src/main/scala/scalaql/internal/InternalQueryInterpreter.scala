@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
 
 private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] {
 
-  override type Res[In, Out] = Unit
+  override type Res[Out] = Unit
 
   override def interpret[In: ToFrom, Out](in: In, query: Query[In, Out])(step: Step[Out]): Unit = {
     query match {

@@ -5,7 +5,7 @@ import scalaql.Query
 import scalaql.interpreter.QueryInterpreter
 
 private[scalaql] object FindInterpreter extends QueryInterpreter[* => Boolean] {
-  override type Res[In, Out] = Option[Out]
+  override type Res[Out] = Option[Out]
 
   override def interpret[In: ToFrom, Out](in: In, query: Query[In, Out])(p: Out => Boolean): Option[Out] = {
     var found = Option.empty[Out]
