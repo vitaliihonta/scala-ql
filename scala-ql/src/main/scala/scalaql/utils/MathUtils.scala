@@ -7,7 +7,7 @@ private[scalaql] object MathUtils {
 
   case class Std[N](value: N, sum: N, mean: N, count: Int)
 
-  def std[N: Fractional](values: List[N]): Std[N] = {
+  def std[N: Fractional](values: Iterable[N]): Std[N] = {
     val sum            = values.qsum
     val count          = values.size
     val mean           = sum / count
@@ -22,12 +22,12 @@ private[scalaql] object MathUtils {
 
   val DefaultPercentiles: List[Int] = List(Percentile25, Percentile75, Percentile90)
 
-  def percentiles[N: Ordering](values: List[N], percents: List[Int] = DefaultPercentiles): Map[Int, N] = {
+  def percentiles[N: Ordering](values: Seq[N], percents: List[Int] = DefaultPercentiles): Map[Int, N] = {
     val sorted = values.sorted
     percentilesSorted(sorted, percents)
   }
 
-  def percentilesSorted[N: Ordering](sorted: List[N], percents: List[Int] = DefaultPercentiles): Map[Int, N] = {
+  def percentilesSorted[N: Ordering](sorted: Seq[N], percents: List[Int] = DefaultPercentiles): Map[Int, N] = {
     val N = sorted.size
     def go(percentile: Int): N = {
       val index = Math.ceil(N * percentile / 100.0).toInt

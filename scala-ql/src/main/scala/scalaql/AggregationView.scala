@@ -3,6 +3,7 @@ package scalaql
 import spire.algebra.AdditiveMonoid
 import spire.algebra.Field
 import spire.algebra.MultiplicativeMonoid
+import spire.math.Fractional
 
 sealed trait AggregationDsl[In, Out] {
   def toList: Aggregation.Of[In, List[Out]]
@@ -22,6 +23,9 @@ sealed trait AggregationDsl[In, Out] {
 
   def avg(implicit ev: Field[Out]): Aggregation.Of[In, Out]
   def avgBy[B](f:      Out => B)(implicit ev: Field[B]): Aggregation.Of[In, B]
+
+  def std(implicit ev: Fractional[Out]): Aggregation.Of[In, Out]
+  def stdBy[B](f:      Out => B)(implicit ev: Fractional[B]): Aggregation.Of[In, B]
 
   def count(p: Out => Boolean): Aggregation.Of[In, Int]
 
@@ -101,6 +105,12 @@ object AggregationView {
     override def avgBy[B](f: A => B)(implicit ev: Field[B]): Aggregation.Of[A, B] =
       new Aggregation.AvgBy[A, B](f, ev)
 
+    override def std(implicit ev: Fractional[A]): Aggregation.Of[A, A] =
+      new Aggregation.Std[A](ev)
+
+    override def stdBy[B](f: A => B)(implicit ev: Fractional[B]): Aggregation.Of[A, B] =
+      new Aggregation.StdBy[A, B](f, ev)
+
     override def report[B, U1](
       group1: A => B
     )(agg1:   (B, AggregationView[A]) => Aggregation.Of[A, U1]
@@ -162,6 +172,12 @@ object AggregationView {
 
     override def avgBy[B](f: Out => B)(implicit ev: Field[B]): Aggregation.Of[A, B] =
       delegate.avgBy(f).contramap(project)
+
+    override def std(implicit ev: Fractional[Out]): Aggregation.Of[A, Out] =
+      delegate.std.contramap(project)
+
+    override def stdBy[B](f: Out => B)(implicit ev: Fractional[B]): Aggregation.Of[A, B] =
+      delegate.stdBy(f).contramap(project)
 
     override def custom[B](f: Iterable[Out] => B): Aggregation.Of[A, B] =
       delegate.custom(f).contramap(project)

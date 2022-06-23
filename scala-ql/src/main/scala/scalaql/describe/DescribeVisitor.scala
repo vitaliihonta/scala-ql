@@ -40,7 +40,7 @@ class NumericStats[N](
           Some(MathUtils.std(valuesSorted)(fractional)),
           Some(valuesSorted.head),
           Some(valuesSorted.last),
-          MathUtils.percentilesSorted(valuesSorted)(ordering)
+          MathUtils.percentilesSorted[N](valuesSorted)(ordering)
         )
       }
 

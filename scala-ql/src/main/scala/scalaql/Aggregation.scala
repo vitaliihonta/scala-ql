@@ -1,9 +1,11 @@
 package scalaql
 
-import scalaql.utils.TupleFlatten
+import scalaql.utils.{MathUtils, TupleFlatten}
 import spire.algebra.AdditiveMonoid
 import spire.algebra.Field
 import spire.algebra.MultiplicativeMonoid
+import spire.math.Fractional
+
 import scala.annotation.unchecked.uncheckedVariance
 
 sealed trait Aggregation[-A] { self =>
@@ -138,6 +140,22 @@ object Aggregation {
       for (x <- xs) sum = ev.additive.combine(sum, f(x))
       ev.div(sum, ev.fromInt(xs.size))
     }
+  }
+
+  final class Std[A](ev: Fractional[A]) extends Aggregation[A] {
+
+    override type Out = A
+
+    override def apply(xs: Iterable[A]): A =
+      MathUtils.std[A](xs)(ev).value
+  }
+
+  final class StdBy[A, B](f: A => B, ev: Fractional[B]) extends Aggregation[A] {
+
+    override type Out = B
+
+    override def apply(xs: Iterable[A]): B =
+      MathUtils.std[B](xs.map(f))(ev).value
   }
 
   final class Report1[A, B, U1](
