@@ -26,8 +26,8 @@ object QueryResult {
   final class CollectMap[In, K, V](private[scalaql] val query: Query[In, (K, V)]) extends QueryResult[In, Map[K, V]]
 
   final class ForeachWithResource[R, S, In, Out](
-    private[scalaql] val query:      Query[In, Out],
-    private[scalaql] val sideEffect: SideEffect[R, S, Out])
+    private[scalaql] val query:            Query[In, Out],
+    private[scalaql] val createSideEffect: () => SideEffect[R, S, Out])
       extends QueryResult[In, Unit]
 
   final class Find[In, Out](private[scalaql] val query: Query[In, Out], private[scalaql] val predicate: Predicate[Out])

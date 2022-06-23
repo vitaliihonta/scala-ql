@@ -18,27 +18,16 @@ private[scalaql] object QueryResultRunner {
 
       case queryResult: QueryResult.ForeachWithResource[r, s, In, Out] =>
         import queryResult.*
-        val resource                     = sideEffect.acquire()
-        var state                        = sideEffect.initialState
-        var capturedException: Throwable = null
+        val sideEffect = createSideEffect()
+        val resource   = sideEffect.acquire()
         try
           QueryInterpreter.runForeach
             .interpret(in, query) { in =>
-              state = sideEffect.use(resource, state, in)
+              sideEffect.use(resource, in)
             }
             .asInstanceOf[Out]
-        catch {
-          case e: Throwable =>
-            capturedException = e
-            throw e
-        } finally {
-          try sideEffect.release(resource, state)
-          catch {
-            case _: Throwable if capturedException != null =>
-              throw capturedException
-          }
-          state = null.asInstanceOf[s] // free memory
-        }
+        finally
+          sideEffect.release(resource)
 
       case queryResult: QueryResult.CollectMap[In, k, v] =>
         import queryResult.*

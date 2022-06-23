@@ -62,6 +62,10 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       counter shouldEqual expectedResult
     }
 
+    "correctly process foreach multiple times" in repeated {
+      assert(true)
+    }
+
     "correctly process simple map + filter + sort" in repeated {
       val people = arbitraryN[Person]
 
