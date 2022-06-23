@@ -11,26 +11,26 @@ import scala.collection.mutable.ListBuffer
 
 @unstableApi
 trait QueryInterpreter[Param[_]] {
-  type Res[Out]
+  type Res[In, Out]
 
-  def interpret[In: ToFrom, Out](in: In, query: Query[In, Out])(param: Param[Out]): Res[Out]
+  def interpret[In: ToFrom, Out](in: In, query: Query[In, Out])(param: Param[Out]): Res[In, Out]
 }
 
 @unstableApi
 object QueryInterpreter {
 
-  type Aux[Param[_], Res0[_]] = QueryInterpreter[Param] { type Res[Out] = Res0[Out] }
-  type Nullary[Res0[_]]       = Aux[λ[a => Unit], Res0]
+  type Aux[Param[_], Res0[_, _]] = QueryInterpreter[Param] { type Res[In, Out] = Res0[In, Out] }
+  type Nullary[Res0[_, _]]       = Aux[λ[a => Unit], Res0]
 
-  val runFind: QueryInterpreter.Aux[* => Boolean, Option]       = FindInterpreter
-  val runForeach: QueryInterpreter.Aux[* => Unit, λ[a => Unit]] = ForeachInterpreter
+  val runFind: QueryInterpreter.Aux[* => Boolean, λ[(in, out) => Option[out]]] = FindInterpreter
+  val runForeach: QueryInterpreter.Aux[* => Unit, λ[(in, out) => Unit]]        = ForeachInterpreter
 
-  def runCollectBuffer: QueryInterpreter.Nullary[ListBuffer] =
+  def runCollectBuffer: QueryInterpreter.Nullary[λ[(in, out) => ListBuffer[out]]] =
     runCollect[ListBuffer](FunctionK.identity[ListBuffer])
 
-  def runCollectList: QueryInterpreter.Nullary[List] =
+  def runCollectList: QueryInterpreter.Nullary[λ[(in, out) => List[out]]] =
     runCollect[List](FunctionK.listBufferToList)
 
-  def runCollect[Coll[_]](mapResult: FunctionK[ListBuffer, Coll]): QueryInterpreter.Nullary[Coll] =
+  def runCollect[Coll[_]](mapResult: FunctionK[ListBuffer, Coll]): QueryInterpreter.Nullary[λ[(in, out) => Coll[out]]] =
     new CollectorInterpreter[Coll](mapResult)
 }

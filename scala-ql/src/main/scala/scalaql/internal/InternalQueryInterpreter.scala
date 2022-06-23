@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
 
 private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] {
 
-  override type Res[Out] = Unit
+  override type Res[In, Out] = Unit
 
   override def interpret[In: ToFrom, Out](in: In, query: Query[In, Out])(step: Step[Out]): Unit = {
     query match {
@@ -23,6 +23,15 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         val outputs = input.get(query.inputTag).asInstanceOf[Iterable[Out]].iterator
         while (step.check() && outputs.hasNext)
           step.next(outputs.next())
+
+      case query: Query.Accumulate[In, mid, s, Out] =>
+        var state = query.initialState
+        interpret[In, mid](in, query.source) {
+          Step.always[mid] { elem =>
+            state = query.modifyState(state, elem)
+          }
+        }
+        query.getResults(state).foreach(step.next)
 
       case query: Query.UnionQuery[In, Out] =>
         import query.*

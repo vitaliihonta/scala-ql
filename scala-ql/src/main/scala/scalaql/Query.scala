@@ -34,6 +34,13 @@ sealed trait Query[-In, +Out] {
   def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
     new Query.WhereSubQuery[In2, Out](this, p)
 
+  def accumulate[S, B](
+    initialState: S
+  )(modifyState:  (S, Out) => S
+  )(getResults:   S => Iterable[B]
+  ): Query[In, B] =
+    new Query.Accumulate[In, Out, S, B](this, initialState, modifyState, getResults)
+
   def ++[In2 <: In, Out0 >: Out](that: Query[In2, Out0]): Query[In2, Out0] =
     union(that)
 
@@ -148,6 +155,48 @@ object Query {
             case false => QueryResult.const(false)
             case true  => p(out)
           }
+      )
+  }
+
+  final class Accumulate[In, Out, S, B](
+    private[scalaql] val source:       Query[In, Out],
+    private[scalaql] val initialState: S,
+    private[scalaql] val modifyState:  (S, Out) => S,
+    private[scalaql] val getResults:   S => Iterable[B])
+      extends Query[In, B] {
+
+    override def toString: String = s"$source -> ACCUMULATE(initial_state=$initialState)"
+
+    override def map[C](f: B => C): Query[In, C] =
+      new Query.Accumulate[In, Out, S, C](
+        source,
+        initialState,
+        modifyState,
+        getResults(_).map(f)
+      )
+
+    override def mapConcat[C](f: B => Iterable[C]): Query[In, C] =
+      new Query.Accumulate[In, Out, S, C](
+        source,
+        initialState,
+        modifyState,
+        getResults(_).flatMap(f)
+      )
+
+    override def mapFilter[C](f: B => Option[C]): Query[In, C] =
+      new Query.Accumulate[In, Out, S, C](
+        source,
+        initialState,
+        modifyState,
+        getResults(_).flatMap(f(_).toList)
+      )
+
+    override def where(p: Predicate[B]): Query[In, B] =
+      new Query.Accumulate[In, Out, S, B](
+        source,
+        initialState,
+        modifyState,
+        getResults(_).filter(p)
       )
   }
 

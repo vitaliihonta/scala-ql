@@ -24,6 +24,31 @@ class ShowAsTableSpec extends ScalaqlUnitSpec {
   import scalaql.visualization.ShowAsTableSpec.*
 
   "show" should {
+    "propagate exceptions" in {
+      implicit val showPerson: ShowAsTable[Person] = new ShowAsTable[Person] {
+        override def headers: List[String] = List("name", "age")
+
+        override def write(value: Person, into: ShowTable)(implicit ctx: ShowAsTableContext): Unit =
+          sys.error("BOOOM!")
+      }
+
+      val error = intercept[RuntimeException] {
+        select[Person]
+          .show(truncate = false)
+          .run(
+            from(
+              List(
+                Person("Vitalii", 24),
+                Person("Alice", 30),
+                Person("Bob", 21)
+              )
+            )
+          )
+      }
+
+      error.getMessage shouldBe "BOOOM!"
+    }
+
     "correctly render simple table" in {
       val result = captureConsoleOut {
         select[Person]
@@ -165,6 +190,9 @@ class ShowAsTableSpec extends ScalaqlUnitSpec {
                     "cyphers" -> List(
                       Metadata("favorite", "RSA"),
                       Metadata("worst", "Cesar")
+                    ),
+                    "languages" -> List(
+                      Metadata("favorite", "scala")
                     )
                   )
                 )
@@ -174,13 +202,13 @@ class ShowAsTableSpec extends ScalaqlUnitSpec {
       }
 
       result shouldBe
-        """+-------+---+-------------------------------------------------------------------------+
-          \|name   |age|metadata                                                                 |
-          \+-------+---+-------------------------------------------------------------------------+
-          \|Vitalii|24 |{langs: [{key: functional, value: scala}, {key: dynamic, value: python}]}|
-          \|Alice  |30 |{colleagues: [{key: best, value: Bob}]}                                  |
-          \|Bob    |21 |{cyphers: [{key: favorite, value: RSA}, {key: worst, value: Cesar}]}     |
-          \+-------+---+-------------------------------------------------------------------------+
+        """+-------+---+--------------------------------------------------------------------------------------------------------------------+
+          \|name   |age|metadata                                                                                                            |
+          \+-------+---+--------------------------------------------------------------------------------------------------------------------+
+          \|Vitalii|24 |[{langs: [{key: functional, value: scala}, {key: dynamic, value: python}]}]                                         |
+          \|Alice  |30 |[{colleagues: [{key: best, value: Bob}]}]                                                                           |
+          \|Bob    |21 |[{cyphers: [{key: favorite, value: RSA}, {key: worst, value: Cesar}]}, {languages: [{key: favorite, value: scala}]}]|
+          \+-------+---+--------------------------------------------------------------------------------------------------------------------+
           \
           \""".stripMargin('\\')
     }

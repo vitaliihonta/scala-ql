@@ -11,55 +11,35 @@ import scala.collection.mutable
 @internalApi
 object ShowQueryResult {
   case class ShowState(
-    buffer:      mutable.ListBuffer[Iterable[String]],
+    into:        ShowTable,
     rowsWritten: Int,
-    writtenAll:  Boolean,
-    numCols:     Option[Int],
-    colWidths:   Option[Array[Int]],
-    sep:         Option[String])
+    writtenAll:  Boolean)
 
   private val minimumColWidth = 3
 
   def sideEffect[A: ShowAsTable](
     numRows:  Int,
     truncate: Int
-  ): SideEffect.Resourceless[ShowState, A] =
+  ): SideEffect.Resourceless[?, A] = {
+    implicit val showContext: ShowAsTableContext = ShowAsTableContext.initial(ShowAsTable[A].headers)
     SideEffect
       .resourceless[ShowState, A](
         initialState = ShowState(
-          mutable.ListBuffer.empty[Iterable[String]],
+          ShowTable.empty,
           rowsWritten = 0,
-          writtenAll = true,
-          numCols = None,
-          colWidths = None,
-          sep = None
+          writtenAll = true
         ),
         use = (state, value) =>
           if (state.rowsWritten > numRows) {
             state.copy(writtenAll = false)
           } else {
-            val row       = ShowAsTable[A].toRow(value)
-            val numCols   = state.numCols.getOrElse(row.size)
-            val colWidths = state.colWidths.getOrElse(Array.fill(numCols)(minimumColWidth))
-            for (((_, cell), i) <- row.zipWithIndex)
-              colWidths(i) = math.max(colWidths(i), stringHalfWidth(truncated(cell, truncate)))
-
-            if (state.rowsWritten == 0) {
-              state.buffer += row.keys
-              for ((header, i) <- row.keys.zipWithIndex)
-                colWidths(i) = math.max(colWidths(i), stringHalfWidth(header))
-            }
-            state.buffer += row.values
-            state.copy(
-              rowsWritten = state.rowsWritten + 1,
-              numCols = Some(numCols),
-              colWidths = Some(colWidths)
-            )
+            ShowAsTable[A].write(value, state.into.appendEmptyRow)
+            state.copy(rowsWritten = state.rowsWritten + 1)
           }
       )
       .afterAll { (_, state) =>
         val sb = new mutable.StringBuilder
-        writeInto(sb, state.buffer, state.colWidths.get, truncate)
+        writeInto(sb, state.into, showContext.headers, truncate)
         if (!state.writtenAll) {
           // For Data that has more than "numRows" records
           val rowsString = if (numRows == 1) "row" else "rows"
@@ -67,15 +47,35 @@ object ShowQueryResult {
         }
         println(sb.toString)
       }
+  }
 
   private def writeInto(
-    sb:        mutable.StringBuilder,
-    rows:      mutable.ListBuffer[Iterable[String]],
-    colWidths: Array[Int],
-    truncate:  Int
+    sb:       mutable.StringBuilder,
+    table:    ShowTable,
+    headers:  List[String],
+    truncate: Int
   ): Unit = {
-    val paddedRows = rows.toList.map { row =>
-      row.zipWithIndex.map { case (cell, i) =>
+    val rows      = table.getRows
+    val numCols   = headers.length
+    val colWidths = Array.fill(numCols)(minimumColWidth)
+
+    for ((header, i) <- headers.zipWithIndex)
+      colWidths(i) = math.max(colWidths(i), stringHalfWidth(header))
+
+    for (row <- rows)
+      for (((_, cell), i) <- row.getCells.zipWithIndex)
+        colWidths(i) = math.max(colWidths(i), stringHalfWidth(truncated(cell, truncate)))
+
+    val paddedHeaders = headers.zipWithIndex.map { case (header, i) =>
+      if (truncate > 0) {
+        StringUtils.leftPad(header, colWidths(i) - stringHalfWidth(header) + header.length)
+      } else {
+        StringUtils.rightPad(header, colWidths(i) - stringHalfWidth(header) + header.length)
+      }
+    }
+
+    val paddedRows = rows.map { row =>
+      row.getCells.zipWithIndex.map { case ((_, cell), i) =>
         val cellStr = truncated(cell, truncate)
         if (truncate > 0) {
           StringUtils.leftPad(cellStr, colWidths(i) - stringHalfWidth(cellStr) + cellStr.length)
@@ -89,11 +89,11 @@ object ShowQueryResult {
     val sep: String = colWidths.map("-" * _).addString(sb, "+", "+", "+\n").toString()
 
     // column names
-    paddedRows.head.addString(sb, "|", "|", "|\n")
+    paddedHeaders.addString(sb, "|", "|", "|\n")
     sb.append(sep)
 
     // data
-    paddedRows.tail.foreach(_.addString(sb, "|", "|", "|\n"))
+    paddedRows.foreach(_.addString(sb, "|", "|", "|\n"))
     sb.append(sep)
   }
 
