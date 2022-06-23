@@ -19,19 +19,19 @@ which you can then apply to multiple sources and write into multiple sinks.
 
 ```sbt
 // Core
-libraryDependencies += "com.github.vitaliihonta" %% "scala-ql" % "<VERSION>"
+libraryDependencies += "dev.vhonta" %% "scala-ql" % "<VERSION>"
 
 // CSV support
-libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-csv" % "<VERSION>"
+libraryDependencies += "dev.vhonta" %% "scala-ql-csv" % "<VERSION>"
 
 // JSON support
-libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-json" % "<VERSION>"
+libraryDependencies += "dev.vhonta" %% "scala-ql-json" % "<VERSION>"
 
 // Excel support
-libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-excel" % "<VERSION>"
+libraryDependencies += "dev.vhonta" %% "scala-ql-excel" % "<VERSION>"
 
 // HTML support
-libraryDependencies += "com.github.vitaliihonta" %% "scala-ql-html" % "<VERSION>"
+libraryDependencies += "dev.vhonta" %% "scala-ql-html" % "<VERSION>"
 ```
 
 ## Supported sources

@@ -7,16 +7,16 @@ val scala3   = "3.1.2"
 val allScalaVersions = List(scala212, scala213, scala3)
 
 ThisBuild / scalaVersion  := scala213
-ThisBuild / organization  := "com.github.vitaliihonta"
-ThisBuild / version       := "0.1.1"
+ThisBuild / organization  := "dev.vhonta"
+ThisBuild / version       := "0.2.0-RC1"
 ThisBuild / versionScheme := Some("early-semver")
 
 val publishSettings = Seq(
   publishTo            := sonatypePublishToBundle.value,
   publishMavenStyle    := true,
-  sonatypeProfileName  := "com.github.vitaliihonta",
-  organizationHomepage := Some(url("https://github.com/vitaliihonta")),
-  homepage             := Some(url("https://github.com/vitaliihonta")),
+  sonatypeProfileName  := "dev.vhonta",
+  organizationHomepage := Some(url("https://vhonta.dev")),
+  homepage             := Some(url("https://vhonta.dev")),
   licenses := Seq(
     "Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
   ),
@@ -35,7 +35,7 @@ val publishSettings = Seq(
       url = new URL("https://github.com/vitaliihonta")
     )
   ),
-  sonatypeCredentialHost := "oss.sonatype.org"
+  sonatypeCredentialHost := "s01.oss.sonatype.org"
 )
 
 val baseProjectSettings = Seq(
