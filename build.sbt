@@ -11,6 +11,9 @@ ThisBuild / organization  := "dev.vhonta"
 ThisBuild / version       := "0.2.0-RC1"
 ThisBuild / versionScheme := Some("early-semver")
 
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / sonatypeRepository     := "https://s01.oss.sonatype.org/service/local"
+
 val publishSettings = Seq(
   publishTo            := sonatypePublishToBundle.value,
   publishMavenStyle    := true,
@@ -33,9 +36,7 @@ val publishSettings = Seq(
       email = "vitalii.honta@gmail.com",
       url = new URL("https://github.com/vitaliihonta")
     )
-  ),
-  sonatypeCredentialHost := "s01.oss.sonatype.org",
-  sonatypeRepository     := "https://s01.oss.sonatype.org/service/local"
+  )
 )
 
 val baseProjectSettings = Seq(
