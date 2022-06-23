@@ -1,6 +1,10 @@
 package scalaql.describe
 
 import scalaql.sources.columnar.{CodecPath, TableApiWriteContext}
+import spire.math.Fractional
+import spire.implicits.*
+
+import java.time.{LocalDate, LocalDateTime}
 
 case class DescribeContext(
   location: CodecPath,
@@ -18,27 +22,30 @@ object DescribeContext {
   def initial: DescribeContext = DescribeContext(CodecPath.Root, Nil)
 }
 
-trait Describe[A] {
+trait Describe[A] { self =>
   def apply(value: A, visitor: DescribeVisitor)(implicit ctx: DescribeContext): Unit
+
+  def contramap[B](f: B => A): Describe[B] = new Describe[B] {
+    override def apply(value: B, visitor: DescribeVisitor)(implicit ctx: DescribeContext): Unit =
+      self.apply(f(value), visitor)
+  }
 }
 
 object Describe extends DescribeAutoDerivation with LowPriorityDescribeInstances {
   def apply[A](implicit ev: Describe[A]): ev.type = ev
 }
 
-trait LowPriorityDescribeInstances {
-  def describeAsBigDecimal[A](toBigDecimal: A => BigDecimal): Describe[A] =
-    new DescribeAsDecimal[A](toBigDecimal)
+trait LowPriorityDescribeInstances extends AdditionalDescribeImplicits {
 
   implicit val describeString: Describe[String]   = new DescribeAny[String]
   implicit val describeBoolean: Describe[Boolean] = new DescribeAny[Boolean]
-  implicit val describeInt: Describe[Int]         = describeAsBigDecimal[Int](BigDecimal(_))
-  implicit val describeLong: Describe[Long]       = describeAsBigDecimal[Long](BigDecimal(_))
-  implicit val describeDouble: Describe[Double]   = describeAsBigDecimal[Double](BigDecimal(_))
-  implicit val describeBigInt: Describe[BigInt]   = describeAsBigDecimal[BigInt](BigDecimal(_))
 
-  implicit val describeBigDecimal: Describe[BigDecimal] =
-    describeAsBigDecimal(identity[BigDecimal])
+  implicit val describeDouble: Describe[Double] = new DescribeFractional[Double]
+
+  implicit val describeBigDecimal: Describe[BigDecimal] = new DescribeFractional[BigDecimal]
+  implicit val describeInt: Describe[Int]               = describeDouble.contramap(_.toDouble)
+  implicit val describeLong: Describe[Long]             = describeDouble.contramap(_.toDouble)
+  implicit val describeBigInt: Describe[BigInt]         = describeBigDecimal.contramap(_.toBigDecimal)
 
   implicit def describeOption[A: Describe]: Describe[Option[A]] =
     new Describe[Option[A]] {
@@ -59,12 +66,17 @@ trait LowPriorityDescribeInstances {
     }
 }
 
-private class DescribeAsDecimal[A](toBigDecimal: A => BigDecimal) extends Describe[A] {
+private class DescribeOrdered[A: Ordering] extends Describe[A] {
   override def apply(value: A, visitor: DescribeVisitor)(implicit ctx: DescribeContext): Unit =
-    visitor.addNumeric(ctx.fieldLocation.name, toBigDecimal(value))
+    visitor.addOrdered(ctx.fieldLocation.name, value)
+}
+
+private class DescribeFractional[A: Fractional: ToBigDecimal] extends Describe[A] {
+  override def apply(value: A, visitor: DescribeVisitor)(implicit ctx: DescribeContext): Unit =
+    visitor.addNumeric[A](ctx.fieldLocation.name, value)
 }
 
 private class DescribeAny[A] extends Describe[A] {
   override def apply(value: A, visitor: DescribeVisitor)(implicit ctx: DescribeContext): Unit =
-    visitor.addCount(ctx.fieldLocation.name, 1)
+    visitor.addNonNumeric(ctx.fieldLocation.name, value)
 }

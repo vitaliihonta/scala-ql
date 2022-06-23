@@ -5,6 +5,8 @@ import io.circe.Encoder
 import io.circe.Json
 import io.circe.syntax.*
 
+import java.time.LocalDate
+
 object Hogwarts {
 
   case class Student(
@@ -12,7 +14,8 @@ object Hogwarts {
     age:            Int,
     faculty:        String,
     grade:          Double,
-    specialization: String)
+    specialization: String,
+    birthDay:       LocalDate)
 
   case class Faculty(name: String, founder: String, description: String)
 
@@ -47,7 +50,8 @@ object Hogwarts {
     age = 19,
     faculty = Gryffindor.name,
     grade = 85.1,
-    specialization = "learning"
+    specialization = "learning",
+    birthDay = LocalDate.of(1980, 7, 31)
   )
 
   val Ron: Student = Student(
@@ -55,7 +59,8 @@ object Hogwarts {
     age = 18,
     faculty = Gryffindor.name,
     grade = 66.2,
-    specialization = "eating"
+    specialization = "eating",
+    birthDay = LocalDate.of(1980, 5, 1)
   )
 
   val Hermione: Student = Student(
@@ -63,7 +68,8 @@ object Hogwarts {
     age = 18,
     faculty = Gryffindor.name,
     grade = 99.6,
-    specialization = "learning"
+    specialization = "learning",
+    birthDay = LocalDate.of(1979, 9, 17)
   )
 
   val Draco: Student = Student(
@@ -71,7 +77,8 @@ object Hogwarts {
     age = 18,
     faculty = Slytherin.name,
     grade = 85.1,
-    specialization = "trolling"
+    specialization = "trolling",
+    birthDay = LocalDate.of(1980, 6, 5)
   )
 
   val Cedric: Student = Student(
@@ -79,7 +86,8 @@ object Hogwarts {
     age = 17,
     faculty = Hufflepuff.name,
     grade = 90.1,
-    specialization = "young dying"
+    specialization = "young dying",
+    birthDay = LocalDate.of(1977, 10, 1)
   )
 
   val students: List[Student] = List(Harry, Ron, Hermione, Draco, Cedric)
