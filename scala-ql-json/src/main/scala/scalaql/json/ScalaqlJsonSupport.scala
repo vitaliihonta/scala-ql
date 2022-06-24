@@ -13,12 +13,13 @@ import java.io.Reader
 import java.io.Writer
 import java.util.stream.Collectors
 
-trait ScalaqlJsonSupport extends DataSourceJavaIOSupport[Decoder, Encoder, λ[a => JsonConfig], λ[a => JsonConfig]] {
+trait ScalaqlJsonSupport
+    extends DataSourceJavaIOSupport[Decoder, Encoder, λ[a => JsonReadConfig], λ[a => JsonWriteConfig]] {
 
   final object read
-      extends DataSourceJavaIOReader[Decoder, λ[a => JsonConfig]]
-      with DataSourceJavaIOReaderFilesSupport[Decoder, λ[a => JsonConfig]] {
-    protected def readImpl[A: Decoder](reader: Reader)(implicit config: JsonConfig): Iterable[A] = {
+      extends DataSourceJavaIOReader[Decoder, λ[a => JsonReadConfig]]
+      with DataSourceJavaIOReaderFilesSupport[Decoder, λ[a => JsonReadConfig]] {
+    protected def readImpl[A: Decoder](reader: Reader)(implicit config: JsonReadConfig): Iterable[A] = {
       val bufferedReader = new BufferedReader(reader)
       if (config.multiline) {
         bufferedReader
@@ -39,10 +40,10 @@ trait ScalaqlJsonSupport extends DataSourceJavaIOSupport[Decoder, Encoder, λ[a 
   }
 
   final object write
-      extends DataSourceJavaIOWriter[Encoder, λ[a => JsonConfig]]
-      with DataSourceJavaIOWriterFilesSupport[Encoder, λ[a => JsonConfig]] {
+      extends DataSourceJavaIOWriter[Encoder, λ[a => JsonWriteConfig]]
+      with DataSourceJavaIOWriterFilesSupport[Encoder, λ[a => JsonWriteConfig]] {
 
-    override def write[A: Encoder](writer: => Writer)(implicit config: JsonConfig): SideEffect[?, ?, A] = {
+    override def write[A: Encoder](writer: => Writer)(implicit config: JsonWriteConfig): SideEffect[?, ?, A] = {
       def basics(writeLine: (Writer, Boolean, Json) => Unit) = SideEffect[Writer, Boolean, A](
         initialState = true,
         acquire = () => writer,
