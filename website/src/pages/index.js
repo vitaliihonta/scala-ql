@@ -11,22 +11,22 @@ const features = [
   {
     title: 'Simple',
     content: [
-      "Querying data is simple and straightforward.",
-      "It's not required to know advanced functional typeclasses to use the lirary."
+      "Querying data is straightforward.",
+      "It's not required to know advanced functional type classes to use the library."
     ]
   },
   {
     title: 'Seamless',
     content: [
-      "Read and write to various datasources seamlessly.",
-      "Scala QL supports CSV, JSON, Excel, HTML and more!"
+      "Read and write to various data sources seamlessly.",
+      "Scala QL supports CSV, JSON, Excel, HTML, and more!"
     ]
   },
   {
     title: 'Static types',
     content: [
       "Benefit from having statically typed queries!",
-      "Scala QL allows to work with plain-old case classes, which makes your code type-checked"
+      "Scala QL allows working with plain-old case classes, which makes your code type-checked"
     ]
   },
 ];
@@ -109,7 +109,7 @@ export default function Home() {
           <div className="row">
             <div className="col col--6 col--offset-1">
               <h2>Get started easily</h2>
-              <p>This is an example how to query data from various sources easily.</p>
+              <p>Here is an example of how to query data from various sources.</p>
               <br />
               <CodeBlock className={clsx("language-scala", styles.exampleCodeBlock)}>
                 {exampleCode}

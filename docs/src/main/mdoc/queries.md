@@ -31,7 +31,7 @@ To run the query and collect the results into a `List`, there is a `run` method,
 filtered.toList.run(from(students))
 ```
 
-Alternatively, you could also print them to console via `show` method.  
+Alternatively, you could also print them to the console via `show` method.  
 It would render your data as a table:
 
 ```scala mdoc
@@ -41,7 +41,7 @@ filtered.show(truncate=false).run(from(students))
 ## Data exploration
 
 Assume you'd like to explore your data.  
-You could to this simply by calling `describe` method on a `Query`:
+You could do this simply by calling `describe` method on a `Query`:
 
 ```scala mdoc
 select[Student]
@@ -79,7 +79,7 @@ val query: Query[From[Student], FacultyInfo] =
     .map(FacultyInfo.tupled)
 ```
 
-Then you could print the results into console:
+Then you could print the results to the console:
 
 ```scala mdoc
 query
