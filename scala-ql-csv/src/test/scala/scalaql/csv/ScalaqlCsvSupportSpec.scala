@@ -2,14 +2,13 @@ package scalaql.csv
 
 import scalaql.ScalaqlUnitSpec
 import scalaql.*
+import scalaql.sources.Naming
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.time.{LocalDate, LocalDateTime}
 import java.util.UUID
 import scala.collection.mutable
-import scala.util.Try
 
 class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
   case class Person(name: String, age: Int)
@@ -38,13 +37,13 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
     }
 
     "correctly read nested csv with options" in {
-      implicit val config: CsvConfig = CsvConfig.default.copy()
-      val sb                         = new mutable.StringBuilder
+      implicit val config: CsvReadConfig = CsvReadConfig.default.copy(naming = Naming.SnakeCase)
+
       val actualResult = select[NestedPersonOption].toList
         .run(
           from(
             csv.read.string[NestedPersonOption](
-              """name,workingExperienceYears,birthDay,isProgrammer,id,createdAt
+              """name,working_experience_years,birth_day,is_programmer,id,created_at
                 |Vitalii,100500,1997-11-13,true,2769a48d-8fec-4242-81d1-959ae424712c,2022-06-15T12:55
                 |John,2000,1922-07-16,true,,
                 |""".stripMargin
@@ -204,8 +203,9 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
     }
 
     "correctly write nested csv with options" in {
-      implicit val config: CsvConfig = CsvConfig.default.copy()
-      val sb                         = new mutable.StringBuilder
+      implicit val config: CsvWriteConfig = CsvWriteConfig.default.copy(naming = Naming.SnakeCase)
+
+      val sb = new mutable.StringBuilder
       select[NestedPersonOption]
         .foreach(
           csv.write.string[NestedPersonOption](sb)
@@ -241,7 +241,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
         )
 
       val expectedResult =
-        """name,workingExperienceYears,birthDay,isProgrammer,id,createdAt
+        """name,working_experience_years,birth_day,is_programmer,id,created_at
           |Vitalii,100500,1997-11-13,true,2769a48d-8fec-4242-81d1-959ae424712c,2022-06-15T12:55
           |John,2000,1922-07-16,true,,
           |""".stripMargin.replace("\n", "\r\n")

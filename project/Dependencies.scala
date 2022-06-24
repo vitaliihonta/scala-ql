@@ -19,8 +19,9 @@ object Dependencies {
   }
 
   object Json {
-    val circeCore   = "io.circe" %% "circe-core"   % "0.14.1"
-    val circeParser = "io.circe" %% "circe-parser" % "0.14.1"
+    val circeCore    = "io.circe" %% "circe-core"    % "0.14.2"
+    val circeParser  = "io.circe" %% "circe-parser"  % "0.14.2"
+    val circeGeneric = "io.circe" %% "circe-generic" % "0.14.2"
   }
 
   object Excel {

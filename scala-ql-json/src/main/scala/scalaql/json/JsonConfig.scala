@@ -1,11 +1,22 @@
 package scalaql.json
 
-case class JsonConfig(multiline: Boolean, lineTerminator: String)
+case class JsonReadConfig(multiline: Boolean, lineTerminator: String)
 
-object JsonConfig extends LowPriorityJsonConfig {}
+object JsonReadConfig extends LowPriorityJsonReadConfig {}
 
-trait LowPriorityJsonConfig {
-  implicit val default: JsonConfig = JsonConfig(
+trait LowPriorityJsonReadConfig {
+  implicit val default: JsonReadConfig = JsonReadConfig(
+    multiline = true,
+    lineTerminator = "\r\n"
+  )
+}
+
+case class JsonWriteConfig(multiline: Boolean, lineTerminator: String)
+
+object JsonWriteConfig extends LowPriorityJsonWriteConfig {}
+
+trait LowPriorityJsonWriteConfig {
+  implicit val default: JsonWriteConfig = JsonWriteConfig(
     multiline = true,
     lineTerminator = "\r\n"
   )

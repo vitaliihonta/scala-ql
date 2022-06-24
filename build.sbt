@@ -115,7 +115,10 @@ lazy val docs = project
     baseSettings,
     mdocSettings,
     noPublishSettings,
-    scalaVersion := scala213
+    scalaVersion := scala213,
+    libraryDependencies ++= Seq(
+      Json.circeGeneric
+    )
   )
   .dependsOn(
     `scala-ql`.jvm(scala213),

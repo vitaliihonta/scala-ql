@@ -42,7 +42,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
     }
 
     "correctly read single line json" in {
-      implicit val config: json.JsonConfig = json.JsonConfig.default.copy(multiline = false)
+      implicit val config: JsonReadConfig = JsonReadConfig.default.copy(multiline = false)
 
       val actualResult = select[Person].toList
         .run(
@@ -163,7 +163,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
     }
 
     "correctly write single line json" in {
-      implicit val config: json.JsonConfig = json.JsonConfig.default.copy(multiline = false)
+      implicit val config: JsonWriteConfig = JsonWriteConfig.default.copy(multiline = false)
 
       val sb = new mutable.StringBuilder
       select[Person]
