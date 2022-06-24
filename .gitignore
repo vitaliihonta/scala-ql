@@ -2,8 +2,18 @@ version
 .sbt/
 target/
 project/project
+.coverage/
+
+# Generated files
 examples/out/*.json
 examples/out/*.csv
-.coverage/
 scala-ql-excel/src/test/out/*.xls
 scala-ql-excel/src/test/out/*.xlsx
+
+# Website ignores
+website/build/
+website/node_modules/
+website/.docusaurus
+website/yarn.lock
+website/package-lock.json
+website/variables.js

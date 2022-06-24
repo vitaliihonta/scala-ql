@@ -1,0 +1,16 @@
+{
+  "docs": {
+    "Getting started": [
+      "installation",
+      "query"
+    ],
+    "Data sources": [
+      "csv",
+      "json",
+      "excel"
+    ],
+    "Generators": [
+      "html"
+    ]
+  }
+}
