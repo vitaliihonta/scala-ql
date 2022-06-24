@@ -2,7 +2,7 @@
 
 ## Install
 
-```sbt
+```scala
 // Core
 libraryDependencies += "@ORGANIZATION@" %% "scala-ql" % "@VERSION@"
 

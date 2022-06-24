@@ -1,7 +1,7 @@
 const siteConfig = {
     title: "Scala QL",
     tagline: "Statically typed query DSL for Scala.",
-    url: "https://vhonta.dev",
+    url: "https://scala-ql.vhonta.dev",
     baseUrl: "/",
     projectName: 'scala-ql',
     favicon: 'img/favicon/favicon.ico',
@@ -21,6 +21,7 @@ const siteConfig = {
     ],
     themeConfig: {
       prism: {
+        theme: require('prism-react-renderer/themes/nightOwl'),
         additionalLanguages: [
           'java',
           'scala',
