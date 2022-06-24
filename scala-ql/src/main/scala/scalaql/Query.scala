@@ -98,7 +98,7 @@ object Query {
   }
 
   final class FromQuery[A](private[scalaql] val inputTag: LightTypeTag) extends Query[From[A], A] {
-    override def toString: String = "FROM"
+    override def toString: String = s"FROM($inputTag)"
   }
 
   final class MapQuery[In, Out0, Out1](
@@ -123,7 +123,7 @@ object Query {
     override def where(p: Predicate[Out1]): Query[In, Out1] =
       new FlatMapQuery[In, Out0, Out1](source, projectM(_).where(p))
 
-    override def toString: String = s"$source -> FLAT_MAP"
+    override def toString: String = s"$source -> FLATMAP"
   }
 
   final class MapWhereQuery[In, Out, Out1](
@@ -145,7 +145,7 @@ object Query {
     override def where(p: Predicate[Out]): Query[In, Out] =
       new WhereSubQuery[In, Out](source, x => predicate(x).map(_ && p(x)))
 
-    override def toString: String = s"$source -> WHERE_SUB_QUERY"
+    override def toString: String = s"$source -> WHERE_SUBQUERY"
 
     override def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
       new WhereSubQuery[In2, Out](
