@@ -208,7 +208,7 @@ trait LowPriorityCellDecoders {
       )
     ) { implicit ctx => cell =>
       val tryNumeric = catching(
-        classOf[DateTimeParseException],
+        classOf[NumberFormatException],
         classOf[IllegalStateException]
       ).either(cell.getLocalDateTimeCellValue)
 
@@ -217,7 +217,7 @@ trait LowPriorityCellDecoders {
         if (tryNumeric.isRight) tryNumeric
         else
           catching(
-            classOf[NumberFormatException],
+            classOf[DateTimeParseException],
             classOf[IllegalStateException]
           ).either(LocalDateTime.parse(cell.getStringCellValue))
 
@@ -232,7 +232,7 @@ trait LowPriorityCellDecoders {
       )
     ) { implicit ctx => cell =>
       val tryNumeric = catching(
-        classOf[DateTimeParseException],
+        classOf[NumberFormatException],
         classOf[IllegalStateException]
       ).either(cell.getLocalDateTimeCellValue.toLocalDate)
 
@@ -241,7 +241,7 @@ trait LowPriorityCellDecoders {
         if (tryNumeric.isRight) tryNumeric
         else
           catching(
-            classOf[NumberFormatException],
+            classOf[DateTimeParseException],
             classOf[IllegalStateException]
           ).either(LocalDate.parse(cell.getStringCellValue))
 

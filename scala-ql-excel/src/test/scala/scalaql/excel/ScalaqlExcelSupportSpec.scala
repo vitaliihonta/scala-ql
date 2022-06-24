@@ -189,8 +189,8 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
 
       caught.toString shouldBe
         """scalaql.excel.ExcelDecoderException$Accumulating: Failed to decode DetailedPerson (at `root`):
-          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
-          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
+          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell of row number #0 at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
+          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell of row number #0 at path `birthDay`: java.time.format.DateTimeParseException: Text 'xxx' could not be parsed at index 0 )
           |""".stripMargin
     }
 
@@ -213,10 +213,10 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
 
       caught.toString shouldEqual
         """scalaql.excel.ExcelDecoderException$Accumulating: Failed to decode DetailedPersonWithMissingFields (at `root`):
-          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
-          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell at path `birthDay`: expected NUMERIC cell (evaluate formulas disabled), got STRING )
-          |	+ ( scalaql.excel.ExcelDecoderException$FieldNotFound: Field not found at path `missingBoolean` )
-          |	+ ( scalaql.excel.ExcelDecoderException$FieldNotFound: Field not found at path `missingString` )
+          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell of row number #0 at path `id`: java.lang.IllegalArgumentException: Invalid UUID string: foo )
+          |	+ ( scalaql.excel.ExcelDecoderException$CannotDecode: Cannot decode cell of row number #0 at path `birthDay`: java.time.format.DateTimeParseException: Text 'xxx' could not be parsed at index 0 )
+          |	+ ( scalaql.excel.ExcelDecoderException$FieldNotFound: Field not found for row number #0 at path `missingBoolean` )
+          |	+ ( scalaql.excel.ExcelDecoderException$FieldNotFound: Field not found for row number #0 at path `missingString` )
           |""".stripMargin
     }
 
