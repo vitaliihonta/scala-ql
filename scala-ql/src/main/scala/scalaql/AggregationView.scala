@@ -1,5 +1,7 @@
 package scalaql
 
+import scalaql.Aggregation.Of
+import scalaql.syntax.{ReportPartiallyApplied2, ReportPartiallyApplied2Syntax}
 import spire.algebra.AdditiveMonoid
 import spire.algebra.Field
 import spire.algebra.MultiplicativeMonoid
@@ -38,12 +40,11 @@ sealed trait AggregationDsl[In, Out] {
   )(agg1:   (B, AggregationView[Out]) => Aggregation.Of[Out, U1]
   ): Aggregation.Of[In, List[U1]]
 
-  def report[B, C, U1, U2](
-    split1:        Out => B,
-    split2:        Out => C
-  )(mergeCascade1: (B, C, AggregationView[Out]) => Aggregation.Of[Out, U1]
-  )(mergeCascade2: (B, AggregationView[U1]) => Aggregation.Of[U1, U2]
-  ): Aggregation.Of[In, List[U2]]
+  def report[B, C, U1](
+    group1: Out => B,
+    group2: Out => C
+  )(merge:  (B, C, AggregationView[Out]) => Aggregation.Of[Out, U1]
+  ): ReportPartiallyApplied2[Out, B, C, U1]
 }
 
 sealed trait AggregationView[A] extends AggregationDsl[A, A] {
@@ -63,7 +64,7 @@ object AggregationView {
       self.asInstanceOf[AggregationView[U]]
   }
 
-  private[scalaql] abstract class Impl[A] extends AggregationView[A] {
+  private[scalaql] abstract class Impl[A] extends AggregationView[A] with ReportPartiallyApplied2Syntax[A] {
     protected def mkChild[U]: AggregationView[U]
 
     override def map[B](f: A => B): AggregationViewMapped[A, B] =
@@ -116,19 +117,6 @@ object AggregationView {
     )(agg1:   (B, AggregationView[A]) => Aggregation.Of[A, U1]
     ): Aggregation.Of[A, List[U1]] =
       new Aggregation.Report1[A, B, U1](mkChild[A])(group1, agg1)
-
-    def report[B, C, U1, U2](
-      group1: A => B,
-      group2: A => C
-    )(agg1:   (B, C, AggregationView[A]) => Aggregation.Of[A, U1]
-    )(agg2:   (B, AggregationView[U1]) => Aggregation.Of[U1, U2]
-    ): Aggregation.Of[A, List[U2]] =
-      new Aggregation.Report2[A, B, C, U1, U2](mkChild[A], mkChild[U1])(
-        group1,
-        group2,
-        agg1,
-        agg2
-      )
 
     override def custom[B](f: Iterable[A] => B): Aggregation.Of[A, B] =
       new Aggregation.Custom[A, B](f)
@@ -190,14 +178,11 @@ object AggregationView {
         .report[B, U1](group1)(agg1)
         .contramap(project)
 
-    override def report[B, C, U1, U2](
+    override def report[B, C, U1](
       group1: Out => B,
       group2: Out => C
-    )(agg1:   (B, C, AggregationView[Out]) => Aggregation.Of[Out, U1]
-    )(agg2:   (B, AggregationView[U1]) => Aggregation.Of[U1, U2]
-    ): Aggregation.Of[A, List[U2]] =
-      delegate
-        .report(group1, group2)(agg1)(agg2)
-        .contramap(project)
+    )(merge:  (B, C, AggregationView[Out]) => Of[Out, U1]
+    ): ReportPartiallyApplied2[Out, B, C, U1] =
+      delegate.report[B, C, U1](group1, group2)(merge)
   }
 }

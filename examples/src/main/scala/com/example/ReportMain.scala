@@ -18,7 +18,8 @@ object ReportMain extends App {
             } else {
               students.const(BySpec(spec, avgGrade = 0))
             }
-          )((age, cascadeInfos) => cascadeInfos.toList.map(ByAge(age, _)))
+          )
+          .combine((age, cascadeInfos) => cascadeInfos.toList.map(ByAge(age, _)))
       }
       .map((ByFaculty.apply _).tupled)
       .sortBy(_.faculty)(desc)

@@ -22,7 +22,7 @@ import java.nio.file.Paths
 import io.circe.generic.auto._
 ```
 
-Assume you have a json file like the following:
+Assume you have a JSON file like the following:
 
 ```scala mdoc
 val studentsPath = Paths.get("docs/src/main/resources/students.json")

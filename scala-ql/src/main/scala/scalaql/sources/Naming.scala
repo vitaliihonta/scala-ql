@@ -9,6 +9,8 @@ object Naming {
 
   val Literal: Naming = identity[String]
 
+  val UpperCase: Naming = _.capitalize
+
   val SnakeCase: Naming = s => {
     val partial = basePattern.matcher(s).replaceAll("$1_$2")
     swapPattern.matcher(partial).replaceAll("$1_$2").toLowerCase
