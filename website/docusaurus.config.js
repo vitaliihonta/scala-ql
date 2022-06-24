@@ -3,7 +3,7 @@ const siteConfig = {
     tagline: "Statically typed query DSL for Scala.",
     url: "https://scala-ql.vhonta.dev",
     baseUrl: "/",
-    projectName: 'scala-ql',
+    // projectName: 'scala-ql',
     favicon: 'img/favicon/favicon.ico',
     presets: [
         [
@@ -43,23 +43,23 @@ const siteConfig = {
         //   src: 'img/logo.svg',
         // },
         items: [
-          { to: 'docs/getting-started', label: 'Docs', position: 'right' },
+          { to: 'docs/installation', label: 'Docs', position: 'right' },
         ],
       },
       footer: {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: 'Info',
             items: [
               {
-                label: 'Get Started',
-                to: 'docs/getting-started',
+                label: 'Contacts',
+                href: 'docs/contacts',
               },
               {
-                label: 'Queries',
-                href: 'docs/queries',
-              },
+                label: 'Contribution',
+                href: 'docs/contribution'
+              }
             ],
           },
         ],

@@ -291,7 +291,8 @@ lazy val mdocSettings = Seq(
   mdocIn := file("docs/src/main/mdoc"),
   mdocVariables := Map(
     "VERSION"      -> version.value,
-    "ORGANIZATION" -> organization.value
+    "ORGANIZATION" -> organization.value,
+    "EMAIL"        -> developers.value.head.email
   ),
   crossScalaVersions := Seq(scalaVersion.value),
   docusaurusCreateSite := docusaurusCreateSite
