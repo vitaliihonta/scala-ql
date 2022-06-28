@@ -1,17 +1,36 @@
 package scalaql
 
+import scala.collection.mutable
+
 final class SideEffect[R, S, A] private (
   private var state:             S,
   private var acquireResource:   () => R,
   private var releaseResource:   (R, S) => Unit,
   private var useResource:       (R, S, A) => S,
+  private val beforeAlls:        mutable.ListBuffer[R => Unit],
+  private val afterAlls:         mutable.ListBuffer[(R, S) => Unit],
+  private val onExits:           mutable.ListBuffer[() => Unit],
   private var capturedException: Throwable)
     extends AutoCloseable
     with (A => Unit) { self =>
 
-  private lazy val resource = acquireResource()
+  private lazy val resource = {
+    val res = acquireResource()
+    try
+      beforeAlls.foreach(_.apply(res))
+    catch {
+      case e: Throwable => capturedException = e
+    }
+    res
+  }
 
-  override def close(): Unit = releaseResource(resource, state)
+  override def close(): Unit =
+    try
+      if (capturedException == null) afterAlls.foreach(_.apply(resource, state))
+    finally {
+      releaseResource(resource, state)
+      onExits.foreach(_.apply())
+    }
 
   override def apply(value: A): Unit = {
     val _ = resource // touch the resource to capture initialization error
@@ -29,36 +48,17 @@ final class SideEffect[R, S, A] private (
   }
 
   def beforeAll(f: R => Unit): this.type = {
-    val previousAcquire = self.acquireResource
-    self.acquireResource = () => {
-      val r = previousAcquire()
-      try f(r)
-      catch {
-        case e: Throwable =>
-          self.capturedException = e
-      }
-      r
-    }
+    self.beforeAlls += f
     self
   }
 
   def afterAll(f: (R, S) => Unit): this.type = {
-    val previousRelease = self.releaseResource
-    self.releaseResource = { (resource, state) =>
-      try
-        if (self.capturedException == null) f(resource, state)
-      finally
-        previousRelease(resource, state)
-    }
+    afterAlls += f
     self
   }
 
   def onExit(f: => Unit): this.type = {
-    val previousRelease = self.releaseResource
-    self.releaseResource = { (resource, state) =>
-      previousRelease(resource, state)
-      f
-    }
+    self.onExits += (() => f)
     self
   }
 }
@@ -81,7 +81,10 @@ object SideEffect {
       acquireResource = acquire,
       releaseResource = release,
       useResource = use,
-      capturedException = null
+      capturedException = null,
+      beforeAlls = mutable.ListBuffer.empty,
+      afterAlls = mutable.ListBuffer.empty,
+      onExits = mutable.ListBuffer.empty
     )
 
   def resourceless[S, A](initialState: S, use: (S, A) => S): SideEffect.Resourceless[S, A] =
@@ -90,7 +93,10 @@ object SideEffect {
       acquireResource = noopAcquire,
       releaseResource = noopRelease,
       useResource = (_, s, a) => use(s, a),
-      capturedException = null
+      capturedException = null,
+      beforeAlls = mutable.ListBuffer.empty,
+      afterAlls = mutable.ListBuffer.empty,
+      onExits = mutable.ListBuffer.empty
     )
 
   def stateless[R, A](acquire: () => R, release: R => Unit, use: (R, A) => Unit): SideEffect.Stateless[R, A] =
@@ -99,6 +105,9 @@ object SideEffect {
       acquireResource = acquire,
       releaseResource = (r, _) => release(r),
       useResource = (r, _, a) => use(r, a),
-      capturedException = null
+      capturedException = null,
+      beforeAlls = mutable.ListBuffer.empty,
+      afterAlls = mutable.ListBuffer.empty,
+      onExits = mutable.ListBuffer.empty
     )
 }

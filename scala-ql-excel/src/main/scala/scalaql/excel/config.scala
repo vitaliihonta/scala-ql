@@ -12,18 +12,14 @@ case class ExcelReadConfig(
   naming:                 Naming,
   evaluateFormulas:       Boolean,
   choseWorksheet:         Workbook => Sheet,
-  cellResolutionStrategy: CellResolutionStrategy,
-  worksheetName:          Option[String])
+  cellResolutionStrategy: CellResolutionStrategy)
 
-object ExcelReadConfig extends LowPriorityExcelReadConfig {}
-
-trait LowPriorityExcelReadConfig {
-  implicit val default: ExcelReadConfig = ExcelReadConfig(
+object ExcelReadConfig {
+  val default: ExcelReadConfig = ExcelReadConfig(
     naming = Naming.Literal,
     evaluateFormulas = false,
     choseWorksheet = _.getSheetAt(0),
-    cellResolutionStrategy = CellResolutionStrategy.IndexBased,
-    worksheetName = None
+    cellResolutionStrategy = CellResolutionStrategy.IndexBased
   )
 }
 
@@ -33,14 +29,12 @@ case class ExcelWriteConfig[-A](
   naming:        Naming,
   styling:       ExcelStyling[A])
 
-object ExcelWriteConfig extends LowPriorityExcelWriteConfig {}
-
-trait LowPriorityExcelWriteConfig {
-  implicit def default[A](implicit styling: ExcelStyling[A]): ExcelWriteConfig[A] = ExcelWriteConfig[A](
+object ExcelWriteConfig {
+  def default[A]: ExcelWriteConfig[A] = ExcelWriteConfig[A](
     worksheetName = None,
     writeHeaders = false,
     naming = Naming.Literal,
-    styling = styling
+    styling = ExcelStyling.NoStyling
   )
 }
 
@@ -52,7 +46,7 @@ sealed trait CellResolutionStrategy {
 
 object CellResolutionStrategy {
 
-  final object IndexBased extends CellResolutionStrategy {
+  final case object IndexBased extends CellResolutionStrategy {
     override val writeHeaders: Boolean = false
 
     override def getStartOffset(
@@ -64,7 +58,7 @@ object CellResolutionStrategy {
       Some(currentOffset)
   }
 
-  final object NameBased extends CellResolutionStrategy {
+  final case object NameBased extends CellResolutionStrategy {
     override val writeHeaders: Boolean = true
 
     override def getStartOffset(

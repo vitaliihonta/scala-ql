@@ -75,7 +75,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       select[Person].toList
         .run(
           from(
-            excel.read.file[Person](path)
+            excel.read[Person].file(path)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "Vitalii", age = 24), Person(name = "John", age = 100))
@@ -85,14 +85,13 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly read xlsx document with headers" in {
       val path = Paths.get("scala-ql-excel/src/test/resources/with-headers.xlsx")
 
-      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        cellResolutionStrategy = CellResolutionStrategy.NameBased
-      )
-
       select[Person].toList
         .run(
           from(
-            excel.read.file[Person](path)
+            excel
+              .read[Person]
+              .option(CellResolutionStrategy.NameBased)
+              .file(path)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "Vitalii", age = 24), Person(name = "John", age = 100))
@@ -102,15 +101,14 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly read nested xlsx document with options and headers" in {
       val path = Paths.get("scala-ql-excel/src/test/resources/nested-options-with-headers.xls")
 
-      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        naming = Naming.WithSpacesLowerCase,
-        cellResolutionStrategy = CellResolutionStrategy.NameBased
-      )
-
       select[NestedPersonOption].toList
         .run(
           from(
-            excel.read.file[NestedPersonOption](path)
+            excel
+              .read[NestedPersonOption]
+              .option(Naming.WithSpacesLowerCase)
+              .option(CellResolutionStrategy.NameBased)
+              .file(path)
           )
         ) should contain theSameElementsAs {
         List(
@@ -140,15 +138,14 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly read complex xlsx document with headers" in {
       val path = Paths.get("scala-ql-excel/src/test/resources/complex-with-headers.xlsx")
 
-      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        naming = Naming.WithSpacesLowerCase,
-        cellResolutionStrategy = CellResolutionStrategy.NameBased
-      )
-
       select[DetailedPerson].toList
         .run(
           from(
-            excel.read.file[DetailedPerson](path)
+            excel
+              .read[DetailedPerson]
+              .option(Naming.WithSpacesLowerCase)
+              .option(CellResolutionStrategy.NameBased)
+              .file(path)
           )
         ) should contain theSameElementsAs {
         List(
@@ -173,16 +170,15 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly read complex xlsx document handling errors" in {
       val path = Paths.get("scala-ql-excel/src/test/resources/errors-complex-with-headers.xlsx")
 
-      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        naming = Naming.WithSpacesLowerCase,
-        cellResolutionStrategy = CellResolutionStrategy.NameBased
-      )
-
       val caught = intercept[ExcelDecoderException.Accumulating] {
         select[DetailedPerson].toList
           .run(
             from(
-              excel.read.file[DetailedPerson](path)
+              excel
+                .read[DetailedPerson]
+                .option(Naming.WithSpacesLowerCase)
+                .option(CellResolutionStrategy.NameBased)
+                .file(path)
             )
           )
       }
@@ -197,16 +193,15 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly read complex xlsx document handling missing cells errors" in {
       val path = Paths.get("scala-ql-excel/src/test/resources/errors-complex-with-headers.xlsx")
 
-      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        naming = Naming.WithSpacesLowerCase,
-        cellResolutionStrategy = CellResolutionStrategy.NameBased
-      )
-
       val caught = intercept[ExcelDecoderException.Accumulating] {
         select[DetailedPersonWithMissingFields].toList
           .run(
             from(
-              excel.read.file[DetailedPersonWithMissingFields](path)
+              excel
+                .read[DetailedPersonWithMissingFields]
+                .option(Naming.WithSpacesLowerCase)
+                .option(CellResolutionStrategy.NameBased)
+                .file(path)
             )
           )
       }
@@ -223,15 +218,14 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly read nested xlsx document with headers" in {
       val path = Paths.get("scala-ql-excel/src/test/resources/nested-with-headers.xlsx")
 
-      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        naming = Naming.WithSpacesLowerCase,
-        cellResolutionStrategy = CellResolutionStrategy.NameBased
-      )
-
       select[NestedPerson].toList
         .run(
           from(
-            excel.read.file[NestedPerson](path)
+            excel
+              .read[NestedPerson]
+              .option(Naming.WithSpacesLowerCase)
+              .option(CellResolutionStrategy.NameBased)
+              .file(path)
           )
         ) should contain theSameElementsAs {
         List(
@@ -265,7 +259,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       select[NestedPersonOrderSensitive].toList
         .run(
           from(
-            excel.read.file[NestedPersonOrderSensitive](path)
+            excel.read[NestedPersonOrderSensitive].file(path)
           )
         ) should contain theSameElementsAs {
         List(
@@ -296,16 +290,15 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly read complex xlsx document with headers and formulas" in {
       val path = Paths.get("scala-ql-excel/src/test/resources/with-headers-and-formulas.xlsx")
 
-      implicit val excelConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-        evaluateFormulas = true,
-        naming = Naming.WithSpacesLowerCase,
-        cellResolutionStrategy = CellResolutionStrategy.NameBased
-      )
-
       select[DetailedPersonWithFormulas].toList
         .run(
           from(
-            excel.read.file[DetailedPersonWithFormulas](path)
+            excel
+              .read[DetailedPersonWithFormulas]
+              .option(evaluateFormulas = true)
+              .option(Naming.WithSpacesLowerCase)
+              .option(CellResolutionStrategy.NameBased)
+              .file(path)
           )
         ) should contain theSameElementsAs {
         List(
@@ -329,7 +322,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write", "without-headers.xls")
       select[Person]
         .foreach(
-          excel.write.file[Person](path)
+          excel.write[Person].file(path)
         )
         .run(
           from(
@@ -343,13 +336,14 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
 
     "correctly write simple xls with headers" in {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write", "with-headers.xls")
-      implicit val excelConfig: ExcelWriteConfig[Person] = ExcelWriteConfig.default.copy(
-        writeHeaders = true,
-        naming = Naming.WithSpacesLowerCase
-      )
+
       select[Person]
         .foreach(
-          excel.write.file[Person](path)
+          excel
+            .write[Person]
+            .option(headers = true)
+            .option(Naming.WithSpacesLowerCase)
+            .file(path)
         )
         .run(
           from(
@@ -364,7 +358,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly write simple xls with headers and styles" in {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-styles", "with-headers.xls")
 
-      implicit val personStyling: ExcelStyling[Person] = ExcelStyling
+      val personStyling: ExcelStyling[Person] = ExcelStyling
         .builder[Person]
         .forAllHeaders(
           cellStyle
@@ -380,15 +374,14 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
         )
         .build
 
-      implicit val excelConfig: ExcelWriteConfig[Person] = ExcelWriteConfig.default
-        .copy(
-          writeHeaders = true,
-          naming = Naming.WithSpacesLowerCase
-        )
-
       select[Person]
         .foreach(
-          excel.write.file[Person](path)
+          excel
+            .write[Person]
+            .option(headers = true)
+            .option(Naming.WithSpacesLowerCase)
+            .option(personStyling)
+            .file(path)
         )
         .run(
           from(
@@ -402,14 +395,14 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
 
     "correctly write complex xlsx document with headers" in {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-complex", "with-headers.xls")
-      implicit val excelConfig: ExcelWriteConfig[DetailedPerson] = ExcelWriteConfig.default.copy(
-        writeHeaders = true,
-        naming = Naming.WithSpacesLowerCase
-      )
 
       select[DetailedPerson]
         .foreach(
-          excel.write.file[DetailedPerson](path)
+          excel
+            .write[DetailedPerson]
+            .option(headers = true)
+            .option(Naming.WithSpacesLowerCase)
+            .file(path)
         )
         .run(
           from(
@@ -439,7 +432,7 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
     "correctly write nested xlsx document with headers" in {
       val path = Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-nested", "with-headers.xls")
 
-      implicit val styling: ExcelStyling[NestedPersonOption] = ExcelStyling
+      val styling: ExcelStyling[NestedPersonOption] = ExcelStyling
         .builder[NestedPersonOption]
         .forAllHeaders(
           cellStyle
@@ -456,14 +449,14 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
         )
         .build
 
-      implicit val excelConfig: ExcelWriteConfig[NestedPersonOption] = ExcelWriteConfig.default.copy(
-        writeHeaders = true,
-        naming = Naming.WithSpacesLowerCase
-      )
-
       select[NestedPersonOption]
         .foreach(
-          excel.write.file[NestedPersonOption](path)
+          excel
+            .write[NestedPersonOption]
+            .option(headers = true)
+            .option(Naming.WithSpacesLowerCase)
+            .option(styling)
+            .file(path)
         )
         .run(
           from(
@@ -499,14 +492,13 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       val path =
         Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-nested-options", "with-headers.xls")
 
-      implicit val excelConfig: ExcelWriteConfig[NestedPersonOption] = ExcelWriteConfig.default.copy(
-        writeHeaders = true,
-        naming = Naming.WithSpacesLowerCase
-      )
-
       select[NestedPersonOption]
         .foreach(
-          excel.write.file[NestedPersonOption](path)
+          excel
+            .write[NestedPersonOption]
+            .option(headers = true)
+            .option(Naming.WithSpacesLowerCase)
+            .file(path)
         )
         .run(
           from(
@@ -542,11 +534,6 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       val path =
         Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-list-nested", "with-headers.xls")
 
-      implicit val excelConfig: ExcelWriteConfig[PeopleStats] = ExcelWriteConfig.default.copy(
-        writeHeaders = true,
-        naming = Naming.WithSpacesLowerCase
-      )
-
       select[PersonWithProfession]
         .groupBy(_.isProgrammer)
         .aggregate { (_, people) =>
@@ -577,7 +564,11 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
           )
         }
         .foreach(
-          excel.write.file[PeopleStats](path)
+          excel
+            .write[PeopleStats]
+            .option(headers = true)
+            .option(Naming.WithSpacesLowerCase)
+            .file(path)
         )
         .run(
           from(

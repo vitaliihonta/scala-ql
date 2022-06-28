@@ -15,10 +15,8 @@ case class HtmlTableEncoderConfig[A](
   naming:   Naming,
   styling:  HtmlStyling[A])
 
-object HtmlTableEncoderConfig extends LowPriorityHtmlTableEncoderConfig {}
-
-trait LowPriorityHtmlTableEncoderConfig {
-  implicit def default[A](implicit styling: HtmlStyling[A]): HtmlTableEncoderConfig[A] =
+object HtmlTableEncoderConfig {
+  def default[A]: HtmlTableEncoderConfig[A] =
     HtmlTableEncoderConfig[A](
       htmlTag = html(),
       headTag = head(),
@@ -28,6 +26,6 @@ trait LowPriorityHtmlTableEncoderConfig {
       thTag = th(),
       tdTag = td(),
       naming = Naming.Literal,
-      styling = styling
+      styling = HtmlStyling.NoStyling
     )
 }

@@ -12,8 +12,7 @@ trait ExcelStyling[-A] {
   def cellStyle(name:   String): Option[Styling]
 }
 
-object ExcelStyling extends LowPriorityExcelStyling {
-  def apply[A](implicit ev: ExcelStyling[A]): ev.type = ev
+object ExcelStyling {
 
   def builder[A]: ExcelStylingBuilder[A] = new ExcelStylingBuilder[A]()
 
@@ -25,10 +24,8 @@ object ExcelStyling extends LowPriorityExcelStyling {
     override def headerStyle(name: String): Option[Styling] = header(name)
     override def cellStyle(name: String): Option[Styling]   = cell(name)
   }
-}
 
-trait LowPriorityExcelStyling {
-  implicit lazy val NoStyling: ExcelStyling[Any] = new ExcelStyling[Any] {
+  lazy val NoStyling: ExcelStyling[Any] = new ExcelStyling[Any] {
     override def headerStyle(name: String): Option[Styling] = None
     override def cellStyle(name: String): Option[Styling]   = None
   }

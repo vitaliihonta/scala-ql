@@ -34,7 +34,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
         .toList
         .run(
           from(
-            json.read.string(rawJson)
+            json.read[Person].load(rawJson)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24))
@@ -42,23 +42,24 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
     }
 
     "correctly read single line json" in {
-      implicit val config: JsonReadConfig = JsonReadConfig.default.copy(multiline = false)
-
       val actualResult = select[Person].toList
         .run(
           from(
-            json.read.string[Person](
-              """[
-                |{
-                |   "name" : "vitalii",
-                |   "age" : 24
-                |},
-                |{
-                |   "name" : "john",
-                |   "age" : 100
-                |}
-                |]""".stripMargin
-            )
+            json
+              .read[Person]
+              .option(multiline = false)
+              .load(
+                """[
+                  |{
+                  |   "name" : "vitalii",
+                  |   "age" : 24
+                  |},
+                  |{
+                  |   "name" : "john",
+                  |   "age" : 100
+                  |}
+                  |]""".stripMargin
+              )
           )
         )
 
@@ -78,7 +79,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
       select[Person].toList
         .run(
           from(
-            json.read.file[Person](path)
+            json.read[Person].file(path)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24), Person(name = "john", age = 100))
@@ -98,9 +99,11 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
       val actualResult = select[Person].toList
         .run(
           from(
-            json.read.files[Person]()(
-              files: _*
-            )
+            json
+              .read[Person]
+              .files()(
+                files: _*
+              )
           )
         )
 
@@ -127,7 +130,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
       val actualResult = select[Person].toList
         .run(
           from(
-            json.read.directory[Person](dir, globPattern = "**.json")
+            json.read[Person].directory(dir, globPattern = "**.json")
           )
         )
 
@@ -144,7 +147,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
       val sb = new mutable.StringBuilder
       select[Person]
         .foreach(
-          json.write.string[Person](sb)
+          json.write[Person].string(sb)
         )
         .run(
           from(
@@ -163,12 +166,13 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
     }
 
     "correctly write single line json" in {
-      implicit val config: JsonWriteConfig = JsonWriteConfig.default.copy(multiline = false)
-
       val sb = new mutable.StringBuilder
       select[Person]
         .foreach(
-          json.write.string[Person](sb)
+          json
+            .write[Person]
+            .option(multiline = false)
+            .string(sb)
         )
         .run(
           from(
@@ -190,6 +194,8 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
 
       val actualResult = sb.toString
 
+      println(actualResult)
+
       assert(actualResult == expectedResult)
     }
 
@@ -198,7 +204,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
 
       select[Person]
         .foreach(
-          json.write.file[Person](path)
+          json.write[Person].file(path)
         )
         .run(
           from(

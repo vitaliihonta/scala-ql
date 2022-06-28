@@ -1,18 +1,56 @@
 package scalaql.sources
 
 import scalaql.SideEffect
-import scala.collection.mutable
 
-trait DataSourceSupport[Source <: AutoCloseable, Sink, Decoder[_], Encoder[_], ReadConfig[_], WriteConfig[_]]
-    extends DataSourceReadSupport[Source, Decoder, ReadConfig]
-    with DataSourceWriteSupport[Sink, Encoder, WriteConfig]
+trait DataSourceSupport[
+  Source <: AutoCloseable,
+  Sink,
+  Decoder[_],
+  Encoder[_],
+  ReadConfig[_],
+  WriteConfig[_],
+  DSReader <: DataSourceReader[Source, Decoder, ReadConfig],
+  DSWriter <: DataSourceWriter[Sink, Encoder, WriteConfig],
+  ReadDSL[A] <: DataSourceReadDsl[A, Source, Decoder, ReadConfig, DSReader, ReadDSL[A]],
+  WriteDSL[A] <: DataSourceWriteDsl[A, Sink, Encoder, WriteConfig, DSWriter, WriteDSL[A]]]
+    extends DataSourceReadSupport[Source, Decoder, ReadConfig, DSReader, ReadDSL]
+    with DataSourceWriteSupport[Sink, Encoder, WriteConfig, DSWriter, WriteDSL]
 
-trait DataSourceReadSupport[Source <: AutoCloseable, Decoder[_], Config[_]] {
-  val read: DataSourceReader[Source, Decoder, Config]
+trait DataSourceReadSupport[
+  Source <: AutoCloseable,
+  Decoder[_],
+  Config[_],
+  DSReader <: DataSourceReader[Source, Decoder, Config],
+  DSL[A] <: DataSourceReadDsl[A, Source, Decoder, Config, DSReader, DSL[A]]] {
+
+  def read[A]: DSL[A]
 }
 
-trait DataSourceWriteSupport[Sink, Encoder[_], Config[_]] {
-  val write: DataSourceWriter[Sink, Encoder, Config]
+trait DataSourceWriteSupport[
+  Sink,
+  Encoder[_],
+  Config[_],
+  DSWriter <: DataSourceWriter[Sink, Encoder, Config],
+  DSL[A] <: DataSourceWriteDsl[A, Sink, Encoder, Config, DSWriter, DSL[A]]] {
+
+  def write[A]: DSL[A]
+}
+
+abstract class DataSourceReadDsl[
+  A,
+  Source <: AutoCloseable,
+  Decoder[_],
+  Config[_],
+  DSReader <: DataSourceReader[Source, Decoder, Config],
+  Self <: DataSourceReadDsl[A, Source, Decoder, Config, DSReader, Self]] {
+
+  protected def _reader: DSReader
+  protected def _config: Config[A]
+
+  def config(config: Config[A]): Self
+
+  def load(source: => Source)(implicit ev: Decoder[A]): Iterable[A] =
+    _reader.read[A](source)(ev, _config)
 }
 
 trait DataSourceReader[Source <: AutoCloseable, Decoder[_], Config[_]] {
@@ -31,14 +69,26 @@ trait DataSourceReader[Source <: AutoCloseable, Decoder[_], Config[_]] {
   }
 }
 
+abstract class DataSourceWriteDsl[
+  A,
+  Sink,
+  Encoder[_],
+  Config[_],
+  DSWriter <: DataSourceWriter[Sink, Encoder, Config],
+  Self <: DataSourceWriteDsl[A, Sink, Encoder, Config, DSWriter, Self]] {
+
+  protected def _writer: DSWriter
+  protected def _config: Config[A]
+
+  def config(config: Config[A]): Self
+
+  def save(sink: => Sink)(implicit ev: Encoder[A]): SideEffect[Sink, ?, A] =
+    _writer.write[A](sink)(ev, _config)
+}
+
 trait DataSourceWriter[Sink, Encoder[_], Config[_]] {
   def write[A: Encoder](
     sink:            => Sink
   )(implicit config: Config[A]
-  ): SideEffect[?, ?, A]
-
-  def string[A: Encoder](
-    builder:         mutable.StringBuilder
-  )(implicit config: Config[A]
-  ): SideEffect[?, ?, A]
+  ): SideEffect[Sink, ?, A]
 }

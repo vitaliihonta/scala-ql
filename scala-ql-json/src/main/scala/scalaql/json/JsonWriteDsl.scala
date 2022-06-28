@@ -1,0 +1,26 @@
+package scalaql.json
+
+import io.circe.Encoder
+import scalaql.json.internal.JsonDataSourceWriter
+import scalaql.sources.{DataSourceFilesWriteDslMixin, DataSourceJavaIOWriteDslMixin, DataSourceWriteDsl}
+
+import java.io.Writer
+
+class JsonWriteDsl[A](override protected val _config: JsonWriteConfig)
+    extends DataSourceWriteDsl[A, Writer, Encoder, λ[a => JsonWriteConfig], JsonDataSourceWriter, JsonWriteDsl[A]]
+    with DataSourceJavaIOWriteDslMixin[A, Encoder, λ[a => JsonWriteConfig], JsonDataSourceWriter, JsonWriteDsl[A]]
+    with DataSourceFilesWriteDslMixin[A, Writer, Encoder, λ[a => JsonWriteConfig], JsonDataSourceWriter, JsonWriteDsl[
+      A
+    ]] {
+
+  override protected val _writer = JsonDataSourceWriter
+
+  override def config(config: JsonWriteConfig): JsonWriteDsl[A] =
+    new JsonWriteDsl[A](config)
+
+  def option(multiline: Boolean): JsonWriteDsl[A] =
+    config(_config.copy(multiline = multiline))
+
+  def option(lineTerminator: String): JsonWriteDsl[A] =
+    config(_config.copy(lineTerminator = lineTerminator))
+}

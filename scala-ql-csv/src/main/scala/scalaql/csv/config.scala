@@ -34,26 +34,24 @@ case class CsvReadConfig(
     }
 }
 
-object CsvReadConfig extends LowPriorityCsvReadConfig {
+object CsvReadConfig {
+  val default: CsvReadConfig = CsvReadConfig(
+    delimiter = ',',
+    quoteChar = '"',
+    escapeChar = '"',
+    lineTerminator = "\r\n",
+    quoting = Quoting.QuoteMinimal,
+    treatEmptyLineAsNil = false,
+    naming = Naming.Literal,
+    caseSensitive = false
+  )
+
   val tsv: CsvReadConfig = CsvReadConfig(
     delimiter = '\t',
     quoteChar = '"',
     escapeChar = '\\',
     lineTerminator = "\r\n",
     quoting = Quoting.QuoteNone,
-    treatEmptyLineAsNil = false,
-    naming = Naming.Literal,
-    caseSensitive = false
-  )
-}
-
-trait LowPriorityCsvReadConfig {
-  implicit val default: CsvReadConfig = CsvReadConfig(
-    delimiter = ',',
-    quoteChar = '"',
-    escapeChar = '"',
-    lineTerminator = "\r\n",
-    quoting = Quoting.QuoteMinimal,
     treatEmptyLineAsNil = false,
     naming = Naming.Literal,
     caseSensitive = false
@@ -80,25 +78,23 @@ case class CsvWriteConfig(
     }
 }
 
-object CsvWriteConfig extends LowPriorityCsvWriteConfig {
+object CsvWriteConfig {
+  val default: CsvWriteConfig = CsvWriteConfig(
+    delimiter = ',',
+    quoteChar = '"',
+    escapeChar = '"',
+    lineTerminator = "\r\n",
+    quoting = Quoting.QuoteMinimal,
+    treatEmptyLineAsNil = false,
+    naming = Naming.Literal
+  )
+
   val tsv: CsvWriteConfig = CsvWriteConfig(
     delimiter = '\t',
     quoteChar = '"',
     escapeChar = '\\',
     lineTerminator = "\r\n",
     quoting = Quoting.QuoteNone,
-    treatEmptyLineAsNil = false,
-    naming = Naming.Literal
-  )
-}
-
-trait LowPriorityCsvWriteConfig {
-  implicit val default: CsvWriteConfig = CsvWriteConfig(
-    delimiter = ',',
-    quoteChar = '"',
-    escapeChar = '"',
-    lineTerminator = "\r\n",
-    quoting = Quoting.QuoteMinimal,
     treatEmptyLineAsNil = false,
     naming = Naming.Literal
   )
