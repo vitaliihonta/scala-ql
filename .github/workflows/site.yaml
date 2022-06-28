@@ -2,7 +2,12 @@ name: Site publish
 on:
   push:
     tags: [ "*" ]
-  workflow_dispatch:
+  workflow_dispatch:    
+    inputs:
+      environment:
+        description: 'Choose an environment to deploy to: <dev|staging|prod>'
+        required: true
+        default: 'dev'
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -34,5 +39,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages publish --project-name=scala-ql --commit-dirty=true build/
+          command: pages publish --env ${{ github.event.inputs.environment }} --project-name=scala-ql --commit-dirty=true build/
           workingDirectory: 'website'
