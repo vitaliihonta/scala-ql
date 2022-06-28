@@ -32,4 +32,7 @@ jobs:
       - name: Install wrangler
         run: npm i -g wrangler
       - name: Publish
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: npx wrangler pages publish --project-name=scala-ql --commit-dirty=true build/
