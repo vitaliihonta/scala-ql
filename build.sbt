@@ -8,7 +8,7 @@ val allScalaVersions = List(scala212, scala213, scala3)
 
 ThisBuild / scalaVersion  := scala213
 ThisBuild / organization  := "dev.vhonta"
-ThisBuild / version       := "0.2.0-RC1"
+ThisBuild / version       := "0.2.0-RC2"
 ThisBuild / versionScheme := Some("early-semver")
 
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"

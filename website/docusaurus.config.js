@@ -43,7 +43,7 @@ const siteConfig = {
       //   src: 'img/logo.svg',
       // },
       items: [
-        { to: 'docs/installation', label: 'Docs', position: 'right' },
+        { to: 'docs/overview', label: 'Documentation', position: 'right' },
         {
           href: 'https://github.com/vitaliihonta/scala-ql',
           label: 'GitHub',
