@@ -22,17 +22,18 @@ jobs:
             ~/.ivy2/cache
             ~/.coursier
           key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
+      - name: Install wrangler
+        run: npm i -g wrangler
       - name: Compile
         run: sbt +compile
       - name: Generate doc
         run: sbt docs/mdoc
       - name: Generate site
         working-directory: 'website'
-        run: yarn install && yarn run build
-      - name: Install wrangler
-        run: npm i -g wrangler
+        run: npm install && npm run build
       - name: Publish
+        working-directory: 'website'
         env:
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: npx wrangler pages publish --project-name=scala-ql --commit-dirty=true build/
