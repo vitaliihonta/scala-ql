@@ -7,7 +7,7 @@ Start by importing `scalaql`:
 ```scala mdoc
 import scalaql._
 import scalaql.sources.Naming
-import scalaql.excel.{ExcelReadConfig, CellResolutionStrategy}
+import scalaql.excel.CellResolutionStrategy
 
 // Docs classes
 import scalaql.docs.ExcelData._
@@ -23,19 +23,11 @@ Assume you have an Excel file like the following:
 val ordersPath = Paths.get("docs/src/main/resources/orders_data.xlsx")
 ```
 
-Which looks like:  
+Which looks like:
 
 ![Input excel document](excel_input_file.png)
 
-This specific Excel file has UpperCased headers.
 To read it, you should first specify `ExcelReadConfig`:
-
-```scala mdoc
-implicit val excelReadConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-  naming = Naming.UpperCase,
-  cellResolutionStrategy = CellResolutionStrategy.NameBased,
-)
-```
 
 First, you defined a `Query` as usual:
 
@@ -43,14 +35,19 @@ First, you defined a `Query` as usual:
 val query = select[OrderInfo]
 ```
 
-You can quickly view the file content:
+Then you can quickly view the file content.  
+**NOTE:** This specific Excel file has UpperCased headers.
 
 ```scala mdoc
 query
   .show(truncate=false)
   .run(
     from(
-      excel.read.file[OrderInfo](ordersPath)
+      excel
+        .read[OrderInfo]
+        .option(Naming.UpperCase)
+        .option(CellResolutionStrategy.NameBased)
+        .file(ordersPath)
     )
   )
 ```

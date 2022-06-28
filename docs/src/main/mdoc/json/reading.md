@@ -39,7 +39,7 @@ query
   .show(truncate=false)
   .run(
     from(
-      json.read.file[Student](studentsPath)
+      json.read[Student].file(studentsPath)
     )
   )
 ```

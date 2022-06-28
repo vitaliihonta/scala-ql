@@ -51,11 +51,11 @@ val outPath = Paths.get("docs/target/stats.json")
 
 aggregation
   .foreach(
-    json.write.file(outPath)
+    json.write[FacultyInfo].file(outPath)
   )
   .run(
     from(
-      json.read.file[Student](studentsPath)
+      json.read[Student].file(studentsPath)
     )
   )
 ```
@@ -77,7 +77,6 @@ Start with the following imports:
 
 ```scala mdoc:reset
 import scalaql._
-import scalaql.json.JsonWriteConfig
 
 // Docs classes
 import scalaql.docs.Hogwarts._
@@ -106,21 +105,22 @@ val aggregation: Query[From[Student], FacultyInfo] =
     .map(FacultyInfo.tupled)
 ```
 
-This is how to produce a CSV file with snake_case headers:
+This is how to produce a JSON file with array:
 
 ```scala mdoc
 val studentsPath = Paths.get("docs/src/main/resources/students.json")
 val outPathArray = Paths.get("docs/target/stats_array.json")
 
-implicit val jsonConfig: JsonWriteConfig = JsonWriteConfig.default.copy(multiline = false)
-
 aggregation
   .foreach(
-    json.write.file(outPathArray)
+    json
+      .write[FacultyInfo]
+      .option(multiline = false)
+      .file(outPathArray)
   )
   .run(
     from(
-      json.read.file[Student](studentsPath)
+      json.read[Student].file(studentsPath)
     )
   )
 ```

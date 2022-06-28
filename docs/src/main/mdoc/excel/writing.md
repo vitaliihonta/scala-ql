@@ -5,7 +5,7 @@ Start by importing `scalaql`:
 ```scala mdoc
 import scalaql._
 import scalaql.sources.Naming
-import scalaql.excel.{ExcelReadConfig, ExcelWriteConfig, CellResolutionStrategy}
+import scalaql.excel.CellResolutionStrategy
 
 // Docs classes
 import scalaql.docs.ExcelData._
@@ -63,26 +63,9 @@ val reportAggregation: Query[From[OrderInfo], OrderReport] = select[OrderInfo]
   .map((OrderReport.apply _).tupled)
 ```
 
-Before writing, we would specify the correct headers naming for the report:
-
-```scala mdoc
-implicit val excelWriteConfig: ExcelWriteConfig[OrderReport] = ExcelWriteConfig.default.copy(
-  naming = Naming.WithSpacesCapitalize,
-  writeHeaders = true
-)
-```
-
-The Excel file used for this example has UpperCased headers.
-To read it, you should first specify `ExcelReadConfig`:
-
-```scala mdoc
-implicit val excelReadConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-  naming = Naming.UpperCase,
-  cellResolutionStrategy = CellResolutionStrategy.NameBased,
-)
-```
-
-Then you could simply write it to an Excel file:
+Then you could simply write it to an Excel file:  
+**NOTE:** The Excel file used for this example has UpperCased headers.  
+**NOTE 2:** Before writing, we would specify the correct headers naming for the report:
 
 ```scala mdoc
 val ordersPath = Paths.get("docs/src/main/resources/orders_data.xlsx")
@@ -90,11 +73,19 @@ val excelReportPath = Paths.get("docs/target/orders_report.xlsx")
   
 reportAggregation
   .foreach(
-    excel.write.file[OrderReport](excelReportPath)
+    excel
+      .write[OrderReport]
+      .option(Naming.WithSpacesCapitalize)
+      .option(headers = true)
+      .file(excelReportPath)
   )
   .run(
     from(
-      excel.read.file[OrderInfo](ordersPath)
+      excel
+        .read[OrderInfo]
+        .option(Naming.UpperCase)
+        .option(CellResolutionStrategy.NameBased)
+        .file(ordersPath)
     )
   )
 ```
