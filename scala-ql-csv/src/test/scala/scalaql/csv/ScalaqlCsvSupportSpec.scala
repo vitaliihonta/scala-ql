@@ -132,7 +132,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
     "correctly read glob from directory" in {
       val dir = Files.createTempDirectory("scala-ql-csv")
       for (i <- 1 to 10) {
-        val file = Files.createTempFile(dir, "scala-ql-csv", "read-glob-spec")
+        val file = Files.createTempFile(dir, "scala-ql-csv", "read-glob-spec.csv")
         writeIntoFile(
           file,
           s"""|name,age
@@ -144,7 +144,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
       val actualResult = select[Person].toList
         .run(
           from(
-            csv.read.directory[Person](dir, globPattern = "*")
+            csv.read.directory[Person](dir, globPattern = "**.csv")
           )
         )
 

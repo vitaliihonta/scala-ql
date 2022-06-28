@@ -1,12 +1,11 @@
 package scalaql.sources
 
 import scalaql.SideEffect
+
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
-import java.nio.file.DirectoryStream
-import java.nio.file.Files
-import java.nio.file.OpenOption
-import java.nio.file.Path
+import java.nio.file.attribute.BasicFileAttributes
+import java.nio.file.{DirectoryStream, FileSystems, Files, OpenOption, Path}
 import scala.jdk.CollectionConverters.*
 
 trait DataSourceReaderFilesSupport[Source <: AutoCloseable, Decoder[_], Config[_]] {
@@ -27,13 +26,30 @@ trait DataSourceReaderFilesSupport[Source <: AutoCloseable, Decoder[_], Config[_
   ): Iterable[A] =
     files.flatMap(file[A](_, encoding))
 
+  // NOTE: globPattern should not include `glob:`
   def directory[A: Decoder](
     dir:             Path,
-    globPattern:     String = "*",
+    globPattern:     String,
+    maxDepth:        Int = 20,
     encoding:        Charset = StandardCharsets.UTF_8
   )(implicit config: Config[A]
-  ): Iterable[A] =
-    fromDirectoryStream[A](Files.newDirectoryStream(dir, globPattern), encoding)
+  ): Iterable[A] = {
+
+    val pathMatcher = FileSystems.getDefault.getPathMatcher(
+      s"glob:$globPattern"
+    )
+
+    Files
+      .find(
+        dir,
+        maxDepth,
+        (p: Path, attrs: BasicFileAttributes) => !attrs.isDirectory && pathMatcher.matches(p)
+      )
+      .iterator()
+      .asScala
+      .flatMap(file[A](_, encoding))
+      .toVector
+  }
 
   private def fromDirectoryStream[A: Decoder](
     dirStream:       DirectoryStream[Path],

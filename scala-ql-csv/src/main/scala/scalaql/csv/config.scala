@@ -20,7 +20,8 @@ case class CsvReadConfig(
   lineTerminator:      String,
   quoting:             Quoting,
   treatEmptyLineAsNil: Boolean,
-  naming:              Naming) { self =>
+  naming:              Naming,
+  caseSensitive:       Boolean) { self =>
 
   protected[scalaql] def toTototoshi: com.github.tototoshi.csv.CSVFormat =
     new com.github.tototoshi.csv.CSVFormat {
@@ -41,7 +42,8 @@ object CsvReadConfig extends LowPriorityCsvReadConfig {
     lineTerminator = "\r\n",
     quoting = Quoting.QuoteNone,
     treatEmptyLineAsNil = false,
-    naming = Naming.Literal
+    naming = Naming.Literal,
+    caseSensitive = false
   )
 }
 
@@ -53,7 +55,8 @@ trait LowPriorityCsvReadConfig {
     lineTerminator = "\r\n",
     quoting = Quoting.QuoteMinimal,
     treatEmptyLineAsNil = false,
-    naming = Naming.Literal
+    naming = Naming.Literal,
+    caseSensitive = false
   )
 }
 

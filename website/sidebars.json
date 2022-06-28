@@ -4,13 +4,29 @@
       "installation",
       "query"
     ],
-    "Data sources": [
-      "csv",
-      "json",
-      "excel"
+    "CSV": [
+      "getting-started",
+      "reading",
+      "writing",
+      "nested"
     ],
-    "Generators": [
-      "html"
+    "JSON": [
+      "getting-started",
+      "reading",
+      "writing"
+    ],
+    "Excel": [
+      "getting-started",
+      "reading",
+      "writing",
+      "nested",
+      "styling"
+    ],
+    "HTML": [
+      "getting-started",
+      "writing",
+      "nested",
+      "styling"
     ]
   }
 }
