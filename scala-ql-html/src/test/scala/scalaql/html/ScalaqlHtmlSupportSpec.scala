@@ -46,7 +46,7 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
 
       select[Person]
         .foreach(
-          html.write.string[Person](resultBuilder)
+          html.write[Person].string(resultBuilder)
         )
         .run(
           from(
@@ -80,7 +80,7 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
 
       select[NestedPersonOption]
         .foreach(
-          html.write.string[NestedPersonOption](resultBuilder)
+          html.write[NestedPersonOption].string(resultBuilder)
         )
         .run(
           from(
@@ -145,7 +145,7 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
           )
         }
         .foreach(
-          html.write.string[PeopleStats](resultBuilder)
+          html.write[PeopleStats].string(resultBuilder)
         )
         .run(
           from(
@@ -182,7 +182,7 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
     "write html with styles" in {
       val resultBuilder = new mutable.StringBuilder
 
-      implicit val styling: HtmlStyling[PeopleStats] = HtmlStyling
+      val styling: HtmlStyling[PeopleStats] = HtmlStyling
         .builder[PeopleStats]
         .forHeader(_.isProgrammer, List(backgroundColor := "green", border := "3px solid #000"))
         .forHeader(_.stats.each.birthYear, List(backgroundColor := "yellow", border := "3px solid #000"))
@@ -236,28 +236,6 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
         )
         .build
 
-      implicit val config: HtmlTableEncoderConfig[PeopleStats] =
-        HtmlTableEncoderConfig.default.copy(
-          bodyTag = body(fontFamily := "Times New Roman")(
-            table(tableLayout.fixed, borderCollapse.separate, width := "100%")(
-              tr(
-                td(p("Data Report", fontSize := "64px")),
-                td(
-                  img(
-                    src := "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Service_mark.svg/1280px-Service_mark.svg.png",
-                    alt    := "Example company",
-                    width  := "300px",
-                    height := "130px"
-                  )
-                )
-              )
-            )
-          ),
-          tableTag = table(tableLayout.fixed, borderCollapse.collapse, width := "100%"),
-          trTag = tr(borderBottom := "2px solid #ddd"),
-          naming = Naming.WithSpacesCapitalize
-        )
-
       select[Person]
         .groupBy(_.isProgrammer)
         .aggregate { (_, people) =>
@@ -288,7 +266,30 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
           )
         }
         .foreach(
-          html.write.string[PeopleStats](resultBuilder)
+          html
+            .write[PeopleStats]
+            .option(Naming.WithSpacesCapitalize)
+            .option(styling)
+            .options(
+              bodyTag = body(fontFamily := "Times New Roman")(
+                table(tableLayout.fixed, borderCollapse.separate, width := "100%")(
+                  tr(
+                    td(p("Data Report", fontSize := "64px")),
+                    td(
+                      img(
+                        src := "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Service_mark.svg/1280px-Service_mark.svg.png",
+                        alt    := "Example company",
+                        width  := "300px",
+                        height := "130px"
+                      )
+                    )
+                  )
+                )
+              ),
+              tableTag = table(tableLayout.fixed, borderCollapse.collapse, width := "100%"),
+              trTag = tr(borderBottom := "2px solid #ddd")
+            )
+            .string(resultBuilder)
         )
         .run(
           from(

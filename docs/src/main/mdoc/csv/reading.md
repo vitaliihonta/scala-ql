@@ -38,7 +38,7 @@ students
   .show(truncate=false)
   .run(
     from(
-      csv.read.file[Student](studentsPath)
+      csv.read[Student].file(studentsPath)
     )
   )
 ```
@@ -50,7 +50,6 @@ You could also read multiple CSV files from an arbitrary nested directories usin
 Start with the following imports:
 ```scala mdoc:reset
 import scalaql._
-import scalaql.csv.CsvReadConfig
 import scalaql.sources.Naming
 
 // Docs classes
@@ -69,13 +68,6 @@ val enterpriseSurvey =
     .where(_.year >= 2015)
 ```
 
-In this case it's required to provide correct naming.  
-It could be done as follows:
-
-```scala mdoc
-implicit val csvConfig: CsvReadConfig = CsvReadConfig.default.copy(naming = Naming.SnakeCase)
-```
-
 And then read the files:
 
 ```scala mdoc
@@ -85,7 +77,11 @@ enterpriseSurvey
   .show(truncate=false)
   .run(
     from(
-      csv.read.directory[EnterpriseSurvey](dir, globPattern = "**/*.csv")
+      csv
+        .read[EnterpriseSurvey]
+        // In this case it's required to provide correct naming. 
+        .option(Naming.SnakeCase)
+        .directory(dir, globPattern = "**/*.csv")
     )
   )
 ```

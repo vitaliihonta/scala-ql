@@ -56,11 +56,11 @@ val nestedPath = Paths.get("docs/target/stats_nested.csv")
 
 nestedAggregation
   .foreach(
-    csv.write.file(nestedPath)
+    csv.write[FacultyInfoNested].file(nestedPath)
   )
   .run(
     from(
-      csv.read.file[Student](studentsPath)
+      csv.read[Student].file(studentsPath)
     )
   )
   

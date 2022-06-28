@@ -50,11 +50,11 @@ val outPath = Paths.get("docs/target/stats.csv")
 
 aggregation
   .foreach(
-    csv.write.file(outPath)
+    csv.write[FacultyInfo].file(outPath)
   )
   .run(
     from(
-      csv.read.file[Student](studentsPath)
+      csv.read[Student].file(studentsPath)
     )
   )
 ```
@@ -109,15 +109,16 @@ This is how to produce a CSV file with snake_case headers:
 val studentsPath = Paths.get("docs/src/main/resources/students.csv")
 val outPathSnakeCase = Paths.get("docs/target/stats_snake_case.csv")
 
-implicit val csvConfig: CsvWriteConfig = CsvWriteConfig.default.copy(naming = Naming.SnakeCase)
-
 aggregation
   .foreach(
-    csv.write.file(outPathSnakeCase)
+    csv
+      .write[FacultyInfo]
+      .option(Naming.SnakeCase)
+      .file(outPathSnakeCase)
   )
   .run(
     from(
-      csv.read.file[Student](studentsPath)
+      csv.read[Student].file(studentsPath)
     )
   )
 ```

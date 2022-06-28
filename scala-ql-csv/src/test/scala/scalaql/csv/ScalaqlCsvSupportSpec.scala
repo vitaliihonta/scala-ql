@@ -29,7 +29,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
         .toList
         .run(
           from(
-            csv.read.string[Person](rawCsv)
+            csv.read[Person].string(rawCsv)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24))
@@ -37,17 +37,19 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
     }
 
     "correctly read nested csv with options" in {
-      implicit val config: CsvReadConfig = CsvReadConfig.default.copy(naming = Naming.SnakeCase)
 
       val actualResult = select[NestedPersonOption].toList
         .run(
           from(
-            csv.read.string[NestedPersonOption](
-              """name,working_experience_years,birth_day,is_programmer,id,created_at
-                |Vitalii,100500,1997-11-13,true,2769a48d-8fec-4242-81d1-959ae424712c,2022-06-15T12:55
-                |John,2000,1922-07-16,true,,
-                |""".stripMargin
-            )
+            csv
+              .read[NestedPersonOption]
+              .option(Naming.SnakeCase)
+              .string(
+                """name,working_experience_years,birth_day,is_programmer,id,created_at
+                  |Vitalii,100500,1997-11-13,true,2769a48d-8fec-4242-81d1-959ae424712c,2022-06-15T12:55
+                  |John,2000,1922-07-16,true,,
+                  |""".stripMargin
+              )
           )
         )
 
@@ -95,9 +97,11 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
       val actualResult = select[Person].toList
         .run(
           from(
-            csv.read.files[Person]()(
-              files: _*
-            )
+            csv
+              .read[Person]
+              .files()(
+                files: _*
+              )
           )
         )
 
@@ -122,7 +126,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
       select[Person].toList
         .run(
           from(
-            csv.read.file[Person](path)
+            csv.read[Person].file(path)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24), Person(name = "john", age = 100))
@@ -144,7 +148,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
       val actualResult = select[Person].toList
         .run(
           from(
-            csv.read.directory[Person](dir, globPattern = "**.csv")
+            csv.read[Person].directory(dir, globPattern = "**.csv")
           )
         )
 
@@ -161,7 +165,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
       val sb = new mutable.StringBuilder
       select[Person]
         .foreach(
-          csv.write.string[Person](sb)
+          csv.write[Person].string(sb)
         )
         .run(
           from(
@@ -185,7 +189,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
 
       select[Person]
         .foreach(
-          csv.write.file[Person](path)
+          csv.write[Person].file(path)
         )
         .run(
           from(
@@ -203,12 +207,13 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
     }
 
     "correctly write nested csv with options" in {
-      implicit val config: CsvWriteConfig = CsvWriteConfig.default.copy(naming = Naming.SnakeCase)
-
       val sb = new mutable.StringBuilder
       select[NestedPersonOption]
         .foreach(
-          csv.write.string[NestedPersonOption](sb)
+          csv
+            .write[NestedPersonOption]
+            .option(Naming.SnakeCase)
+            .string(sb)
         )
         .run(
           from(

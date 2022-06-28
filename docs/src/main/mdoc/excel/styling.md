@@ -7,7 +7,6 @@ Start by importing `scalaql`:
 import scalaql._
 import scalaql.excel._
 import scalaql.sources.Naming
-import scalaql.excel.{ExcelReadConfig, ExcelWriteConfig, CellResolutionStrategy}
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.IndexedColors
 
@@ -39,7 +38,7 @@ case class RepresentativeOrders(
 Then define document style for the report:
 
 ```scala mdoc
-implicit val styling: ExcelStyling[OrderReport] = ExcelStyling
+val orderReportStyling: ExcelStyling[OrderReport] = ExcelStyling
   .builder[OrderReport]
   .forAllHeaders(
     cellStyle
@@ -101,33 +100,30 @@ val reportAggregation: Query[From[OrderInfo], OrderReport] = select[OrderInfo]
   .map((OrderReport.apply _).tupled)
 ```
 
-Specify `ExcelReadConfig`:
-
-```scala mdoc
-implicit val excelReadConfig: ExcelReadConfig = ExcelReadConfig.default.copy(
-  naming = Naming.UpperCase,
-  cellResolutionStrategy = CellResolutionStrategy.NameBased,
-)
-```
-
 Then write the file as usual:
 
 ```scala mdoc
-implicit val excelStyledWriteConfig: ExcelWriteConfig[OrderReport] = ExcelWriteConfig.default.copy(
-  naming = Naming.WithSpacesCapitalize,
-  writeHeaders = true
-)
-
 val ordersPath = Paths.get("docs/src/main/resources/orders_data.xlsx")
 val excelStyledReportPath = Paths.get("docs/target/orders_styled_report.xlsx")
 
 reportAggregation
   .foreach(
-    excel.write.file[OrderReport](excelStyledReportPath)
+    excel
+      .write[OrderReport]
+      // Notice styling option
+      .option(orderReportStyling)
+      // Other options
+      .option(Naming.WithSpacesCapitalize)
+      .option(headers = true)
+      .file(excelStyledReportPath)
   )
   .run(
     from(
-      excel.read.file[OrderInfo](ordersPath)
+      excel
+        .read[OrderInfo]
+        .option(Naming.UpperCase)
+        .option(CellResolutionStrategy.NameBased)
+        .file(ordersPath)
     )
   )
 ```
