@@ -1,8 +1,8 @@
 name: Site publish
 on:
   push:
-    tags: [ "*" ]
-  workflow_dispatch:    
+    branches: [ "main", "site/*" ]
+  workflow_dispatch:
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -22,8 +22,6 @@ jobs:
             ~/.ivy2/cache
             ~/.coursier
           key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
-      - name: Install wrangler
-        run: npm i -g wrangler
       - name: Compile
         run: sbt +compile
       - name: Generate doc
@@ -32,8 +30,9 @@ jobs:
         working-directory: 'website'
         run: npm install && npm run build
       - name: Publish
-        working-directory: 'website'
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: npx wrangler pages publish --project-name=scala-ql --commit-dirty=true build/
+        uses: cloudflare/wrangler-action@2.0.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages publish --project-name=scala-ql build/
+          workingDirectory: 'website'

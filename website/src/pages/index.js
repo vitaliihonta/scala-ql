@@ -50,13 +50,13 @@ val outPath = Paths.get("faculty_stats.csv")
 
 query
   .foreach(
-    csv.write.file[FacultyStats](outPath)
+    csv.write[FacultyStats].file(outPath)
   )
   .run(
     from(
-      csv.read.file[Student](studentsPath)
+      csv.read[Student].file(studentsPath)
     ) & from(
-      json.read.file[Faculty](facultiesPath)
+      json.read[Faculty].file(facultiesPath)
     )
   )
 `
