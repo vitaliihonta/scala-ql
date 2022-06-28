@@ -1,29 +1,28 @@
 {
   "docs": {
     "Getting started": [
-      "installation",
+      "overview",
       "query"
     ],
     "CSV": [
-      "csv/getting-started",
+      "csv/overview",
       "csv/reading",
       "csv/writing",
       "csv/nested"
     ],
     "JSON": [
-      "json/getting-started",
+      "json/overview",
       "json/reading",
       "json/writing"
     ],
     "Excel": [
-      "excel/getting-started",
+      "excel/overview",
       "excel/reading",
       "excel/writing",
-      "excel/nested",
       "excel/styling"
     ],
     "HTML": [
-      "html/getting-started",
+      "html/overview",
       "html/writing",
       "html/nested",
       "html/styling"

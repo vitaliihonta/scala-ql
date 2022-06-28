@@ -1,6 +1,6 @@
-# Getting started
+# Overview
 
-## Install
+## Installation
 
 ```scala
 // Core

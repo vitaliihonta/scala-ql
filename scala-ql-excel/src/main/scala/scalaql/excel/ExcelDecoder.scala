@@ -207,14 +207,12 @@ trait LowPriorityCellDecoders {
         CellType.STRING
       )
     ) { implicit ctx => cell =>
-      val tryNumeric = catching(
-        classOf[NumberFormatException],
-        classOf[IllegalStateException]
-      ).either(cell.getLocalDateTimeCellValue)
-
-      // Scala 2.12 doesn't have Either#orElse :(
       val result =
-        if (tryNumeric.isRight) tryNumeric
+        if (cell.getCellType == CellType.NUMERIC)
+          catching(
+            classOf[NumberFormatException],
+            classOf[IllegalStateException]
+          ).either(cell.getLocalDateTimeCellValue)
         else
           catching(
             classOf[DateTimeParseException],
@@ -231,19 +229,18 @@ trait LowPriorityCellDecoders {
         CellType.STRING
       )
     ) { implicit ctx => cell =>
-      val tryNumeric = catching(
-        classOf[NumberFormatException],
-        classOf[IllegalStateException]
-      ).either(cell.getLocalDateTimeCellValue.toLocalDate)
-
-      // Scala 2.12 doesn't have Either#orElse :(
       val result =
-        if (tryNumeric.isRight) tryNumeric
-        else
+        if (cell.getCellType == CellType.NUMERIC) {
+          catching(
+            classOf[NumberFormatException],
+            classOf[IllegalStateException]
+          ).either(cell.getLocalDateTimeCellValue.toLocalDate)
+        } else {
           catching(
             classOf[DateTimeParseException],
             classOf[IllegalStateException]
           ).either(LocalDate.parse(cell.getStringCellValue))
+        }
 
       result.left.map(e => ctx.cannotDecodeError(e.toString))
     }
