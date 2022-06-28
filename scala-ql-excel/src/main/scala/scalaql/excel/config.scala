@@ -25,14 +25,14 @@ object ExcelReadConfig {
 
 case class ExcelWriteConfig[-A](
   worksheetName: Option[String],
-  writeHeaders:  Boolean,
+  headers:       Boolean,
   naming:        Naming,
   styling:       ExcelStyling[A])
 
 object ExcelWriteConfig {
   def default[A]: ExcelWriteConfig[A] = ExcelWriteConfig[A](
     worksheetName = None,
-    writeHeaders = false,
+    headers = false,
     naming = Naming.Literal,
     styling = ExcelStyling.NoStyling
   )

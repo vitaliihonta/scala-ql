@@ -56,7 +56,7 @@ trait DataSourceJavaIOReadDslMixin[
 
   self: Self =>
 
-  def load(content: String)(implicit ev: Decoder[A]): Iterable[A] =
+  def string(content: String)(implicit ev: Decoder[A]): Iterable[A] =
     load(new StringReader(content))
 }
 

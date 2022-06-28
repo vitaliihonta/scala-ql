@@ -25,7 +25,7 @@ object ExcelStyling {
     override def cellStyle(name: String): Option[Styling]   = cell(name)
   }
 
-  lazy val NoStyling: ExcelStyling[Any] = new ExcelStyling[Any] {
+  final case object NoStyling extends ExcelStyling[Any] {
     override def headerStyle(name: String): Option[Styling] = None
     override def cellStyle(name: String): Option[Styling]   = None
   }

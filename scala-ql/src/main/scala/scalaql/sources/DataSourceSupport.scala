@@ -45,12 +45,13 @@ abstract class DataSourceReadDsl[
   Self <: DataSourceReadDsl[A, Source, Decoder, Config, DSReader, Self]] {
 
   protected def _reader: DSReader
-  protected def _config: Config[A]
 
-  def config(config: Config[A]): Self
+  def config: Config[A]
+
+  def withConfig(config: Config[A]): Self
 
   def load(source: => Source)(implicit ev: Decoder[A]): Iterable[A] =
-    _reader.read[A](source)(ev, _config)
+    _reader.read[A](source)(ev, config)
 }
 
 trait DataSourceReader[Source <: AutoCloseable, Decoder[_], Config[_]] {
@@ -78,12 +79,13 @@ abstract class DataSourceWriteDsl[
   Self <: DataSourceWriteDsl[A, Sink, Encoder, Config, DSWriter, Self]] {
 
   protected def _writer: DSWriter
-  protected def _config: Config[A]
 
-  def config(config: Config[A]): Self
+  def config: Config[A]
+
+  def withConfig(config: Config[A]): Self
 
   def save(sink: => Sink)(implicit ev: Encoder[A]): SideEffect[Sink, ?, A] =
-    _writer.write[A](sink)(ev, _config)
+    _writer.write[A](sink)(ev, config)
 }
 
 trait DataSourceWriter[Sink, Encoder[_], Config[_]] {

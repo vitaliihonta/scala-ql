@@ -21,9 +21,8 @@ object HtmlStyling {
     override def fieldStyle(name: String): List[Modifier]  = cell(name)
   }
 
-  implicit lazy val NoStyling: HtmlStyling[Any] = new HtmlStyling[Any] {
+  final case object NoStyling extends HtmlStyling[Any] {
     override def headerStyle(name: String): List[Modifier] = Nil
-
-    override def fieldStyle(name: String): List[Modifier] = Nil
+    override def fieldStyle(name: String): List[Modifier]  = Nil
   }
 }

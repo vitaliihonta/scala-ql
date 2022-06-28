@@ -29,7 +29,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
         .toList
         .run(
           from(
-            csv.read[Person].load(rawCsv)
+            csv.read[Person].string(rawCsv)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24))
@@ -44,7 +44,7 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
             csv
               .read[NestedPersonOption]
               .option(Naming.SnakeCase)
-              .load(
+              .string(
                 """name,working_experience_years,birth_day,is_programmer,id,created_at
                   |Vitalii,100500,1997-11-13,true,2769a48d-8fec-4242-81d1-959ae424712c,2022-06-15T12:55
                   |John,2000,1922-07-16,true,,

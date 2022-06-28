@@ -34,7 +34,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
         .toList
         .run(
           from(
-            json.read[Person].load(rawJson)
+            json.read[Person].string(rawJson)
           )
         ) should contain theSameElementsAs {
         List(Person(name = "vitalii", age = 24))
@@ -48,7 +48,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
             json
               .read[Person]
               .option(multiline = false)
-              .load(
+              .string(
                 """[
                   |{
                   |   "name" : "vitalii",

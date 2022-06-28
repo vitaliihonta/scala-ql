@@ -57,7 +57,7 @@ class ExcelDataSourceWriter
     value:           A
   )(implicit config: ExcelWriteConfig[A]
   ): Int = {
-    val idx = if (rowIdx == 0 && config.writeHeaders) {
+    val idx = if (rowIdx == 0 && config.headers) {
       writeHeaders[A](workbook, table)
       rowIdx + 1
     } else rowIdx
