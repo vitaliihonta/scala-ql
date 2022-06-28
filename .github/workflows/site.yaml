@@ -2,7 +2,6 @@ name: Site publish
 on:
   push:
     tags: [ "*" ]
-    branches: [ "feature/auto-site-deploy" ]
 jobs:
   publish:
     runs-on: ubuntu-latest
