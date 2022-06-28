@@ -11,15 +11,16 @@ import scalaql.docs.DocUtils._
 
 // Imports for examples
 import java.nio.file.Paths
+import io.circe.generic.auto._
 ```
 
 ## Basic write
 
-In this example, we'll read an existing CSV file, process it and write the result into a new CSV file.  
+In this example, we'll read an existing JSON file, process it and write the result into a new CSV file.  
 Input file:
 
 ```scala mdoc
-val studentsPath = Paths.get("docs/src/main/resources/students.csv")
+val studentsPath = Paths.get("docs/src/main/resources/students.json")
 
 printFile(studentsPath)
 ```
@@ -46,15 +47,15 @@ Then you could write the result into a CSV file as follows:
 
 ```scala mdoc
 
-val outPath = Paths.get("docs/target/stats.csv")
+val outPath = Paths.get("docs/target/stats.json")
 
 aggregation
   .foreach(
-    csv.write.file(outPath)
+    json.write.file(outPath)
   )
   .run(
     from(
-      csv.read.file[Student](studentsPath)
+      json.read.file[Student](studentsPath)
     )
   )
 ```
@@ -65,17 +66,18 @@ It will generate a CSV file with the following content:
 printFile(outPath)
 ```
 
-## Naming
+## Single line
 
-You could also customize naming style for CSV header.  
-By default, headers have the same names as case class fields.
+You could also customize the resulting JSON file format.  
+By default, it writes each JSON document into a separate file line.
+
+Alternatively, you could write them into a single array.
 
 Start with the following imports:
 
 ```scala mdoc:reset
 import scalaql._
-import scalaql.csv.CsvWriteConfig
-import scalaql.sources.Naming
+import scalaql.json.JsonWriteConfig
 
 // Docs classes
 import scalaql.docs.Hogwarts._
@@ -83,6 +85,7 @@ import scalaql.docs.DocUtils._
 
 // Imports for examples
 import java.nio.file.Paths
+import io.circe.generic.auto._
 ```
 
 With the same aggregation query:
@@ -106,24 +109,24 @@ val aggregation: Query[From[Student], FacultyInfo] =
 This is how to produce a CSV file with snake_case headers:
 
 ```scala mdoc
-val studentsPath = Paths.get("docs/src/main/resources/students.csv")
-val outPathSnakeCase = Paths.get("docs/target/stats_snake_case.csv")
+val studentsPath = Paths.get("docs/src/main/resources/students.json")
+val outPathArray = Paths.get("docs/target/stats_array.json")
 
-implicit val csvConfig: CsvWriteConfig = CsvWriteConfig.default.copy(naming = Naming.SnakeCase)
+implicit val jsonConfig: JsonWriteConfig = JsonWriteConfig.default.copy(multiline = false)
 
 aggregation
   .foreach(
-    csv.write.file(outPathSnakeCase)
+    json.write.file(outPathArray)
   )
   .run(
     from(
-      csv.read.file[Student](studentsPath)
+      json.read.file[Student](studentsPath)
     )
   )
 ```
 
-It will produce the following CSV file:
+It will produce the following JSON file:
 
 ```scala mdoc
-printFile(outPathSnakeCase)
+printFile(outPathArray)
 ```

@@ -5,28 +5,28 @@
       "query"
     ],
     "CSV": [
-      "getting-started",
-      "reading",
-      "writing",
-      "nested"
+      "csv/getting-started",
+      "csv/reading",
+      "csv/writing",
+      "csv/nested"
     ],
     "JSON": [
-      "getting-started",
-      "reading",
-      "writing"
+      "json/getting-started",
+      "json/reading",
+      "json/writing"
     ],
     "Excel": [
-      "getting-started",
-      "reading",
-      "writing",
-      "nested",
-      "styling"
+      "excel/getting-started",
+      "excel/reading",
+      "excel/writing",
+      "excel/nested",
+      "excel/styling"
     ],
     "HTML": [
-      "getting-started",
-      "writing",
-      "nested",
-      "styling"
+      "html/getting-started",
+      "html/writing",
+      "html/nested",
+      "html/styling"
     ]
   }
 }

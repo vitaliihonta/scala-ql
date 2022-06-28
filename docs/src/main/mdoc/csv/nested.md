@@ -1,4 +1,4 @@
-# Writing nested case classes into CSV
+# Writing nested case classes
 
 ScalaQL allows you to write nested case classes into CSV files.
 It will automatically flatten headers and rows when writing to a file.

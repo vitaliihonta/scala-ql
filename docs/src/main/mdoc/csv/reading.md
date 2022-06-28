@@ -1,4 +1,4 @@
-# Reading CSV
+# Reading files
 
 ## Reading single file
 
@@ -14,6 +14,8 @@ import scalaql.docs.DocUtils._
 // Imports for examples
 import java.nio.file.Paths
 ```
+
+Assume you have a CSV file like the following:
 
 ```scala mdoc
 val studentsPath = Paths.get("docs/src/main/resources/students.csv")

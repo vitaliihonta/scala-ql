@@ -116,7 +116,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
     "correctly read glob from directory" in {
       val dir = Files.createTempDirectory("scala-ql-json")
       for (i <- 1 to 10) {
-        val file = Files.createTempFile(dir, "scala-ql-json", "read-glob-spec")
+        val file = Files.createTempFile(dir, "scala-ql-json", "read-glob-spec.json")
         writeIntoFile(
           file,
           s"""|{"name": "vitalii", "age": $i}
@@ -127,7 +127,7 @@ class ScalaqlJsonSupportSpec extends ScalaqlUnitSpec {
       val actualResult = select[Person].toList
         .run(
           from(
-            json.read.directory[Person](dir, globPattern = "*")
+            json.read.directory[Person](dir, globPattern = "**.json")
           )
         )
 
