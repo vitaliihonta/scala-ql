@@ -26,10 +26,13 @@ jobs:
         run: sbt +compile
       - name: Generate doc
         run: sbt docs/mdoc
+      - name: Generate site
+        working-directory: 'website'
+        run: yarn install && yarn run build
       - name: Publish
         uses: cloudflare/wrangler-action@2.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages publish --project-name=scala-ql .
+          command: pages publish --project-name=scala-ql build/
           workingDirectory: 'website'
