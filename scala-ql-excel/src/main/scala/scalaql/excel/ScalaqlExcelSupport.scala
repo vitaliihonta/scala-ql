@@ -29,7 +29,14 @@ trait ScalaqlExcelSupport
 
       implicit val ctx: ExcelReadContext = initialContext(workbook, rowIterator, config.naming)
 
-      rowIterator.map(ExcelDecoder[A].read(_).fold[A](throw _, _.value)).toVector
+      rowIterator.zipWithIndex
+        .filterNot { case (row, _) => isBlankRow(row) }
+        .map { case (row, idx) =>
+          ExcelDecoder[A]
+            .read(row)(ctx.copy(documentRowNumber = idx))
+            .fold[A](throw _, _.value)
+        }
+        .toVector
     }
 
     private def initialContext(
@@ -46,7 +53,8 @@ trait ScalaqlExcelSupport
         headers = headers,
         config.cellResolutionStrategy,
         location = CodecPath.Root,
-        currentOffset = 0
+        currentOffset = 0,
+        documentRowNumber = 0
       )
     }
   }
@@ -136,6 +144,14 @@ trait ScalaqlExcelSupport
       )
   }
 
+  // Usually Excel documents can have rows with blanks cells.
+  // We're not interested in reading them
+  private def isBlankRow(row: Row): Boolean =
+    row.cellIterator().asScala.forall(isBlankCell)
+
+  private def isBlankCell(cell: Cell): Boolean =
+    cell.getCellType == CellType.BLANK
+
   private def inferHeaders(rowIterator: Iterator[Row])(implicit config: ExcelReadConfig): Map[String, Int] =
     config.cellResolutionStrategy match {
       case CellResolutionStrategy.NameBased =>
@@ -148,6 +164,7 @@ trait ScalaqlExcelSupport
       .iterator()
       .asScala
       .zipWithIndex
+      .filterNot { case (cell, _) => isBlankCell(cell) }
       .map { case (cell, idx) =>
         if (cell.getCellType == CellType.STRING) cell.getStringCellValue -> idx
         else

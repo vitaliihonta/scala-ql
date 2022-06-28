@@ -20,14 +20,14 @@ case class ReadResult[+A](value: A, readCells: Int)
 
 abstract class ExcelDecoderException(msg: String) extends Exception(msg)
 object ExcelDecoderException {
-  class CannotDecode(location: CodecPath, cause: String)
+  class CannotDecode(location: CodecPath, rowNumber: Int, cause: String)
       extends ExcelDecoderException(
-        s"Cannot decode cell at path `$location`: $cause"
+        s"Cannot decode cell of row number #$rowNumber at path `$location`: $cause"
       )
 
-  class FieldNotFound(location: CodecPath)
+  class FieldNotFound(location: CodecPath, rowNumber: Int)
       extends ExcelDecoderException(
-        s"Field not found at path `$location`"
+        s"Field not found for row number #$rowNumber at path `$location`"
       )
 
   class Accumulating(name: String, val errors: List[ExcelDecoderException])
@@ -201,17 +201,49 @@ trait LowPriorityCellDecoders {
     numericDecoder[BigDecimal](BigDecimal(_), BigDecimal(_))
 
   implicit val localDateTimeDecoder: ExcelDecoder.SingleCell[LocalDateTime] =
-    DecoderForCellType.single[LocalDateTime](CellType.NUMERIC) { implicit ctx => cell =>
-      val result = catching(
-        classOf[NumberFormatException],
-        classOf[IllegalStateException]
-      ).either(cell.getLocalDateTimeCellValue)
+    DecoderForCellType[LocalDateTime](
+      Set(
+        CellType.NUMERIC,
+        CellType.STRING
+      )
+    ) { implicit ctx => cell =>
+      val result =
+        if (cell.getCellType == CellType.NUMERIC)
+          catching(
+            classOf[NumberFormatException],
+            classOf[IllegalStateException]
+          ).either(cell.getLocalDateTimeCellValue)
+        else
+          catching(
+            classOf[DateTimeParseException],
+            classOf[IllegalStateException]
+          ).either(LocalDateTime.parse(cell.getStringCellValue))
 
       result.left.map(e => ctx.cannotDecodeError(e.toString))
     }
 
   implicit val localDateDecoder: ExcelDecoder.SingleCell[LocalDate] =
-    localDateTimeDecoder.map(_.toLocalDate)
+    DecoderForCellType[LocalDate](
+      Set(
+        CellType.NUMERIC,
+        CellType.STRING
+      )
+    ) { implicit ctx => cell =>
+      val result =
+        if (cell.getCellType == CellType.NUMERIC) {
+          catching(
+            classOf[NumberFormatException],
+            classOf[IllegalStateException]
+          ).either(cell.getLocalDateTimeCellValue.toLocalDate)
+        } else {
+          catching(
+            classOf[DateTimeParseException],
+            classOf[IllegalStateException]
+          ).either(LocalDate.parse(cell.getStringCellValue))
+        }
+
+      result.left.map(e => ctx.cannotDecodeError(e.toString))
+    }
 
   implicit def optionDecoder[A: ExcelDecoder]: ExcelDecoder[Option[A]] = new ExcelDecoder[Option[A]] {
     override def read(row: Row)(implicit ctx: ExcelReadContext): ExcelDecoder.Result[Option[A]] =

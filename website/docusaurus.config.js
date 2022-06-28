@@ -44,6 +44,11 @@ const siteConfig = {
       // },
       items: [
         { to: 'docs/installation', label: 'Docs', position: 'right' },
+        {
+          href: 'https://github.com/vitaliihonta/scala-ql',
+          label: 'GitHub',
+          position: 'right',
+        },
       ],
     },
     footer: {

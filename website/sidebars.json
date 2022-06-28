@@ -1,16 +1,31 @@
 {
   "docs": {
     "Getting started": [
-      "installation",
+      "overview",
       "query"
     ],
-    "Data sources": [
-      "csv",
-      "json",
-      "excel"
+    "CSV": [
+      "csv/overview",
+      "csv/reading",
+      "csv/writing",
+      "csv/nested"
     ],
-    "Generators": [
-      "html"
+    "JSON": [
+      "json/overview",
+      "json/reading",
+      "json/writing"
+    ],
+    "Excel": [
+      "excel/overview",
+      "excel/reading",
+      "excel/writing",
+      "excel/styling"
+    ],
+    "HTML": [
+      "html/overview",
+      "html/writing",
+      "html/nested",
+      "html/styling"
     ]
   }
 }

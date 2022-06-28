@@ -3,9 +3,13 @@ package scalaql.csv
 import scalaql.sources.Naming
 import scalaql.sources.columnar.{CodecPath, TableApiContext, TableApiWriteContext}
 
-case class CsvReadContext(location: CodecPath, naming: Naming) extends TableApiContext[CsvReadContext] {
-  def getFieldName: String =
-    naming(location.fieldLocation.name)
+case class CsvReadContext(location: CodecPath, naming: Naming, caseSensitive: Boolean)
+    extends TableApiContext[CsvReadContext] {
+
+  def getFieldName: String = {
+    val base = naming(location.fieldLocation.name)
+    if (caseSensitive) base else base.toLowerCase
+  }
 
   def cannotDecodeError(cause: String): CsvDecoderException.CannotDecode =
     new CsvDecoderException.CannotDecode(location, cause)
@@ -35,9 +39,10 @@ case class CsvReadContext(location: CodecPath, naming: Naming) extends TableApiC
 }
 
 object CsvReadContext {
-  def initial(naming: Naming): CsvReadContext = CsvReadContext(
+  def initial(naming: Naming, caseSensitive: Boolean): CsvReadContext = CsvReadContext(
     location = CodecPath.Root,
-    naming = naming
+    naming = naming,
+    caseSensitive = caseSensitive
   )
 }
 

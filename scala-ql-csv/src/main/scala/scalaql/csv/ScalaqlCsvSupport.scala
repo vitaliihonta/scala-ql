@@ -16,12 +16,19 @@ trait ScalaqlCsvSupport
 
     override protected def readImpl[A: CsvDecoder](reader: Reader)(implicit config: CsvReadConfig): Iterable[A] = {
       implicit val initialContext: CsvReadContext = CsvReadContext.initial(
-        naming = config.naming
+        naming = config.naming,
+        caseSensitive = config.caseSensitive
       )
       CSVReader
         .open(reader)(config.toTototoshi)
         .iteratorWithHeaders
-        .map(CsvDecoder[A].read(_).fold[A](throw _, identity[A]))
+        .map { baseRow =>
+          val row =
+            if (config.caseSensitive) baseRow
+            else baseRow.map { case (k, v) => k.toLowerCase -> v }
+
+          CsvDecoder[A].read(row).fold[A](throw _, identity[A])
+        }
         .toList
     }
   }

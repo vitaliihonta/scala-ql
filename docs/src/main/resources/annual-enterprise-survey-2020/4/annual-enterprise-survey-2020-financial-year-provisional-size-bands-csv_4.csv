@@ -1,0 +1,2001 @@
+year,industry_code_ANZSIC,industry_name_ANZSIC,rme_size_grp,variable,value,unit
+2016,D,"Electricity, Gas, Water and Waste Services",b_1-5,Fixed tangible assets,217,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",c_6-9,Activity unit,66,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",c_6-9,Rolling mean employees,498,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",c_6-9,Salaries and wages paid,26,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",c_6-9,"Sales, government funding, grants and subsidies",160,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",c_6-9,Total income,161,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",c_6-9,Total expenditure,139,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",c_6-9,Operating profit before tax,23,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",c_6-9,Total assets,207,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",c_6-9,Fixed tangible assets,141,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",d_10-19,Activity unit,45,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",d_10-19,Rolling mean employees,630,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",d_10-19,Salaries and wages paid,31,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",d_10-19,"Sales, government funding, grants and subsidies",154,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",d_10-19,Total income,156,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",d_10-19,Total expenditure,126,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",d_10-19,Operating profit before tax,31,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",d_10-19,Total assets,401,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",d_10-19,Fixed tangible assets,285,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",e_20-49,Activity unit,27,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",e_20-49,Rolling mean employees,828,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",e_20-49,Salaries and wages paid,50,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",e_20-49,"Sales, government funding, grants and subsidies",314,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",e_20-49,Total income,323,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",e_20-49,Total expenditure,307,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",e_20-49,Operating profit before tax,14,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",e_20-49,Total assets,788,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",e_20-49,Fixed tangible assets,594,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",f_50-99,Activity unit,18,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",f_50-99,Rolling mean employees,1245,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",f_50-99,Salaries and wages paid,85,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",f_50-99,"Sales, government funding, grants and subsidies",536,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",f_50-99,Total income,590,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",f_50-99,Total expenditure,489,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",f_50-99,Operating profit before tax,C,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",f_50-99,Total assets,1084,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",f_50-99,Fixed tangible assets,814,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",g_100-199,Activity unit,12,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",g_100-199,Rolling mean employees,1893,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",g_100-199,Salaries and wages paid,142,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",g_100-199,"Sales, government funding, grants and subsidies",1048,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",g_100-199,Total income,1062,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",g_100-199,Total expenditure,913,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",g_100-199,Operating profit before tax,C,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",g_100-199,Total assets,3746,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",g_100-199,Fixed tangible assets,3126,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",h_200+,Activity unit,15,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",h_200+,Rolling mean employees,10473,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",h_200+,Salaries and wages paid,877,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",h_200+,"Sales, government funding, grants and subsidies",12248,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",h_200+,Total income,12604,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",h_200+,Total expenditure,11304,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",h_200+,Operating profit before tax,1647,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",h_200+,Total assets,49787,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",h_200+,Fixed tangible assets,40580,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Activity unit,1128,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Rolling mean employees,16257,COUNT
+2016,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Salaries and wages paid,1323,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Total income,17662,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Total expenditure,15663,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Operating profit before tax,C,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Total assets,66003,DOLLARS(millions)
+2016,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Fixed tangible assets,53723,DOLLARS(millions)
+2016,E,Construction,a_0,Activity unit,32952,COUNT
+2016,E,Construction,a_0,Rolling mean employees,0,COUNT
+2016,E,Construction,a_0,Salaries and wages paid,1091,DOLLARS(millions)
+2016,E,Construction,a_0,"Sales, government funding, grants and subsidies",9637,DOLLARS(millions)
+2016,E,Construction,a_0,Total income,9746,DOLLARS(millions)
+2016,E,Construction,a_0,Total expenditure,8998,DOLLARS(millions)
+2016,E,Construction,a_0,Operating profit before tax,1339,DOLLARS(millions)
+2016,E,Construction,a_0,Total assets,11283,DOLLARS(millions)
+2016,E,Construction,a_0,Fixed tangible assets,2952,DOLLARS(millions)
+2016,E,Construction,b_1-5,Activity unit,18090,COUNT
+2016,E,Construction,b_1-5,Rolling mean employees,33288,COUNT
+2016,E,Construction,b_1-5,Salaries and wages paid,1924,DOLLARS(millions)
+2016,E,Construction,b_1-5,"Sales, government funding, grants and subsidies",9388,DOLLARS(millions)
+2016,E,Construction,b_1-5,Total income,9483,DOLLARS(millions)
+2016,E,Construction,b_1-5,Total expenditure,8778,DOLLARS(millions)
+2016,E,Construction,b_1-5,Operating profit before tax,871,DOLLARS(millions)
+2016,E,Construction,b_1-5,Total assets,5592,DOLLARS(millions)
+2016,E,Construction,b_1-5,Fixed tangible assets,1291,DOLLARS(millions)
+2016,E,Construction,c_6-9,Activity unit,2502,COUNT
+2016,E,Construction,c_6-9,Rolling mean employees,17658,COUNT
+2016,E,Construction,c_6-9,Salaries and wages paid,997,DOLLARS(millions)
+2016,E,Construction,c_6-9,"Sales, government funding, grants and subsidies",4054,DOLLARS(millions)
+2016,E,Construction,c_6-9,Total income,4071,DOLLARS(millions)
+2016,E,Construction,c_6-9,Total expenditure,3799,DOLLARS(millions)
+2016,E,Construction,c_6-9,Operating profit before tax,327,DOLLARS(millions)
+2016,E,Construction,c_6-9,Total assets,1887,DOLLARS(millions)
+2016,E,Construction,c_6-9,Fixed tangible assets,433,DOLLARS(millions)
+2016,E,Construction,d_10-19,Activity unit,1839,COUNT
+2016,E,Construction,d_10-19,Rolling mean employees,24642,COUNT
+2016,E,Construction,d_10-19,Salaries and wages paid,1348,DOLLARS(millions)
+2016,E,Construction,d_10-19,"Sales, government funding, grants and subsidies",5499,DOLLARS(millions)
+2016,E,Construction,d_10-19,Total income,5521,DOLLARS(millions)
+2016,E,Construction,d_10-19,Total expenditure,5333,DOLLARS(millions)
+2016,E,Construction,d_10-19,Operating profit before tax,243,DOLLARS(millions)
+2016,E,Construction,d_10-19,Total assets,2869,DOLLARS(millions)
+2016,E,Construction,d_10-19,Fixed tangible assets,820,DOLLARS(millions)
+2016,E,Construction,e_20-49,Activity unit,762,COUNT
+2016,E,Construction,e_20-49,Rolling mean employees,21483,COUNT
+2016,E,Construction,e_20-49,Salaries and wages paid,1271,DOLLARS(millions)
+2016,E,Construction,e_20-49,"Sales, government funding, grants and subsidies",6037,DOLLARS(millions)
+2016,E,Construction,e_20-49,Total income,6209,DOLLARS(millions)
+2016,E,Construction,e_20-49,Total expenditure,5721,DOLLARS(millions)
+2016,E,Construction,e_20-49,Operating profit before tax,389,DOLLARS(millions)
+2016,E,Construction,e_20-49,Total assets,2481,DOLLARS(millions)
+2016,E,Construction,e_20-49,Fixed tangible assets,576,DOLLARS(millions)
+2016,E,Construction,f_50-99,Activity unit,195,COUNT
+2016,E,Construction,f_50-99,Rolling mean employees,13146,COUNT
+2016,E,Construction,f_50-99,Salaries and wages paid,827,DOLLARS(millions)
+2016,E,Construction,f_50-99,"Sales, government funding, grants and subsidies",3835,DOLLARS(millions)
+2016,E,Construction,f_50-99,Total income,3871,DOLLARS(millions)
+2016,E,Construction,f_50-99,Total expenditure,3682,DOLLARS(millions)
+2016,E,Construction,f_50-99,Operating profit before tax,260,DOLLARS(millions)
+2016,E,Construction,f_50-99,Total assets,2328,DOLLARS(millions)
+2016,E,Construction,f_50-99,Fixed tangible assets,413,DOLLARS(millions)
+2016,E,Construction,g_100-199,Activity unit,60,COUNT
+2016,E,Construction,g_100-199,Rolling mean employees,8007,COUNT
+2016,E,Construction,g_100-199,Salaries and wages paid,510,DOLLARS(millions)
+2016,E,Construction,g_100-199,"Sales, government funding, grants and subsidies",2835,DOLLARS(millions)
+2016,E,Construction,g_100-199,Total income,2854,DOLLARS(millions)
+2016,E,Construction,g_100-199,Total expenditure,2654,DOLLARS(millions)
+2016,E,Construction,g_100-199,Operating profit before tax,222,DOLLARS(millions)
+2016,E,Construction,g_100-199,Total assets,1415,DOLLARS(millions)
+2016,E,Construction,g_100-199,Fixed tangible assets,420,DOLLARS(millions)
+2016,E,Construction,h_200+,Activity unit,33,COUNT
+2016,E,Construction,h_200+,Rolling mean employees,25332,COUNT
+2016,E,Construction,h_200+,Salaries and wages paid,2025,DOLLARS(millions)
+2016,E,Construction,h_200+,"Sales, government funding, grants and subsidies",8036,DOLLARS(millions)
+2016,E,Construction,h_200+,Total income,8107,DOLLARS(millions)
+2016,E,Construction,h_200+,Total expenditure,7912,DOLLARS(millions)
+2016,E,Construction,h_200+,Operating profit before tax,245,DOLLARS(millions)
+2016,E,Construction,h_200+,Total assets,3888,DOLLARS(millions)
+2016,E,Construction,h_200+,Fixed tangible assets,817,DOLLARS(millions)
+2016,E,Construction,i_Industry_Total,Activity unit,56433,COUNT
+2016,E,Construction,i_Industry_Total,Rolling mean employees,143565,COUNT
+2016,E,Construction,i_Industry_Total,Salaries and wages paid,9993,DOLLARS(millions)
+2016,E,Construction,i_Industry_Total,"Sales, government funding, grants and subsidies",49322,DOLLARS(millions)
+2016,E,Construction,i_Industry_Total,Total income,49861,DOLLARS(millions)
+2016,E,Construction,i_Industry_Total,Total expenditure,46876,DOLLARS(millions)
+2016,E,Construction,i_Industry_Total,Operating profit before tax,3895,DOLLARS(millions)
+2016,E,Construction,i_Industry_Total,Total assets,31744,DOLLARS(millions)
+2016,E,Construction,i_Industry_Total,Fixed tangible assets,7722,DOLLARS(millions)
+2016,F,Wholesale Trade,a_0,Activity unit,8778,COUNT
+2016,F,Wholesale Trade,a_0,Rolling mean employees,0,COUNT
+2016,F,Wholesale Trade,a_0,Salaries and wages paid,303,DOLLARS(millions)
+2016,F,Wholesale Trade,a_0,"Sales, government funding, grants and subsidies",6490,DOLLARS(millions)
+2016,F,Wholesale Trade,a_0,Total income,6569,DOLLARS(millions)
+2016,F,Wholesale Trade,a_0,Total expenditure,6041,DOLLARS(millions)
+2016,F,Wholesale Trade,a_0,Operating profit before tax,524,DOLLARS(millions)
+2016,F,Wholesale Trade,a_0,Total assets,4026,DOLLARS(millions)
+2016,F,Wholesale Trade,a_0,Fixed tangible assets,839,DOLLARS(millions)
+2016,F,Wholesale Trade,b_1-5,Activity unit,5568,COUNT
+2016,F,Wholesale Trade,b_1-5,Rolling mean employees,12642,COUNT
+2016,F,Wholesale Trade,b_1-5,Salaries and wages paid,761,DOLLARS(millions)
+2016,F,Wholesale Trade,b_1-5,"Sales, government funding, grants and subsidies",8529,DOLLARS(millions)
+2016,F,Wholesale Trade,b_1-5,Total income,8580,DOLLARS(millions)
+2016,F,Wholesale Trade,b_1-5,Total expenditure,8160,DOLLARS(millions)
+2016,F,Wholesale Trade,b_1-5,Operating profit before tax,528,DOLLARS(millions)
+2016,F,Wholesale Trade,b_1-5,Total assets,4569,DOLLARS(millions)
+2016,F,Wholesale Trade,b_1-5,Fixed tangible assets,569,DOLLARS(millions)
+2016,F,Wholesale Trade,c_6-9,Activity unit,1305,COUNT
+2016,F,Wholesale Trade,c_6-9,Rolling mean employees,9390,COUNT
+2016,F,Wholesale Trade,c_6-9,Salaries and wages paid,553,DOLLARS(millions)
+2016,F,Wholesale Trade,c_6-9,"Sales, government funding, grants and subsidies",5735,DOLLARS(millions)
+2016,F,Wholesale Trade,c_6-9,Total income,5785,DOLLARS(millions)
+2016,F,Wholesale Trade,c_6-9,Total expenditure,5498,DOLLARS(millions)
+2016,F,Wholesale Trade,c_6-9,Operating profit before tax,297,DOLLARS(millions)
+2016,F,Wholesale Trade,c_6-9,Total assets,2516,DOLLARS(millions)
+2016,F,Wholesale Trade,c_6-9,Fixed tangible assets,216,DOLLARS(millions)
+2016,F,Wholesale Trade,d_10-19,Activity unit,1113,COUNT
+2016,F,Wholesale Trade,d_10-19,Rolling mean employees,14772,COUNT
+2016,F,Wholesale Trade,d_10-19,Salaries and wages paid,870,DOLLARS(millions)
+2016,F,Wholesale Trade,d_10-19,"Sales, government funding, grants and subsidies",8545,DOLLARS(millions)
+2016,F,Wholesale Trade,d_10-19,Total income,8601,DOLLARS(millions)
+2016,F,Wholesale Trade,d_10-19,Total expenditure,8200,DOLLARS(millions)
+2016,F,Wholesale Trade,d_10-19,Operating profit before tax,395,DOLLARS(millions)
+2016,F,Wholesale Trade,d_10-19,Total assets,4687,DOLLARS(millions)
+2016,F,Wholesale Trade,d_10-19,Fixed tangible assets,360,DOLLARS(millions)
+2016,F,Wholesale Trade,e_20-49,Activity unit,642,COUNT
+2016,F,Wholesale Trade,e_20-49,Rolling mean employees,18975,COUNT
+2016,F,Wholesale Trade,e_20-49,Salaries and wages paid,1304,DOLLARS(millions)
+2016,F,Wholesale Trade,e_20-49,"Sales, government funding, grants and subsidies",14626,DOLLARS(millions)
+2016,F,Wholesale Trade,e_20-49,Total income,14774,DOLLARS(millions)
+2016,F,Wholesale Trade,e_20-49,Total expenditure,14085,DOLLARS(millions)
+2016,F,Wholesale Trade,e_20-49,Operating profit before tax,824,DOLLARS(millions)
+2016,F,Wholesale Trade,e_20-49,Total assets,7992,DOLLARS(millions)
+2016,F,Wholesale Trade,e_20-49,Fixed tangible assets,811,DOLLARS(millions)
+2016,F,Wholesale Trade,f_50-99,Activity unit,228,COUNT
+2016,F,Wholesale Trade,f_50-99,Rolling mean employees,15615,COUNT
+2016,F,Wholesale Trade,f_50-99,Salaries and wages paid,975,DOLLARS(millions)
+2016,F,Wholesale Trade,f_50-99,"Sales, government funding, grants and subsidies",11123,DOLLARS(millions)
+2016,F,Wholesale Trade,f_50-99,Total income,11448,DOLLARS(millions)
+2016,F,Wholesale Trade,f_50-99,Total expenditure,10796,DOLLARS(millions)
+2016,F,Wholesale Trade,f_50-99,Operating profit before tax,642,DOLLARS(millions)
+2016,F,Wholesale Trade,f_50-99,Total assets,6114,DOLLARS(millions)
+2016,F,Wholesale Trade,f_50-99,Fixed tangible assets,479,DOLLARS(millions)
+2016,F,Wholesale Trade,g_100-199,Activity unit,69,COUNT
+2016,F,Wholesale Trade,g_100-199,Rolling mean employees,9015,COUNT
+2016,F,Wholesale Trade,g_100-199,Salaries and wages paid,580,DOLLARS(millions)
+2016,F,Wholesale Trade,g_100-199,"Sales, government funding, grants and subsidies",5860,DOLLARS(millions)
+2016,F,Wholesale Trade,g_100-199,Total income,6041,DOLLARS(millions)
+2016,F,Wholesale Trade,g_100-199,Total expenditure,5671,DOLLARS(millions)
+2016,F,Wholesale Trade,g_100-199,Operating profit before tax,390,DOLLARS(millions)
+2016,F,Wholesale Trade,g_100-199,Total assets,3701,DOLLARS(millions)
+2016,F,Wholesale Trade,g_100-199,Fixed tangible assets,294,DOLLARS(millions)
+2016,F,Wholesale Trade,h_200+,Activity unit,57,COUNT
+2016,F,Wholesale Trade,h_200+,Rolling mean employees,26289,COUNT
+2016,F,Wholesale Trade,h_200+,Salaries and wages paid,1739,DOLLARS(millions)
+2016,F,Wholesale Trade,h_200+,"Sales, government funding, grants and subsidies",30185,DOLLARS(millions)
+2016,F,Wholesale Trade,h_200+,Total income,30393,DOLLARS(millions)
+2016,F,Wholesale Trade,h_200+,Total expenditure,29911,DOLLARS(millions)
+2016,F,Wholesale Trade,h_200+,Operating profit before tax,534,DOLLARS(millions)
+2016,F,Wholesale Trade,h_200+,Total assets,10737,DOLLARS(millions)
+2016,F,Wholesale Trade,h_200+,Fixed tangible assets,1541,DOLLARS(millions)
+2016,F,Wholesale Trade,i_Industry_Total,Activity unit,17754,COUNT
+2016,F,Wholesale Trade,i_Industry_Total,Rolling mean employees,106695,COUNT
+2016,F,Wholesale Trade,i_Industry_Total,Salaries and wages paid,7084,DOLLARS(millions)
+2016,F,Wholesale Trade,i_Industry_Total,"Sales, government funding, grants and subsidies",91094,DOLLARS(millions)
+2016,F,Wholesale Trade,i_Industry_Total,Total income,92193,DOLLARS(millions)
+2016,F,Wholesale Trade,i_Industry_Total,Total expenditure,88362,DOLLARS(millions)
+2016,F,Wholesale Trade,i_Industry_Total,Operating profit before tax,4135,DOLLARS(millions)
+2016,F,Wholesale Trade,i_Industry_Total,Total assets,44343,DOLLARS(millions)
+2016,F,Wholesale Trade,i_Industry_Total,Fixed tangible assets,5108,DOLLARS(millions)
+2016,G,Retail Trade,a_0,Activity unit,12228,COUNT
+2016,G,Retail Trade,a_0,Rolling mean employees,0,COUNT
+2016,G,Retail Trade,a_0,Salaries and wages paid,260,DOLLARS(millions)
+2016,G,Retail Trade,a_0,"Sales, government funding, grants and subsidies",3381,DOLLARS(millions)
+2016,G,Retail Trade,a_0,Total income,3416,DOLLARS(millions)
+2016,G,Retail Trade,a_0,Total expenditure,3203,DOLLARS(millions)
+2016,G,Retail Trade,a_0,Operating profit before tax,C,DOLLARS(millions)
+2016,G,Retail Trade,a_0,Total assets,2509,DOLLARS(millions)
+2016,G,Retail Trade,a_0,Fixed tangible assets,922,DOLLARS(millions)
+2016,G,Retail Trade,b_1-5,Activity unit,10671,COUNT
+2016,G,Retail Trade,b_1-5,Rolling mean employees,23364,COUNT
+2016,G,Retail Trade,b_1-5,Salaries and wages paid,806,DOLLARS(millions)
+2016,G,Retail Trade,b_1-5,"Sales, government funding, grants and subsidies",7693,DOLLARS(millions)
+2016,G,Retail Trade,b_1-5,Total income,7753,DOLLARS(millions)
+2016,G,Retail Trade,b_1-5,Total expenditure,7368,DOLLARS(millions)
+2016,G,Retail Trade,b_1-5,Operating profit before tax,394,DOLLARS(millions)
+2016,G,Retail Trade,b_1-5,Total assets,3601,DOLLARS(millions)
+2016,G,Retail Trade,b_1-5,Fixed tangible assets,670,DOLLARS(millions)
+2016,G,Retail Trade,c_6-9,Activity unit,2253,COUNT
+2016,G,Retail Trade,c_6-9,Rolling mean employees,16275,COUNT
+2016,G,Retail Trade,c_6-9,Salaries and wages paid,576,DOLLARS(millions)
+2016,G,Retail Trade,c_6-9,"Sales, government funding, grants and subsidies",4461,DOLLARS(millions)
+2016,G,Retail Trade,c_6-9,Total income,4486,DOLLARS(millions)
+2016,G,Retail Trade,c_6-9,Total expenditure,4375,DOLLARS(millions)
+2016,G,Retail Trade,c_6-9,Operating profit before tax,143,DOLLARS(millions)
+2016,G,Retail Trade,c_6-9,Total assets,1630,DOLLARS(millions)
+2016,G,Retail Trade,c_6-9,Fixed tangible assets,245,DOLLARS(millions)
+2016,G,Retail Trade,d_10-19,Activity unit,1479,COUNT
+2016,G,Retail Trade,d_10-19,Rolling mean employees,19473,COUNT
+2016,G,Retail Trade,d_10-19,Salaries and wages paid,737,DOLLARS(millions)
+2016,G,Retail Trade,d_10-19,"Sales, government funding, grants and subsidies",6728,DOLLARS(millions)
+2016,G,Retail Trade,d_10-19,Total income,6747,DOLLARS(millions)
+2016,G,Retail Trade,d_10-19,Total expenditure,6531,DOLLARS(millions)
+2016,G,Retail Trade,d_10-19,Operating profit before tax,266,DOLLARS(millions)
+2016,G,Retail Trade,d_10-19,Total assets,2357,DOLLARS(millions)
+2016,G,Retail Trade,d_10-19,Fixed tangible assets,555,DOLLARS(millions)
+2016,G,Retail Trade,e_20-49,Activity unit,642,COUNT
+2016,G,Retail Trade,e_20-49,Rolling mean employees,18684,COUNT
+2016,G,Retail Trade,e_20-49,Salaries and wages paid,699,DOLLARS(millions)
+2016,G,Retail Trade,e_20-49,"Sales, government funding, grants and subsidies",6607,DOLLARS(millions)
+2016,G,Retail Trade,e_20-49,Total income,6635,DOLLARS(millions)
+2016,G,Retail Trade,e_20-49,Total expenditure,6430,DOLLARS(millions)
+2016,G,Retail Trade,e_20-49,Operating profit before tax,208,DOLLARS(millions)
+2016,G,Retail Trade,e_20-49,Total assets,1994,DOLLARS(millions)
+2016,G,Retail Trade,e_20-49,Fixed tangible assets,262,DOLLARS(millions)
+2016,G,Retail Trade,f_50-99,Activity unit,231,COUNT
+2016,G,Retail Trade,f_50-99,Rolling mean employees,16263,COUNT
+2016,G,Retail Trade,f_50-99,Salaries and wages paid,561,DOLLARS(millions)
+2016,G,Retail Trade,f_50-99,"Sales, government funding, grants and subsidies",5759,DOLLARS(millions)
+2016,G,Retail Trade,f_50-99,Total income,5777,DOLLARS(millions)
+2016,G,Retail Trade,f_50-99,Total expenditure,5615,DOLLARS(millions)
+2016,G,Retail Trade,f_50-99,Operating profit before tax,232,DOLLARS(millions)
+2016,G,Retail Trade,f_50-99,Total assets,1698,DOLLARS(millions)
+2016,G,Retail Trade,f_50-99,Fixed tangible assets,307,DOLLARS(millions)
+2016,G,Retail Trade,g_100-199,Activity unit,192,COUNT
+2016,G,Retail Trade,g_100-199,Rolling mean employees,27966,COUNT
+2016,G,Retail Trade,g_100-199,Salaries and wages paid,937,DOLLARS(millions)
+2016,G,Retail Trade,g_100-199,"Sales, government funding, grants and subsidies",9146,DOLLARS(millions)
+2016,G,Retail Trade,g_100-199,Total income,9186,DOLLARS(millions)
+2016,G,Retail Trade,g_100-199,Total expenditure,8936,DOLLARS(millions)
+2016,G,Retail Trade,g_100-199,Operating profit before tax,269,DOLLARS(millions)
+2016,G,Retail Trade,g_100-199,Total assets,2660,DOLLARS(millions)
+2016,G,Retail Trade,g_100-199,Fixed tangible assets,503,DOLLARS(millions)
+2016,G,Retail Trade,h_200+,Activity unit,117,COUNT
+2016,G,Retail Trade,h_200+,Rolling mean employees,79068,COUNT
+2016,G,Retail Trade,h_200+,Salaries and wages paid,2741,DOLLARS(millions)
+2016,G,Retail Trade,h_200+,"Sales, government funding, grants and subsidies",22825,DOLLARS(millions)
+2016,G,Retail Trade,h_200+,Total income,22939,DOLLARS(millions)
+2016,G,Retail Trade,h_200+,Total expenditure,21935,DOLLARS(millions)
+2016,G,Retail Trade,h_200+,Operating profit before tax,1111,DOLLARS(millions)
+2016,G,Retail Trade,h_200+,Total assets,8848,DOLLARS(millions)
+2016,G,Retail Trade,h_200+,Fixed tangible assets,2083,DOLLARS(millions)
+2016,G,Retail Trade,i_Industry_Total,Activity unit,27816,COUNT
+2016,G,Retail Trade,i_Industry_Total,Rolling mean employees,201090,COUNT
+2016,G,Retail Trade,i_Industry_Total,Salaries and wages paid,7318,DOLLARS(millions)
+2016,G,Retail Trade,i_Industry_Total,"Sales, government funding, grants and subsidies",66601,DOLLARS(millions)
+2016,G,Retail Trade,i_Industry_Total,Total income,66939,DOLLARS(millions)
+2016,G,Retail Trade,i_Industry_Total,Total expenditure,64393,DOLLARS(millions)
+2016,G,Retail Trade,i_Industry_Total,Operating profit before tax,C,DOLLARS(millions)
+2016,G,Retail Trade,i_Industry_Total,Total assets,25298,DOLLARS(millions)
+2016,G,Retail Trade,i_Industry_Total,Fixed tangible assets,5547,DOLLARS(millions)
+2016,H,Accommodation and Food Services,a_0,Activity unit,6015,COUNT
+2016,H,Accommodation and Food Services,a_0,Rolling mean employees,0,COUNT
+2016,H,Accommodation and Food Services,a_0,Salaries and wages paid,120,DOLLARS(millions)
+2016,H,Accommodation and Food Services,a_0,"Sales, government funding, grants and subsidies",865,DOLLARS(millions)
+2016,H,Accommodation and Food Services,a_0,Total income,901,DOLLARS(millions)
+2016,H,Accommodation and Food Services,a_0,Total expenditure,801,DOLLARS(millions)
+2016,H,Accommodation and Food Services,a_0,Operating profit before tax,C,DOLLARS(millions)
+2016,H,Accommodation and Food Services,a_0,Total assets,2471,DOLLARS(millions)
+2016,H,Accommodation and Food Services,a_0,Fixed tangible assets,1698,DOLLARS(millions)
+2016,H,Accommodation and Food Services,b_1-5,Activity unit,8133,COUNT
+2016,H,Accommodation and Food Services,b_1-5,Rolling mean employees,19965,COUNT
+2016,H,Accommodation and Food Services,b_1-5,Salaries and wages paid,475,DOLLARS(millions)
+2016,H,Accommodation and Food Services,b_1-5,"Sales, government funding, grants and subsidies",2026,DOLLARS(millions)
+2016,H,Accommodation and Food Services,b_1-5,Total income,2057,DOLLARS(millions)
+2016,H,Accommodation and Food Services,b_1-5,Total expenditure,1978,DOLLARS(millions)
+2016,H,Accommodation and Food Services,b_1-5,Operating profit before tax,68,DOLLARS(millions)
+2016,H,Accommodation and Food Services,b_1-5,Total assets,2133,DOLLARS(millions)
+2016,H,Accommodation and Food Services,b_1-5,Fixed tangible assets,1228,DOLLARS(millions)
+2016,H,Accommodation and Food Services,c_6-9,Activity unit,2655,COUNT
+2016,H,Accommodation and Food Services,c_6-9,Rolling mean employees,19104,COUNT
+2016,H,Accommodation and Food Services,c_6-9,Salaries and wages paid,438,DOLLARS(millions)
+2016,H,Accommodation and Food Services,c_6-9,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2016,H,Accommodation and Food Services,c_6-9,Total income,1419,DOLLARS(millions)
+2016,H,Accommodation and Food Services,c_6-9,Total expenditure,1383,DOLLARS(millions)
+2016,H,Accommodation and Food Services,c_6-9,Operating profit before tax,34,DOLLARS(millions)
+2016,H,Accommodation and Food Services,c_6-9,Total assets,963,DOLLARS(millions)
+2016,H,Accommodation and Food Services,c_6-9,Fixed tangible assets,502,DOLLARS(millions)
+2016,H,Accommodation and Food Services,d_10-19,Activity unit,2409,COUNT
+2016,H,Accommodation and Food Services,d_10-19,Rolling mean employees,32052,COUNT
+2016,H,Accommodation and Food Services,d_10-19,Salaries and wages paid,748,DOLLARS(millions)
+2016,H,Accommodation and Food Services,d_10-19,"Sales, government funding, grants and subsidies",2248,DOLLARS(millions)
+2016,H,Accommodation and Food Services,d_10-19,Total income,2261,DOLLARS(millions)
+2016,H,Accommodation and Food Services,d_10-19,Total expenditure,2203,DOLLARS(millions)
+2016,H,Accommodation and Food Services,d_10-19,Operating profit before tax,61,DOLLARS(millions)
+2016,H,Accommodation and Food Services,d_10-19,Total assets,1520,DOLLARS(millions)
+2016,H,Accommodation and Food Services,d_10-19,Fixed tangible assets,873,DOLLARS(millions)
+2016,H,Accommodation and Food Services,e_20-49,Activity unit,1098,COUNT
+2016,H,Accommodation and Food Services,e_20-49,Rolling mean employees,30540,COUNT
+2016,H,Accommodation and Food Services,e_20-49,Salaries and wages paid,749,DOLLARS(millions)
+2016,H,Accommodation and Food Services,e_20-49,"Sales, government funding, grants and subsidies",2312,DOLLARS(millions)
+2016,H,Accommodation and Food Services,e_20-49,Total income,2338,DOLLARS(millions)
+2016,H,Accommodation and Food Services,e_20-49,Total expenditure,2207,DOLLARS(millions)
+2016,H,Accommodation and Food Services,e_20-49,Operating profit before tax,138,DOLLARS(millions)
+2016,H,Accommodation and Food Services,e_20-49,Total assets,1804,DOLLARS(millions)
+2016,H,Accommodation and Food Services,e_20-49,Fixed tangible assets,1127,DOLLARS(millions)
+2016,H,Accommodation and Food Services,f_50-99,Activity unit,177,COUNT
+2016,H,Accommodation and Food Services,f_50-99,Rolling mean employees,12108,COUNT
+2016,H,Accommodation and Food Services,f_50-99,Salaries and wages paid,317,DOLLARS(millions)
+2016,H,Accommodation and Food Services,f_50-99,"Sales, government funding, grants and subsidies",1051,DOLLARS(millions)
+2016,H,Accommodation and Food Services,f_50-99,Total income,1081,DOLLARS(millions)
+2016,H,Accommodation and Food Services,f_50-99,Total expenditure,963,DOLLARS(millions)
+2016,H,Accommodation and Food Services,f_50-99,Operating profit before tax,119,DOLLARS(millions)
+2016,H,Accommodation and Food Services,f_50-99,Total assets,1244,DOLLARS(millions)
+2016,H,Accommodation and Food Services,f_50-99,Fixed tangible assets,719,DOLLARS(millions)
+2016,H,Accommodation and Food Services,g_100-199,Activity unit,66,COUNT
+2016,H,Accommodation and Food Services,g_100-199,Rolling mean employees,9315,COUNT
+2016,H,Accommodation and Food Services,g_100-199,Salaries and wages paid,270,DOLLARS(millions)
+2016,H,Accommodation and Food Services,g_100-199,"Sales, government funding, grants and subsidies",949,DOLLARS(millions)
+2016,H,Accommodation and Food Services,g_100-199,Total income,954,DOLLARS(millions)
+2016,H,Accommodation and Food Services,g_100-199,Total expenditure,810,DOLLARS(millions)
+2016,H,Accommodation and Food Services,g_100-199,Operating profit before tax,162,DOLLARS(millions)
+2016,H,Accommodation and Food Services,g_100-199,Total assets,1023,DOLLARS(millions)
+2016,H,Accommodation and Food Services,g_100-199,Fixed tangible assets,579,DOLLARS(millions)
+2016,H,Accommodation and Food Services,h_200+,Activity unit,30,COUNT
+2016,H,Accommodation and Food Services,h_200+,Rolling mean employees,20058,COUNT
+2016,H,Accommodation and Food Services,h_200+,Salaries and wages paid,561,DOLLARS(millions)
+2016,H,Accommodation and Food Services,h_200+,"Sales, government funding, grants and subsidies",1916,DOLLARS(millions)
+2016,H,Accommodation and Food Services,h_200+,Total income,1931,DOLLARS(millions)
+2016,H,Accommodation and Food Services,h_200+,Total expenditure,1761,DOLLARS(millions)
+2016,H,Accommodation and Food Services,h_200+,Operating profit before tax,179,DOLLARS(millions)
+2016,H,Accommodation and Food Services,h_200+,Total assets,2518,DOLLARS(millions)
+2016,H,Accommodation and Food Services,h_200+,Fixed tangible assets,1602,DOLLARS(millions)
+2016,H,Accommodation and Food Services,i_Industry_Total,Activity unit,20586,COUNT
+2016,H,Accommodation and Food Services,i_Industry_Total,Rolling mean employees,143142,COUNT
+2016,H,Accommodation and Food Services,i_Industry_Total,Salaries and wages paid,3677,DOLLARS(millions)
+2016,H,Accommodation and Food Services,i_Industry_Total,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2016,H,Accommodation and Food Services,i_Industry_Total,Total income,12942,DOLLARS(millions)
+2016,H,Accommodation and Food Services,i_Industry_Total,Total expenditure,12106,DOLLARS(millions)
+2016,H,Accommodation and Food Services,i_Industry_Total,Operating profit before tax,C,DOLLARS(millions)
+2016,H,Accommodation and Food Services,i_Industry_Total,Total assets,13676,DOLLARS(millions)
+2016,H,Accommodation and Food Services,i_Industry_Total,Fixed tangible assets,8328,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",a_0,Activity unit,10005,COUNT
+2016,I,"Transport, Postal and Warehousing",a_0,Rolling mean employees,0,COUNT
+2016,I,"Transport, Postal and Warehousing",a_0,Salaries and wages paid,134,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",a_0,"Sales, government funding, grants and subsidies",1469,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",a_0,Total income,1495,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",a_0,Total expenditure,1195,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",a_0,Operating profit before tax,299,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",a_0,Total assets,5882,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",a_0,Fixed tangible assets,4873,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",b_1-5,Activity unit,4107,COUNT
+2016,I,"Transport, Postal and Warehousing",b_1-5,Rolling mean employees,8358,COUNT
+2016,I,"Transport, Postal and Warehousing",b_1-5,Salaries and wages paid,383,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",b_1-5,"Sales, government funding, grants and subsidies",1643,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",b_1-5,Total income,1671,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",b_1-5,Total expenditure,1611,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",b_1-5,Operating profit before tax,62,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",b_1-5,Total assets,1832,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",b_1-5,Fixed tangible assets,996,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",c_6-9,Activity unit,543,COUNT
+2016,I,"Transport, Postal and Warehousing",c_6-9,Rolling mean employees,3771,COUNT
+2016,I,"Transport, Postal and Warehousing",c_6-9,Salaries and wages paid,177,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",c_6-9,"Sales, government funding, grants and subsidies",723,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",c_6-9,Total income,736,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",c_6-9,Total expenditure,636,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",c_6-9,Operating profit before tax,111,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",c_6-9,Total assets,834,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",c_6-9,Fixed tangible assets,282,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",d_10-19,Activity unit,657,COUNT
+2016,I,"Transport, Postal and Warehousing",d_10-19,Rolling mean employees,9090,COUNT
+2016,I,"Transport, Postal and Warehousing",d_10-19,Salaries and wages paid,418,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",d_10-19,"Sales, government funding, grants and subsidies",1598,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",d_10-19,Total income,1635,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",d_10-19,Total expenditure,1479,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",d_10-19,Operating profit before tax,142,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",d_10-19,Total assets,1441,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",d_10-19,Fixed tangible assets,829,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",e_20-49,Activity unit,297,COUNT
+2016,I,"Transport, Postal and Warehousing",e_20-49,Rolling mean employees,9012,COUNT
+2016,I,"Transport, Postal and Warehousing",e_20-49,Salaries and wages paid,511,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",e_20-49,"Sales, government funding, grants and subsidies",1952,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",e_20-49,Total income,1974,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",e_20-49,Total expenditure,1847,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",e_20-49,Operating profit before tax,130,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",e_20-49,Total assets,2183,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",e_20-49,Fixed tangible assets,1340,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",f_50-99,Activity unit,117,COUNT
+2016,I,"Transport, Postal and Warehousing",f_50-99,Rolling mean employees,8175,COUNT
+2016,I,"Transport, Postal and Warehousing",f_50-99,Salaries and wages paid,481,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",f_50-99,"Sales, government funding, grants and subsidies",1828,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",f_50-99,Total income,1849,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",f_50-99,Total expenditure,1641,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",f_50-99,Operating profit before tax,211,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",f_50-99,Total assets,1745,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",f_50-99,Fixed tangible assets,835,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",g_100-199,Activity unit,63,COUNT
+2016,I,"Transport, Postal and Warehousing",g_100-199,Rolling mean employees,8379,COUNT
+2016,I,"Transport, Postal and Warehousing",g_100-199,Salaries and wages paid,477,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",g_100-199,"Sales, government funding, grants and subsidies",1657,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",g_100-199,Total income,1702,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",g_100-199,Total expenditure,1563,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",g_100-199,Operating profit before tax,189,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",g_100-199,Total assets,2774,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",g_100-199,Fixed tangible assets,1997,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",h_200+,Activity unit,66,COUNT
+2016,I,"Transport, Postal and Warehousing",h_200+,Rolling mean employees,43338,COUNT
+2016,I,"Transport, Postal and Warehousing",h_200+,Salaries and wages paid,3241,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",h_200+,"Sales, government funding, grants and subsidies",12423,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",h_200+,Total income,12902,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",h_200+,Total expenditure,11748,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",h_200+,Operating profit before tax,1272,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",h_200+,Total assets,22469,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",h_200+,Fixed tangible assets,14062,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",i_Industry_Total,Activity unit,15858,COUNT
+2016,I,"Transport, Postal and Warehousing",i_Industry_Total,Rolling mean employees,90123,COUNT
+2016,I,"Transport, Postal and Warehousing",i_Industry_Total,Salaries and wages paid,5823,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",i_Industry_Total,"Sales, government funding, grants and subsidies",23293,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",i_Industry_Total,Total income,23965,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",i_Industry_Total,Total expenditure,21720,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",i_Industry_Total,Operating profit before tax,2416,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",i_Industry_Total,Total assets,39161,DOLLARS(millions)
+2016,I,"Transport, Postal and Warehousing",i_Industry_Total,Fixed tangible assets,25214,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,a_0,Activity unit,3843,COUNT
+2016,J,Information Media and Telecommunications,a_0,Rolling mean employees,0,COUNT
+2016,J,Information Media and Telecommunications,a_0,Salaries and wages paid,130,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,a_0,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,a_0,Total income,948,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,a_0,Total expenditure,754,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,a_0,Operating profit before tax,116,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,a_0,Total assets,1152,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,a_0,Fixed tangible assets,C,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,b_1-5,Activity unit,1047,COUNT
+2016,J,Information Media and Telecommunications,b_1-5,Rolling mean employees,2016,COUNT
+2016,J,Information Media and Telecommunications,b_1-5,Salaries and wages paid,142,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,b_1-5,"Sales, government funding, grants and subsidies",739,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,b_1-5,Total income,783,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,b_1-5,Total expenditure,723,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,b_1-5,Operating profit before tax,45,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,b_1-5,Total assets,691,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,b_1-5,Fixed tangible assets,C,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,c_6-9,Activity unit,150,COUNT
+2016,J,Information Media and Telecommunications,c_6-9,Rolling mean employees,1050,COUNT
+2016,J,Information Media and Telecommunications,c_6-9,Salaries and wages paid,59,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,c_6-9,"Sales, government funding, grants and subsidies",226,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,c_6-9,Total income,236,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,c_6-9,Total expenditure,206,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,c_6-9,Operating profit before tax,21,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,c_6-9,Total assets,113,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,c_6-9,Fixed tangible assets,19,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,d_10-19,Activity unit,111,COUNT
+2016,J,Information Media and Telecommunications,d_10-19,Rolling mean employees,1488,COUNT
+2016,J,Information Media and Telecommunications,d_10-19,Salaries and wages paid,97,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,d_10-19,"Sales, government funding, grants and subsidies",717,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,d_10-19,Total income,733,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,d_10-19,Total expenditure,665,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,d_10-19,Operating profit before tax,74,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,d_10-19,Total assets,703,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,d_10-19,Fixed tangible assets,C,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,e_20-49,Activity unit,45,COUNT
+2016,J,Information Media and Telecommunications,e_20-49,Rolling mean employees,1335,COUNT
+2016,J,Information Media and Telecommunications,e_20-49,Salaries and wages paid,97,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,e_20-49,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,e_20-49,Total income,428,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,e_20-49,Total expenditure,397,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,e_20-49,Operating profit before tax,38,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,e_20-49,Total assets,453,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,e_20-49,Fixed tangible assets,C,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,f_50-99,Activity unit,27,COUNT
+2016,J,Information Media and Telecommunications,f_50-99,Rolling mean employees,2058,COUNT
+2016,J,Information Media and Telecommunications,f_50-99,Salaries and wages paid,134,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,f_50-99,"Sales, government funding, grants and subsidies",504,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,f_50-99,Total income,514,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,f_50-99,Total expenditure,514,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,f_50-99,Operating profit before tax,6,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,f_50-99,Total assets,477,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,f_50-99,Fixed tangible assets,C,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,g_100-199,Activity unit,9,COUNT
+2016,J,Information Media and Telecommunications,g_100-199,Rolling mean employees,975,COUNT
+2016,J,Information Media and Telecommunications,g_100-199,Salaries and wages paid,92,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,g_100-199,"Sales, government funding, grants and subsidies",307,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,g_100-199,Total income,308,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,g_100-199,Total expenditure,280,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,g_100-199,Operating profit before tax,29,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,g_100-199,Total assets,233,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,g_100-199,Fixed tangible assets,82,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,h_200+,Activity unit,21,COUNT
+2016,J,Information Media and Telecommunications,h_200+,Rolling mean employees,22551,COUNT
+2016,J,Information Media and Telecommunications,h_200+,Salaries and wages paid,1631,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,h_200+,"Sales, government funding, grants and subsidies",9740,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,h_200+,Total income,9991,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,h_200+,Total expenditure,9389,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,h_200+,Operating profit before tax,824,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,h_200+,Total assets,16698,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,h_200+,Fixed tangible assets,6783,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,i_Industry_Total,Activity unit,5250,COUNT
+2016,J,Information Media and Telecommunications,i_Industry_Total,Rolling mean employees,31479,COUNT
+2016,J,Information Media and Telecommunications,i_Industry_Total,Salaries and wages paid,2382,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,i_Industry_Total,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,i_Industry_Total,Total income,13939,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,i_Industry_Total,Total expenditure,12928,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,i_Industry_Total,Operating profit before tax,1154,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,i_Industry_Total,Total assets,20521,DOLLARS(millions)
+2016,J,Information Media and Telecommunications,i_Industry_Total,Fixed tangible assets,C,DOLLARS(millions)
+2016,K,Financial and Insurance Services,a_0,Activity unit,26388,COUNT
+2016,K,Financial and Insurance Services,a_0,Rolling mean employees,0,COUNT
+2016,K,Financial and Insurance Services,a_0,Salaries and wages paid,568,DOLLARS(millions)
+2016,K,Financial and Insurance Services,a_0,"Sales, government funding, grants and subsidies",5882,DOLLARS(millions)
+2016,K,Financial and Insurance Services,a_0,Total income,28715,DOLLARS(millions)
+2016,K,Financial and Insurance Services,a_0,Total expenditure,15360,DOLLARS(millions)
+2016,K,Financial and Insurance Services,a_0,Operating profit before tax,12085,DOLLARS(millions)
+2016,K,Financial and Insurance Services,a_0,Total assets,420018,DOLLARS(millions)
+2016,K,Financial and Insurance Services,a_0,Fixed tangible assets,18374,DOLLARS(millions)
+2016,K,Financial and Insurance Services,b_1-5,Activity unit,2394,COUNT
+2016,K,Financial and Insurance Services,b_1-5,Rolling mean employees,4335,COUNT
+2016,K,Financial and Insurance Services,b_1-5,Salaries and wages paid,365,DOLLARS(millions)
+2016,K,Financial and Insurance Services,b_1-5,"Sales, government funding, grants and subsidies",1734,DOLLARS(millions)
+2016,K,Financial and Insurance Services,b_1-5,Total income,4384,DOLLARS(millions)
+2016,K,Financial and Insurance Services,b_1-5,Total expenditure,2659,DOLLARS(millions)
+2016,K,Financial and Insurance Services,b_1-5,Operating profit before tax,1319,DOLLARS(millions)
+2016,K,Financial and Insurance Services,b_1-5,Total assets,32749,DOLLARS(millions)
+2016,K,Financial and Insurance Services,b_1-5,Fixed tangible assets,1060,DOLLARS(millions)
+2016,K,Financial and Insurance Services,c_6-9,Activity unit,246,COUNT
+2016,K,Financial and Insurance Services,c_6-9,Rolling mean employees,1794,COUNT
+2016,K,Financial and Insurance Services,c_6-9,Salaries and wages paid,172,DOLLARS(millions)
+2016,K,Financial and Insurance Services,c_6-9,"Sales, government funding, grants and subsidies",823,DOLLARS(millions)
+2016,K,Financial and Insurance Services,c_6-9,Total income,1178,DOLLARS(millions)
+2016,K,Financial and Insurance Services,c_6-9,Total expenditure,843,DOLLARS(millions)
+2016,K,Financial and Insurance Services,c_6-9,Operating profit before tax,266,DOLLARS(millions)
+2016,K,Financial and Insurance Services,c_6-9,Total assets,5390,DOLLARS(millions)
+2016,K,Financial and Insurance Services,c_6-9,Fixed tangible assets,57,DOLLARS(millions)
+2016,K,Financial and Insurance Services,d_10-19,Activity unit,147,COUNT
+2016,K,Financial and Insurance Services,d_10-19,Rolling mean employees,1956,COUNT
+2016,K,Financial and Insurance Services,d_10-19,Salaries and wages paid,152,DOLLARS(millions)
+2016,K,Financial and Insurance Services,d_10-19,"Sales, government funding, grants and subsidies",584,DOLLARS(millions)
+2016,K,Financial and Insurance Services,d_10-19,Total income,1224,DOLLARS(millions)
+2016,K,Financial and Insurance Services,d_10-19,Total expenditure,982,DOLLARS(millions)
+2016,K,Financial and Insurance Services,d_10-19,Operating profit before tax,180,DOLLARS(millions)
+2016,K,Financial and Insurance Services,d_10-19,Total assets,9643,DOLLARS(millions)
+2016,K,Financial and Insurance Services,d_10-19,Fixed tangible assets,86,DOLLARS(millions)
+2016,K,Financial and Insurance Services,e_20-49,Activity unit,87,COUNT
+2016,K,Financial and Insurance Services,e_20-49,Rolling mean employees,2700,COUNT
+2016,K,Financial and Insurance Services,e_20-49,Salaries and wages paid,301,DOLLARS(millions)
+2016,K,Financial and Insurance Services,e_20-49,"Sales, government funding, grants and subsidies",875,DOLLARS(millions)
+2016,K,Financial and Insurance Services,e_20-49,Total income,1917,DOLLARS(millions)
+2016,K,Financial and Insurance Services,e_20-49,Total expenditure,2115,DOLLARS(millions)
+2016,K,Financial and Insurance Services,e_20-49,Operating profit before tax,214,DOLLARS(millions)
+2016,K,Financial and Insurance Services,e_20-49,Total assets,19597,DOLLARS(millions)
+2016,K,Financial and Insurance Services,e_20-49,Fixed tangible assets,172,DOLLARS(millions)
+2016,K,Financial and Insurance Services,f_50-99,Activity unit,42,COUNT
+2016,K,Financial and Insurance Services,f_50-99,Rolling mean employees,2592,COUNT
+2016,K,Financial and Insurance Services,f_50-99,Salaries and wages paid,249,DOLLARS(millions)
+2016,K,Financial and Insurance Services,f_50-99,"Sales, government funding, grants and subsidies",673,DOLLARS(millions)
+2016,K,Financial and Insurance Services,f_50-99,Total income,1267,DOLLARS(millions)
+2016,K,Financial and Insurance Services,f_50-99,Total expenditure,996,DOLLARS(millions)
+2016,K,Financial and Insurance Services,f_50-99,Operating profit before tax,276,DOLLARS(millions)
+2016,K,Financial and Insurance Services,f_50-99,Total assets,8133,DOLLARS(millions)
+2016,K,Financial and Insurance Services,f_50-99,Fixed tangible assets,C,DOLLARS(millions)
+2016,K,Financial and Insurance Services,g_100-199,Activity unit,30,COUNT
+2016,K,Financial and Insurance Services,g_100-199,Rolling mean employees,4032,COUNT
+2016,K,Financial and Insurance Services,g_100-199,Salaries and wages paid,268,DOLLARS(millions)
+2016,K,Financial and Insurance Services,g_100-199,"Sales, government funding, grants and subsidies",778,DOLLARS(millions)
+2016,K,Financial and Insurance Services,g_100-199,Total income,1701,DOLLARS(millions)
+2016,K,Financial and Insurance Services,g_100-199,Total expenditure,1480,DOLLARS(millions)
+2016,K,Financial and Insurance Services,g_100-199,Operating profit before tax,-2,DOLLARS(millions)
+2016,K,Financial and Insurance Services,g_100-199,Total assets,34713,DOLLARS(millions)
+2016,K,Financial and Insurance Services,g_100-199,Fixed tangible assets,C,DOLLARS(millions)
+2016,K,Financial and Insurance Services,h_200+,Activity unit,42,COUNT
+2016,K,Financial and Insurance Services,h_200+,Rolling mean employees,46137,COUNT
+2016,K,Financial and Insurance Services,h_200+,Salaries and wages paid,3700,DOLLARS(millions)
+2016,K,Financial and Insurance Services,h_200+,"Sales, government funding, grants and subsidies",7358,DOLLARS(millions)
+2016,K,Financial and Insurance Services,h_200+,Total income,32551,DOLLARS(millions)
+2016,K,Financial and Insurance Services,h_200+,Total expenditure,25347,DOLLARS(millions)
+2016,K,Financial and Insurance Services,h_200+,Operating profit before tax,7490,DOLLARS(millions)
+2016,K,Financial and Insurance Services,h_200+,Total assets,573123,DOLLARS(millions)
+2016,K,Financial and Insurance Services,h_200+,Fixed tangible assets,998,DOLLARS(millions)
+2016,K,Financial and Insurance Services,i_Industry_Total,Activity unit,29373,COUNT
+2016,K,Financial and Insurance Services,i_Industry_Total,Rolling mean employees,63546,COUNT
+2016,K,Financial and Insurance Services,i_Industry_Total,Salaries and wages paid,5775,DOLLARS(millions)
+2016,K,Financial and Insurance Services,i_Industry_Total,"Sales, government funding, grants and subsidies",18707,DOLLARS(millions)
+2016,K,Financial and Insurance Services,i_Industry_Total,Total income,72936,DOLLARS(millions)
+2016,K,Financial and Insurance Services,i_Industry_Total,Total expenditure,49782,DOLLARS(millions)
+2016,K,Financial and Insurance Services,i_Industry_Total,Operating profit before tax,21828,DOLLARS(millions)
+2016,K,Financial and Insurance Services,i_Industry_Total,Total assets,1103365,DOLLARS(millions)
+2016,K,Financial and Insurance Services,i_Industry_Total,Fixed tangible assets,20856,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",a_0,Activity unit,70683,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",a_0,Rolling mean employees,0,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",a_0,Salaries and wages paid,511,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",a_0,"Sales, government funding, grants and subsidies",16088,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",a_0,Total income,19985,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",a_0,Total expenditure,11331,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",a_0,Operating profit before tax,6369,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",a_0,Total assets,189018,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",a_0,Fixed tangible assets,137895,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",b_1-5,Activity unit,5382,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",b_1-5,Rolling mean employees,8910,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",b_1-5,Salaries and wages paid,433,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",b_1-5,"Sales, government funding, grants and subsidies",2893,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",b_1-5,Total income,3260,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",b_1-5,Total expenditure,2577,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",b_1-5,Operating profit before tax,577,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",b_1-5,Total assets,14400,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",b_1-5,Fixed tangible assets,9494,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",c_6-9,Activity unit,576,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",c_6-9,Rolling mean employees,4176,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",c_6-9,Salaries and wages paid,197,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",c_6-9,"Sales, government funding, grants and subsidies",750,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",c_6-9,Total income,806,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",c_6-9,Total expenditure,710,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",c_6-9,Operating profit before tax,93,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",c_6-9,Total assets,2232,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",c_6-9,Fixed tangible assets,1256,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",d_10-19,Activity unit,267,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",d_10-19,Rolling mean employees,3348,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",d_10-19,Salaries and wages paid,228,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",d_10-19,"Sales, government funding, grants and subsidies",1073,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",d_10-19,Total income,1183,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",d_10-19,Total expenditure,1142,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",d_10-19,Operating profit before tax,180,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",d_10-19,Total assets,2171,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",d_10-19,Fixed tangible assets,1309,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",e_20-49,Activity unit,132,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",e_20-49,Rolling mean employees,3882,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",e_20-49,Salaries and wages paid,240,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",e_20-49,"Sales, government funding, grants and subsidies",941,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",e_20-49,Total income,1019,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",e_20-49,Total expenditure,869,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",e_20-49,Operating profit before tax,101,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",e_20-49,Total assets,2372,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",e_20-49,Fixed tangible assets,1682,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",f_50-99,Activity unit,21,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",f_50-99,Rolling mean employees,1302,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",f_50-99,Salaries and wages paid,92,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",f_50-99,"Sales, government funding, grants and subsidies",447,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",f_50-99,Total income,477,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",f_50-99,Total expenditure,402,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",f_50-99,Operating profit before tax,78,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",f_50-99,Total assets,813,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",f_50-99,Fixed tangible assets,C,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",g_100-199,Activity unit,24,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",g_100-199,Rolling mean employees,3240,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",g_100-199,Salaries and wages paid,209,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",g_100-199,"Sales, government funding, grants and subsidies",1291,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",g_100-199,Total income,1509,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",g_100-199,Total expenditure,1119,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",g_100-199,Operating profit before tax,298,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",g_100-199,Total assets,4712,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",g_100-199,Fixed tangible assets,3526,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",h_200+,Activity unit,9,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",h_200+,Rolling mean employees,3318,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",h_200+,Salaries and wages paid,180,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",h_200+,"Sales, government funding, grants and subsidies",1063,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",h_200+,Total income,1071,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",h_200+,Total expenditure,985,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",h_200+,Operating profit before tax,96,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",h_200+,Total assets,1076,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",h_200+,Fixed tangible assets,C,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",i_Industry_Total,Activity unit,77088,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",i_Industry_Total,Rolling mean employees,28179,COUNT
+2016,L,"Rental, Hiring and Real Estate Services",i_Industry_Total,Salaries and wages paid,2091,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",i_Industry_Total,"Sales, government funding, grants and subsidies",24546,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",i_Industry_Total,Total income,29310,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",i_Industry_Total,Total expenditure,19135,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",i_Industry_Total,Operating profit before tax,7791,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",i_Industry_Total,Total assets,216793,DOLLARS(millions)
+2016,L,"Rental, Hiring and Real Estate Services",i_Industry_Total,Fixed tangible assets,156210,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",a_0,Activity unit,39102,COUNT
+2016,M,"Professional, Scientific and Technical Services",a_0,Rolling mean employees,0,COUNT
+2016,M,"Professional, Scientific and Technical Services",a_0,Salaries and wages paid,1771,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",a_0,"Sales, government funding, grants and subsidies",6714,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",a_0,Total income,7002,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",a_0,Total expenditure,5168,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",a_0,Operating profit before tax,1808,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",a_0,Total assets,6732,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",a_0,Fixed tangible assets,1697,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",b_1-5,Activity unit,12744,COUNT
+2016,M,"Professional, Scientific and Technical Services",b_1-5,Rolling mean employees,24000,COUNT
+2016,M,"Professional, Scientific and Technical Services",b_1-5,Salaries and wages paid,1711,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",b_1-5,"Sales, government funding, grants and subsidies",4623,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",b_1-5,Total income,4742,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",b_1-5,Total expenditure,4044,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",b_1-5,Operating profit before tax,718,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",b_1-5,Total assets,3887,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",b_1-5,Fixed tangible assets,709,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",c_6-9,Activity unit,2031,COUNT
+2016,M,"Professional, Scientific and Technical Services",c_6-9,Rolling mean employees,14421,COUNT
+2016,M,"Professional, Scientific and Technical Services",c_6-9,Salaries and wages paid,1035,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",c_6-9,"Sales, government funding, grants and subsidies",2497,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",c_6-9,Total income,2523,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",c_6-9,Total expenditure,2281,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",c_6-9,Operating profit before tax,265,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",c_6-9,Total assets,1910,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",c_6-9,Fixed tangible assets,211,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",d_10-19,Activity unit,1443,COUNT
+2016,M,"Professional, Scientific and Technical Services",d_10-19,Rolling mean employees,19104,COUNT
+2016,M,"Professional, Scientific and Technical Services",d_10-19,Salaries and wages paid,1398,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",d_10-19,"Sales, government funding, grants and subsidies",3124,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",d_10-19,Total income,3177,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",d_10-19,Total expenditure,2769,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",d_10-19,Operating profit before tax,435,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",d_10-19,Total assets,1755,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",d_10-19,Fixed tangible assets,282,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",e_20-49,Activity unit,804,COUNT
+2016,M,"Professional, Scientific and Technical Services",e_20-49,Rolling mean employees,23223,COUNT
+2016,M,"Professional, Scientific and Technical Services",e_20-49,Salaries and wages paid,1724,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",e_20-49,"Sales, government funding, grants and subsidies",4387,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",e_20-49,Total income,5019,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",e_20-49,Total expenditure,4006,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",e_20-49,Operating profit before tax,1089,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",e_20-49,Total assets,6726,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",e_20-49,Fixed tangible assets,407,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",f_50-99,Activity unit,210,COUNT
+2016,M,"Professional, Scientific and Technical Services",f_50-99,Rolling mean employees,14394,COUNT
+2016,M,"Professional, Scientific and Technical Services",f_50-99,Salaries and wages paid,1085,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",f_50-99,"Sales, government funding, grants and subsidies",2310,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",f_50-99,Total income,2500,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",f_50-99,Total expenditure,2326,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",f_50-99,Operating profit before tax,193,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",f_50-99,Total assets,4222,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",f_50-99,Fixed tangible assets,289,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",g_100-199,Activity unit,90,COUNT
+2016,M,"Professional, Scientific and Technical Services",g_100-199,Rolling mean employees,12093,COUNT
+2016,M,"Professional, Scientific and Technical Services",g_100-199,Salaries and wages paid,1035,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",g_100-199,"Sales, government funding, grants and subsidies",2402,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",g_100-199,Total income,2491,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",g_100-199,Total expenditure,2211,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",g_100-199,Operating profit before tax,285,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",g_100-199,Total assets,2453,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",g_100-199,Fixed tangible assets,204,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",h_200+,Activity unit,63,COUNT
+2016,M,"Professional, Scientific and Technical Services",h_200+,Rolling mean employees,30993,COUNT
+2016,M,"Professional, Scientific and Technical Services",h_200+,Salaries and wages paid,2609,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",h_200+,"Sales, government funding, grants and subsidies",5842,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",h_200+,Total income,6659,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",h_200+,Total expenditure,6179,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",h_200+,Operating profit before tax,497,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",h_200+,Total assets,28148,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",h_200+,Fixed tangible assets,1158,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",i_Industry_Total,Activity unit,56484,COUNT
+2016,M,"Professional, Scientific and Technical Services",i_Industry_Total,Rolling mean employees,138231,COUNT
+2016,M,"Professional, Scientific and Technical Services",i_Industry_Total,Salaries and wages paid,12366,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",i_Industry_Total,"Sales, government funding, grants and subsidies",31899,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",i_Industry_Total,Total income,34114,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",i_Industry_Total,Total expenditure,28984,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",i_Industry_Total,Operating profit before tax,5291,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",i_Industry_Total,Total assets,55832,DOLLARS(millions)
+2016,M,"Professional, Scientific and Technical Services",i_Industry_Total,Fixed tangible assets,4956,DOLLARS(millions)
+2016,N,Administrative and Support Services,a_0,Activity unit,10530,COUNT
+2016,N,Administrative and Support Services,a_0,Rolling mean employees,0,COUNT
+2016,N,Administrative and Support Services,a_0,Salaries and wages paid,227,DOLLARS(millions)
+2016,N,Administrative and Support Services,a_0,"Sales, government funding, grants and subsidies",1622,DOLLARS(millions)
+2016,N,Administrative and Support Services,a_0,Total income,1681,DOLLARS(millions)
+2016,N,Administrative and Support Services,a_0,Total expenditure,1471,DOLLARS(millions)
+2016,N,Administrative and Support Services,a_0,Operating profit before tax,212,DOLLARS(millions)
+2016,N,Administrative and Support Services,a_0,Total assets,2045,DOLLARS(millions)
+2016,N,Administrative and Support Services,a_0,Fixed tangible assets,887,DOLLARS(millions)
+2016,N,Administrative and Support Services,b_1-5,Activity unit,4632,COUNT
+2016,N,Administrative and Support Services,b_1-5,Rolling mean employees,8556,COUNT
+2016,N,Administrative and Support Services,b_1-5,Salaries and wages paid,363,DOLLARS(millions)
+2016,N,Administrative and Support Services,b_1-5,"Sales, government funding, grants and subsidies",1230,DOLLARS(millions)
+2016,N,Administrative and Support Services,b_1-5,Total income,1293,DOLLARS(millions)
+2016,N,Administrative and Support Services,b_1-5,Total expenditure,1149,DOLLARS(millions)
+2016,N,Administrative and Support Services,b_1-5,Operating profit before tax,157,DOLLARS(millions)
+2016,N,Administrative and Support Services,b_1-5,Total assets,1275,DOLLARS(millions)
+2016,N,Administrative and Support Services,b_1-5,Fixed tangible assets,347,DOLLARS(millions)
+2016,N,Administrative and Support Services,c_6-9,Activity unit,594,COUNT
+2016,N,Administrative and Support Services,c_6-9,Rolling mean employees,4311,COUNT
+2016,N,Administrative and Support Services,c_6-9,Salaries and wages paid,173,DOLLARS(millions)
+2016,N,Administrative and Support Services,c_6-9,"Sales, government funding, grants and subsidies",412,DOLLARS(millions)
+2016,N,Administrative and Support Services,c_6-9,Total income,424,DOLLARS(millions)
+2016,N,Administrative and Support Services,c_6-9,Total expenditure,395,DOLLARS(millions)
+2016,N,Administrative and Support Services,c_6-9,Operating profit before tax,31,DOLLARS(millions)
+2016,N,Administrative and Support Services,c_6-9,Total assets,363,DOLLARS(millions)
+2016,N,Administrative and Support Services,c_6-9,Fixed tangible assets,98,DOLLARS(millions)
+2016,N,Administrative and Support Services,d_10-19,Activity unit,492,COUNT
+2016,N,Administrative and Support Services,d_10-19,Rolling mean employees,6798,COUNT
+2016,N,Administrative and Support Services,d_10-19,Salaries and wages paid,322,DOLLARS(millions)
+2016,N,Administrative and Support Services,d_10-19,"Sales, government funding, grants and subsidies",977,DOLLARS(millions)
+2016,N,Administrative and Support Services,d_10-19,Total income,1010,DOLLARS(millions)
+2016,N,Administrative and Support Services,d_10-19,Total expenditure,904,DOLLARS(millions)
+2016,N,Administrative and Support Services,d_10-19,Operating profit before tax,111,DOLLARS(millions)
+2016,N,Administrative and Support Services,d_10-19,Total assets,623,DOLLARS(millions)
+2016,N,Administrative and Support Services,d_10-19,Fixed tangible assets,166,DOLLARS(millions)
+2016,N,Administrative and Support Services,e_20-49,Activity unit,315,COUNT
+2016,N,Administrative and Support Services,e_20-49,Rolling mean employees,9549,COUNT
+2016,N,Administrative and Support Services,e_20-49,Salaries and wages paid,419,DOLLARS(millions)
+2016,N,Administrative and Support Services,e_20-49,"Sales, government funding, grants and subsidies",1040,DOLLARS(millions)
+2016,N,Administrative and Support Services,e_20-49,Total income,1082,DOLLARS(millions)
+2016,N,Administrative and Support Services,e_20-49,Total expenditure,987,DOLLARS(millions)
+2016,N,Administrative and Support Services,e_20-49,Operating profit before tax,106,DOLLARS(millions)
+2016,N,Administrative and Support Services,e_20-49,Total assets,938,DOLLARS(millions)
+2016,N,Administrative and Support Services,e_20-49,Fixed tangible assets,150,DOLLARS(millions)
+2016,N,Administrative and Support Services,f_50-99,Activity unit,138,COUNT
+2016,N,Administrative and Support Services,f_50-99,Rolling mean employees,9693,COUNT
+2016,N,Administrative and Support Services,f_50-99,Salaries and wages paid,286,DOLLARS(millions)
+2016,N,Administrative and Support Services,f_50-99,"Sales, government funding, grants and subsidies",674,DOLLARS(millions)
+2016,N,Administrative and Support Services,f_50-99,Total income,721,DOLLARS(millions)
+2016,N,Administrative and Support Services,f_50-99,Total expenditure,643,DOLLARS(millions)
+2016,N,Administrative and Support Services,f_50-99,Operating profit before tax,82,DOLLARS(millions)
+2016,N,Administrative and Support Services,f_50-99,Total assets,969,DOLLARS(millions)
+2016,N,Administrative and Support Services,f_50-99,Fixed tangible assets,162,DOLLARS(millions)
+2016,N,Administrative and Support Services,g_100-199,Activity unit,84,COUNT
+2016,N,Administrative and Support Services,g_100-199,Rolling mean employees,11910,COUNT
+2016,N,Administrative and Support Services,g_100-199,Salaries and wages paid,364,DOLLARS(millions)
+2016,N,Administrative and Support Services,g_100-199,"Sales, government funding, grants and subsidies",790,DOLLARS(millions)
+2016,N,Administrative and Support Services,g_100-199,Total income,806,DOLLARS(millions)
+2016,N,Administrative and Support Services,g_100-199,Total expenditure,785,DOLLARS(millions)
+2016,N,Administrative and Support Services,g_100-199,Operating profit before tax,44,DOLLARS(millions)
+2016,N,Administrative and Support Services,g_100-199,Total assets,474,DOLLARS(millions)
+2016,N,Administrative and Support Services,g_100-199,Fixed tangible assets,82,DOLLARS(millions)
+2016,N,Administrative and Support Services,h_200+,Activity unit,81,COUNT
+2016,N,Administrative and Support Services,h_200+,Rolling mean employees,53727,COUNT
+2016,N,Administrative and Support Services,h_200+,Salaries and wages paid,1454,DOLLARS(millions)
+2016,N,Administrative and Support Services,h_200+,"Sales, government funding, grants and subsidies",2982,DOLLARS(millions)
+2016,N,Administrative and Support Services,h_200+,Total income,3020,DOLLARS(millions)
+2016,N,Administrative and Support Services,h_200+,Total expenditure,2950,DOLLARS(millions)
+2016,N,Administrative and Support Services,h_200+,Operating profit before tax,179,DOLLARS(millions)
+2016,N,Administrative and Support Services,h_200+,Total assets,1624,DOLLARS(millions)
+2016,N,Administrative and Support Services,h_200+,Fixed tangible assets,432,DOLLARS(millions)
+2016,N,Administrative and Support Services,i_Industry_Total,Activity unit,16866,COUNT
+2016,N,Administrative and Support Services,i_Industry_Total,Rolling mean employees,104544,COUNT
+2016,N,Administrative and Support Services,i_Industry_Total,Salaries and wages paid,3608,DOLLARS(millions)
+2016,N,Administrative and Support Services,i_Industry_Total,"Sales, government funding, grants and subsidies",9728,DOLLARS(millions)
+2016,N,Administrative and Support Services,i_Industry_Total,Total income,10036,DOLLARS(millions)
+2016,N,Administrative and Support Services,i_Industry_Total,Total expenditure,9284,DOLLARS(millions)
+2016,N,Administrative and Support Services,i_Industry_Total,Operating profit before tax,922,DOLLARS(millions)
+2016,N,Administrative and Support Services,i_Industry_Total,Total assets,8313,DOLLARS(millions)
+2016,N,Administrative and Support Services,i_Industry_Total,Fixed tangible assets,2324,DOLLARS(millions)
+2016,O,Public Administration and Safety,a_0,Activity unit,486,COUNT
+2016,O,Public Administration and Safety,a_0,Rolling mean employees,0,COUNT
+2016,O,Public Administration and Safety,a_0,Salaries and wages paid,20,DOLLARS(millions)
+2016,O,Public Administration and Safety,a_0,"Sales, government funding, grants and subsidies",130,DOLLARS(millions)
+2016,O,Public Administration and Safety,a_0,Total income,131,DOLLARS(millions)
+2016,O,Public Administration and Safety,a_0,Total expenditure,116,DOLLARS(millions)
+2016,O,Public Administration and Safety,a_0,Operating profit before tax,16,DOLLARS(millions)
+2016,O,Public Administration and Safety,a_0,Total assets,C,DOLLARS(millions)
+2016,O,Public Administration and Safety,a_0,Fixed tangible assets,25,DOLLARS(millions)
+2016,O,Public Administration and Safety,b_1-5,Activity unit,303,COUNT
+2016,O,Public Administration and Safety,b_1-5,Rolling mean employees,672,COUNT
+2016,O,Public Administration and Safety,b_1-5,Salaries and wages paid,35,DOLLARS(millions)
+2016,O,Public Administration and Safety,b_1-5,"Sales, government funding, grants and subsidies",99,DOLLARS(millions)
+2016,O,Public Administration and Safety,b_1-5,Total income,99,DOLLARS(millions)
+2016,O,Public Administration and Safety,b_1-5,Total expenditure,92,DOLLARS(millions)
+2016,O,Public Administration and Safety,b_1-5,Operating profit before tax,7,DOLLARS(millions)
+2016,O,Public Administration and Safety,b_1-5,Total assets,52,DOLLARS(millions)
+2016,O,Public Administration and Safety,b_1-5,Fixed tangible assets,10,DOLLARS(millions)
+2016,O,Public Administration and Safety,c_6-9,Activity unit,78,COUNT
+2016,O,Public Administration and Safety,c_6-9,Rolling mean employees,552,COUNT
+2016,O,Public Administration and Safety,c_6-9,Salaries and wages paid,24,DOLLARS(millions)
+2016,O,Public Administration and Safety,c_6-9,"Sales, government funding, grants and subsidies",56,DOLLARS(millions)
+2016,O,Public Administration and Safety,c_6-9,Total income,56,DOLLARS(millions)
+2016,O,Public Administration and Safety,c_6-9,Total expenditure,51,DOLLARS(millions)
+2016,O,Public Administration and Safety,c_6-9,Operating profit before tax,5,DOLLARS(millions)
+2016,O,Public Administration and Safety,c_6-9,Total assets,27,DOLLARS(millions)
+2016,O,Public Administration and Safety,c_6-9,Fixed tangible assets,5,DOLLARS(millions)
+2016,O,Public Administration and Safety,d_10-19,Activity unit,63,COUNT
+2016,O,Public Administration and Safety,d_10-19,Rolling mean employees,849,COUNT
+2016,O,Public Administration and Safety,d_10-19,Salaries and wages paid,29,DOLLARS(millions)
+2016,O,Public Administration and Safety,d_10-19,"Sales, government funding, grants and subsidies",68,DOLLARS(millions)
+2016,O,Public Administration and Safety,d_10-19,Total income,68,DOLLARS(millions)
+2016,O,Public Administration and Safety,d_10-19,Total expenditure,61,DOLLARS(millions)
+2016,O,Public Administration and Safety,d_10-19,Operating profit before tax,C,DOLLARS(millions)
+2016,O,Public Administration and Safety,d_10-19,Total assets,C,DOLLARS(millions)
+2016,O,Public Administration and Safety,d_10-19,Fixed tangible assets,7,DOLLARS(millions)
+2016,O,Public Administration and Safety,e_20-49,Activity unit,48,COUNT
+2016,O,Public Administration and Safety,e_20-49,Rolling mean employees,1527,COUNT
+2016,O,Public Administration and Safety,e_20-49,Salaries and wages paid,51,DOLLARS(millions)
+2016,O,Public Administration and Safety,e_20-49,"Sales, government funding, grants and subsidies",117,DOLLARS(millions)
+2016,O,Public Administration and Safety,e_20-49,Total income,123,DOLLARS(millions)
+2016,O,Public Administration and Safety,e_20-49,Total expenditure,114,DOLLARS(millions)
+2016,O,Public Administration and Safety,e_20-49,Operating profit before tax,9,DOLLARS(millions)
+2016,O,Public Administration and Safety,e_20-49,Total assets,62,DOLLARS(millions)
+2016,O,Public Administration and Safety,e_20-49,Fixed tangible assets,13,DOLLARS(millions)
+2016,O,Public Administration and Safety,f_50-99,Activity unit,9,COUNT
+2016,O,Public Administration and Safety,f_50-99,Rolling mean employees,636,COUNT
+2016,O,Public Administration and Safety,f_50-99,Salaries and wages paid,25,DOLLARS(millions)
+2016,O,Public Administration and Safety,f_50-99,"Sales, government funding, grants and subsidies",43,DOLLARS(millions)
+2016,O,Public Administration and Safety,f_50-99,Total income,43,DOLLARS(millions)
+2016,O,Public Administration and Safety,f_50-99,Total expenditure,43,DOLLARS(millions)
+2016,O,Public Administration and Safety,f_50-99,Operating profit before tax,-1,DOLLARS(millions)
+2016,O,Public Administration and Safety,f_50-99,Total assets,42,DOLLARS(millions)
+2016,O,Public Administration and Safety,f_50-99,Fixed tangible assets,7,DOLLARS(millions)
+2016,O,Public Administration and Safety,g_100-199,Activity unit,6,COUNT
+2016,O,Public Administration and Safety,g_100-199,Rolling mean employees,726,COUNT
+2016,O,Public Administration and Safety,g_100-199,Salaries and wages paid,34,DOLLARS(millions)
+2016,O,Public Administration and Safety,g_100-199,"Sales, government funding, grants and subsidies",55,DOLLARS(millions)
+2016,O,Public Administration and Safety,g_100-199,Total income,56,DOLLARS(millions)
+2016,O,Public Administration and Safety,g_100-199,Total expenditure,52,DOLLARS(millions)
+2016,O,Public Administration and Safety,g_100-199,Operating profit before tax,3,DOLLARS(millions)
+2016,O,Public Administration and Safety,g_100-199,Total assets,43,DOLLARS(millions)
+2016,O,Public Administration and Safety,g_100-199,Fixed tangible assets,4,DOLLARS(millions)
+2016,O,Public Administration and Safety,h_200+,Activity unit,15,COUNT
+2016,O,Public Administration and Safety,h_200+,Rolling mean employees,9915,COUNT
+2016,O,Public Administration and Safety,h_200+,Salaries and wages paid,379,DOLLARS(millions)
+2016,O,Public Administration and Safety,h_200+,"Sales, government funding, grants and subsidies",681,DOLLARS(millions)
+2016,O,Public Administration and Safety,h_200+,Total income,695,DOLLARS(millions)
+2016,O,Public Administration and Safety,h_200+,Total expenditure,662,DOLLARS(millions)
+2016,O,Public Administration and Safety,h_200+,Operating profit before tax,23,DOLLARS(millions)
+2016,O,Public Administration and Safety,h_200+,Total assets,611,DOLLARS(millions)
+2016,O,Public Administration and Safety,h_200+,Fixed tangible assets,86,DOLLARS(millions)
+2016,O,Public Administration and Safety,i_Industry_Total,Activity unit,1005,COUNT
+2016,O,Public Administration and Safety,i_Industry_Total,Rolling mean employees,14877,COUNT
+2016,O,Public Administration and Safety,i_Industry_Total,Salaries and wages paid,597,DOLLARS(millions)
+2016,O,Public Administration and Safety,i_Industry_Total,"Sales, government funding, grants and subsidies",1248,DOLLARS(millions)
+2016,O,Public Administration and Safety,i_Industry_Total,Total income,1270,DOLLARS(millions)
+2016,O,Public Administration and Safety,i_Industry_Total,Total expenditure,1191,DOLLARS(millions)
+2016,O,Public Administration and Safety,i_Industry_Total,Operating profit before tax,C,DOLLARS(millions)
+2016,O,Public Administration and Safety,i_Industry_Total,Total assets,1305,DOLLARS(millions)
+2016,O,Public Administration and Safety,i_Industry_Total,Fixed tangible assets,158,DOLLARS(millions)
+2016,P,Education and Training,a_0,Activity unit,2568,COUNT
+2016,P,Education and Training,a_0,Rolling mean employees,0,COUNT
+2016,P,Education and Training,a_0,Salaries and wages paid,83,DOLLARS(millions)
+2016,P,Education and Training,a_0,"Sales, government funding, grants and subsidies",319,DOLLARS(millions)
+2016,P,Education and Training,a_0,Total income,368,DOLLARS(millions)
+2016,P,Education and Training,a_0,Total expenditure,308,DOLLARS(millions)
+2016,P,Education and Training,a_0,Operating profit before tax,86,DOLLARS(millions)
+2016,P,Education and Training,a_0,Total assets,487,DOLLARS(millions)
+2016,P,Education and Training,a_0,Fixed tangible assets,188,DOLLARS(millions)
+2016,P,Education and Training,b_1-5,Activity unit,1347,COUNT
+2016,P,Education and Training,b_1-5,Rolling mean employees,3234,COUNT
+2016,P,Education and Training,b_1-5,Salaries and wages paid,111,DOLLARS(millions)
+2016,P,Education and Training,b_1-5,"Sales, government funding, grants and subsidies",312,DOLLARS(millions)
+2016,P,Education and Training,b_1-5,Total income,348,DOLLARS(millions)
+2016,P,Education and Training,b_1-5,Total expenditure,307,DOLLARS(millions)
+2016,P,Education and Training,b_1-5,Operating profit before tax,43,DOLLARS(millions)
+2016,P,Education and Training,b_1-5,Total assets,476,DOLLARS(millions)
+2016,P,Education and Training,b_1-5,Fixed tangible assets,278,DOLLARS(millions)
+2016,P,Education and Training,c_6-9,Activity unit,714,COUNT
+2016,P,Education and Training,c_6-9,Rolling mean employees,5088,COUNT
+2016,P,Education and Training,c_6-9,Salaries and wages paid,152,DOLLARS(millions)
+2016,P,Education and Training,c_6-9,"Sales, government funding, grants and subsidies",271,DOLLARS(millions)
+2016,P,Education and Training,c_6-9,Total income,305,DOLLARS(millions)
+2016,P,Education and Training,c_6-9,Total expenditure,294,DOLLARS(millions)
+2016,P,Education and Training,c_6-9,Operating profit before tax,12,DOLLARS(millions)
+2016,P,Education and Training,c_6-9,Total assets,229,DOLLARS(millions)
+2016,P,Education and Training,c_6-9,Fixed tangible assets,78,DOLLARS(millions)
+2016,P,Education and Training,d_10-19,Activity unit,669,COUNT
+2016,P,Education and Training,d_10-19,Rolling mean employees,8952,COUNT
+2016,P,Education and Training,d_10-19,Salaries and wages paid,291,DOLLARS(millions)
+2016,P,Education and Training,d_10-19,"Sales, government funding, grants and subsidies",470,DOLLARS(millions)
+2016,P,Education and Training,d_10-19,Total income,523,DOLLARS(millions)
+2016,P,Education and Training,d_10-19,Total expenditure,494,DOLLARS(millions)
+2016,P,Education and Training,d_10-19,Operating profit before tax,32,DOLLARS(millions)
+2016,P,Education and Training,d_10-19,Total assets,411,DOLLARS(millions)
+2016,P,Education and Training,d_10-19,Fixed tangible assets,166,DOLLARS(millions)
+2016,P,Education and Training,e_20-49,Activity unit,300,COUNT
+2016,P,Education and Training,e_20-49,Rolling mean employees,8859,COUNT
+2016,P,Education and Training,e_20-49,Salaries and wages paid,320,DOLLARS(millions)
+2016,P,Education and Training,e_20-49,"Sales, government funding, grants and subsidies",625,DOLLARS(millions)
+2016,P,Education and Training,e_20-49,Total income,691,DOLLARS(millions)
+2016,P,Education and Training,e_20-49,Total expenditure,635,DOLLARS(millions)
+2016,P,Education and Training,e_20-49,Operating profit before tax,64,DOLLARS(millions)
+2016,P,Education and Training,e_20-49,Total assets,548,DOLLARS(millions)
+2016,P,Education and Training,e_20-49,Fixed tangible assets,239,DOLLARS(millions)
+2016,P,Education and Training,f_50-99,Activity unit,87,COUNT
+2016,P,Education and Training,f_50-99,Rolling mean employees,5811,COUNT
+2016,P,Education and Training,f_50-99,Salaries and wages paid,256,DOLLARS(millions)
+2016,P,Education and Training,f_50-99,"Sales, government funding, grants and subsidies",540,DOLLARS(millions)
+2016,P,Education and Training,f_50-99,Total income,568,DOLLARS(millions)
+2016,P,Education and Training,f_50-99,Total expenditure,517,DOLLARS(millions)
+2016,P,Education and Training,f_50-99,Operating profit before tax,50,DOLLARS(millions)
+2016,P,Education and Training,f_50-99,Total assets,513,DOLLARS(millions)
+2016,P,Education and Training,f_50-99,Fixed tangible assets,228,DOLLARS(millions)
+2016,P,Education and Training,g_100-199,Activity unit,30,COUNT
+2016,P,Education and Training,g_100-199,Rolling mean employees,4161,COUNT
+2016,P,Education and Training,g_100-199,Salaries and wages paid,196,DOLLARS(millions)
+2016,P,Education and Training,g_100-199,"Sales, government funding, grants and subsidies",427,DOLLARS(millions)
+2016,P,Education and Training,g_100-199,Total income,436,DOLLARS(millions)
+2016,P,Education and Training,g_100-199,Total expenditure,396,DOLLARS(millions)
+2016,P,Education and Training,g_100-199,Operating profit before tax,42,DOLLARS(millions)
+2016,P,Education and Training,g_100-199,Total assets,658,DOLLARS(millions)
+2016,P,Education and Training,g_100-199,Fixed tangible assets,403,DOLLARS(millions)
+2016,P,Education and Training,h_200+,Activity unit,24,COUNT
+2016,P,Education and Training,h_200+,Rolling mean employees,11832,COUNT
+2016,P,Education and Training,h_200+,Salaries and wages paid,512,DOLLARS(millions)
+2016,P,Education and Training,h_200+,"Sales, government funding, grants and subsidies",893,DOLLARS(millions)
+2016,P,Education and Training,h_200+,Total income,973,DOLLARS(millions)
+2016,P,Education and Training,h_200+,Total expenditure,847,DOLLARS(millions)
+2016,P,Education and Training,h_200+,Operating profit before tax,65,DOLLARS(millions)
+2016,P,Education and Training,h_200+,Total assets,1875,DOLLARS(millions)
+2016,P,Education and Training,h_200+,Fixed tangible assets,966,DOLLARS(millions)
+2016,P,Education and Training,i_Industry_Total,Activity unit,5736,COUNT
+2016,P,Education and Training,i_Industry_Total,Rolling mean employees,47937,COUNT
+2016,P,Education and Training,i_Industry_Total,Salaries and wages paid,1923,DOLLARS(millions)
+2016,P,Education and Training,i_Industry_Total,"Sales, government funding, grants and subsidies",3858,DOLLARS(millions)
+2016,P,Education and Training,i_Industry_Total,Total income,4211,DOLLARS(millions)
+2016,P,Education and Training,i_Industry_Total,Total expenditure,3799,DOLLARS(millions)
+2016,P,Education and Training,i_Industry_Total,Operating profit before tax,394,DOLLARS(millions)
+2016,P,Education and Training,i_Industry_Total,Total assets,5197,DOLLARS(millions)
+2016,P,Education and Training,i_Industry_Total,Fixed tangible assets,2547,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,a_0,Activity unit,10038,COUNT
+2016,Q,Health Care and Social Assistance,a_0,Rolling mean employees,0,COUNT
+2016,Q,Health Care and Social Assistance,a_0,Salaries and wages paid,484,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,a_0,"Sales, government funding, grants and subsidies",2168,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,a_0,Total income,2235,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,a_0,Total expenditure,1635,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,a_0,Operating profit before tax,605,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,a_0,Total assets,2043,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,a_0,Fixed tangible assets,811,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,b_1-5,Activity unit,5025,COUNT
+2016,Q,Health Care and Social Assistance,b_1-5,Rolling mean employees,12216,COUNT
+2016,Q,Health Care and Social Assistance,b_1-5,Salaries and wages paid,756,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,b_1-5,"Sales, government funding, grants and subsidies",1995,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,b_1-5,Total income,2067,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,b_1-5,Total expenditure,1705,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,b_1-5,Operating profit before tax,386,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,b_1-5,Total assets,1420,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,b_1-5,Fixed tangible assets,427,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,c_6-9,Activity unit,1239,COUNT
+2016,Q,Health Care and Social Assistance,c_6-9,Rolling mean employees,9213,COUNT
+2016,Q,Health Care and Social Assistance,c_6-9,Salaries and wages paid,346,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,c_6-9,"Sales, government funding, grants and subsidies",763,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,c_6-9,Total income,870,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,c_6-9,Total expenditure,695,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,c_6-9,Operating profit before tax,122,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,c_6-9,Total assets,1245,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,c_6-9,Fixed tangible assets,227,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,d_10-19,Activity unit,1014,COUNT
+2016,Q,Health Care and Social Assistance,d_10-19,Rolling mean employees,13383,COUNT
+2016,Q,Health Care and Social Assistance,d_10-19,Salaries and wages paid,572,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,d_10-19,"Sales, government funding, grants and subsidies",1105,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,d_10-19,Total income,1186,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,d_10-19,Total expenditure,1096,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,d_10-19,Operating profit before tax,83,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,d_10-19,Total assets,842,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,d_10-19,Fixed tangible assets,347,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,e_20-49,Activity unit,720,COUNT
+2016,Q,Health Care and Social Assistance,e_20-49,Rolling mean employees,20892,COUNT
+2016,Q,Health Care and Social Assistance,e_20-49,Salaries and wages paid,802,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,e_20-49,"Sales, government funding, grants and subsidies",1782,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,e_20-49,Total income,1933,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,e_20-49,Total expenditure,1726,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,e_20-49,Operating profit before tax,182,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,e_20-49,Total assets,1425,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,e_20-49,Fixed tangible assets,574,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,f_50-99,Activity unit,270,COUNT
+2016,Q,Health Care and Social Assistance,f_50-99,Rolling mean employees,18537,COUNT
+2016,Q,Health Care and Social Assistance,f_50-99,Salaries and wages paid,694,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,f_50-99,"Sales, government funding, grants and subsidies",1318,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,f_50-99,Total income,1397,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,f_50-99,Total expenditure,1368,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,f_50-99,Operating profit before tax,21,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,f_50-99,Total assets,1756,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,f_50-99,Fixed tangible assets,921,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,g_100-199,Activity unit,129,COUNT
+2016,Q,Health Care and Social Assistance,g_100-199,Rolling mean employees,17511,COUNT
+2016,Q,Health Care and Social Assistance,g_100-199,Salaries and wages paid,711,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,g_100-199,"Sales, government funding, grants and subsidies",1790,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,g_100-199,Total income,1966,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,g_100-199,Total expenditure,1657,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,g_100-199,Operating profit before tax,202,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,g_100-199,Total assets,4420,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,g_100-199,Fixed tangible assets,1488,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,h_200+,Activity unit,81,COUNT
+2016,Q,Health Care and Social Assistance,h_200+,Rolling mean employees,60114,COUNT
+2016,Q,Health Care and Social Assistance,h_200+,Salaries and wages paid,2170,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,h_200+,"Sales, government funding, grants and subsidies",3758,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,h_200+,Total income,4020,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,h_200+,Total expenditure,3690,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,h_200+,Operating profit before tax,307,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,h_200+,Total assets,5338,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,h_200+,Fixed tangible assets,2015,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,i_Industry_Total,Activity unit,18513,COUNT
+2016,Q,Health Care and Social Assistance,i_Industry_Total,Rolling mean employees,151866,COUNT
+2016,Q,Health Care and Social Assistance,i_Industry_Total,Salaries and wages paid,6534,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,i_Industry_Total,"Sales, government funding, grants and subsidies",14679,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,i_Industry_Total,Total income,15674,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,i_Industry_Total,Total expenditure,13572,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,i_Industry_Total,Operating profit before tax,1908,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,i_Industry_Total,Total assets,18488,DOLLARS(millions)
+2016,Q,Health Care and Social Assistance,i_Industry_Total,Fixed tangible assets,6811,DOLLARS(millions)
+2016,R,Arts and Recreation Services,a_0,Activity unit,6444,COUNT
+2016,R,Arts and Recreation Services,a_0,Rolling mean employees,0,COUNT
+2016,R,Arts and Recreation Services,a_0,Salaries and wages paid,110,DOLLARS(millions)
+2016,R,Arts and Recreation Services,a_0,"Sales, government funding, grants and subsidies",757,DOLLARS(millions)
+2016,R,Arts and Recreation Services,a_0,Total income,893,DOLLARS(millions)
+2016,R,Arts and Recreation Services,a_0,Total expenditure,743,DOLLARS(millions)
+2016,R,Arts and Recreation Services,a_0,Operating profit before tax,146,DOLLARS(millions)
+2016,R,Arts and Recreation Services,a_0,Total assets,1602,DOLLARS(millions)
+2016,R,Arts and Recreation Services,a_0,Fixed tangible assets,981,DOLLARS(millions)
+2016,R,Arts and Recreation Services,b_1-5,Activity unit,2358,COUNT
+2016,R,Arts and Recreation Services,b_1-5,Rolling mean employees,4668,COUNT
+2016,R,Arts and Recreation Services,b_1-5,Salaries and wages paid,148,DOLLARS(millions)
+2016,R,Arts and Recreation Services,b_1-5,"Sales, government funding, grants and subsidies",585,DOLLARS(millions)
+2016,R,Arts and Recreation Services,b_1-5,Total income,719,DOLLARS(millions)
+2016,R,Arts and Recreation Services,b_1-5,Total expenditure,669,DOLLARS(millions)
+2016,R,Arts and Recreation Services,b_1-5,Operating profit before tax,63,DOLLARS(millions)
+2016,R,Arts and Recreation Services,b_1-5,Total assets,1142,DOLLARS(millions)
+2016,R,Arts and Recreation Services,b_1-5,Fixed tangible assets,736,DOLLARS(millions)
+2016,R,Arts and Recreation Services,c_6-9,Activity unit,351,COUNT
+2016,R,Arts and Recreation Services,c_6-9,Rolling mean employees,2535,COUNT
+2016,R,Arts and Recreation Services,c_6-9,Salaries and wages paid,69,DOLLARS(millions)
+2016,R,Arts and Recreation Services,c_6-9,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2016,R,Arts and Recreation Services,c_6-9,Total income,294,DOLLARS(millions)
+2016,R,Arts and Recreation Services,c_6-9,Total expenditure,283,DOLLARS(millions)
+2016,R,Arts and Recreation Services,c_6-9,Operating profit before tax,C,DOLLARS(millions)
+2016,R,Arts and Recreation Services,c_6-9,Total assets,395,DOLLARS(millions)
+2016,R,Arts and Recreation Services,c_6-9,Fixed tangible assets,305,DOLLARS(millions)
+2016,R,Arts and Recreation Services,d_10-19,Activity unit,378,COUNT
+2016,R,Arts and Recreation Services,d_10-19,Rolling mean employees,5058,COUNT
+2016,R,Arts and Recreation Services,d_10-19,Salaries and wages paid,154,DOLLARS(millions)
+2016,R,Arts and Recreation Services,d_10-19,"Sales, government funding, grants and subsidies",421,DOLLARS(millions)
+2016,R,Arts and Recreation Services,d_10-19,Total income,537,DOLLARS(millions)
+2016,R,Arts and Recreation Services,d_10-19,Total expenditure,515,DOLLARS(millions)
+2016,R,Arts and Recreation Services,d_10-19,Operating profit before tax,21,DOLLARS(millions)
+2016,R,Arts and Recreation Services,d_10-19,Total assets,843,DOLLARS(millions)
+2016,R,Arts and Recreation Services,d_10-19,Fixed tangible assets,568,DOLLARS(millions)
+2016,R,Arts and Recreation Services,e_20-49,Activity unit,204,COUNT
+2016,R,Arts and Recreation Services,e_20-49,Rolling mean employees,6078,COUNT
+2016,R,Arts and Recreation Services,e_20-49,Salaries and wages paid,211,DOLLARS(millions)
+2016,R,Arts and Recreation Services,e_20-49,"Sales, government funding, grants and subsidies",729,DOLLARS(millions)
+2016,R,Arts and Recreation Services,e_20-49,Total income,981,DOLLARS(millions)
+2016,R,Arts and Recreation Services,e_20-49,Total expenditure,916,DOLLARS(millions)
+2016,R,Arts and Recreation Services,e_20-49,Operating profit before tax,72,DOLLARS(millions)
+2016,R,Arts and Recreation Services,e_20-49,Total assets,1842,DOLLARS(millions)
+2016,R,Arts and Recreation Services,e_20-49,Fixed tangible assets,1398,DOLLARS(millions)
+2016,R,Arts and Recreation Services,f_50-99,Activity unit,45,COUNT
+2016,R,Arts and Recreation Services,f_50-99,Rolling mean employees,2862,COUNT
+2016,R,Arts and Recreation Services,f_50-99,Salaries and wages paid,104,DOLLARS(millions)
+2016,R,Arts and Recreation Services,f_50-99,"Sales, government funding, grants and subsidies",263,DOLLARS(millions)
+2016,R,Arts and Recreation Services,f_50-99,Total income,342,DOLLARS(millions)
+2016,R,Arts and Recreation Services,f_50-99,Total expenditure,303,DOLLARS(millions)
+2016,R,Arts and Recreation Services,f_50-99,Operating profit before tax,15,DOLLARS(millions)
+2016,R,Arts and Recreation Services,f_50-99,Total assets,455,DOLLARS(millions)
+2016,R,Arts and Recreation Services,f_50-99,Fixed tangible assets,213,DOLLARS(millions)
+2016,R,Arts and Recreation Services,g_100-199,Activity unit,18,COUNT
+2016,R,Arts and Recreation Services,g_100-199,Rolling mean employees,2499,COUNT
+2016,R,Arts and Recreation Services,g_100-199,Salaries and wages paid,82,DOLLARS(millions)
+2016,R,Arts and Recreation Services,g_100-199,"Sales, government funding, grants and subsidies",602,DOLLARS(millions)
+2016,R,Arts and Recreation Services,g_100-199,Total income,639,DOLLARS(millions)
+2016,R,Arts and Recreation Services,g_100-199,Total expenditure,421,DOLLARS(millions)
+2016,R,Arts and Recreation Services,g_100-199,Operating profit before tax,C,DOLLARS(millions)
+2016,R,Arts and Recreation Services,g_100-199,Total assets,362,DOLLARS(millions)
+2016,R,Arts and Recreation Services,g_100-199,Fixed tangible assets,184,DOLLARS(millions)
+2016,R,Arts and Recreation Services,h_200+,Activity unit,15,COUNT
+2016,R,Arts and Recreation Services,h_200+,Rolling mean employees,12660,COUNT
+2016,R,Arts and Recreation Services,h_200+,Salaries and wages paid,404,DOLLARS(millions)
+2016,R,Arts and Recreation Services,h_200+,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2016,R,Arts and Recreation Services,h_200+,Total income,3706,DOLLARS(millions)
+2016,R,Arts and Recreation Services,h_200+,Total expenditure,3126,DOLLARS(millions)
+2016,R,Arts and Recreation Services,h_200+,Operating profit before tax,420,DOLLARS(millions)
+2016,R,Arts and Recreation Services,h_200+,Total assets,3364,DOLLARS(millions)
+2016,R,Arts and Recreation Services,h_200+,Fixed tangible assets,2407,DOLLARS(millions)
+2016,R,Arts and Recreation Services,i_Industry_Total,Activity unit,9810,COUNT
+2016,R,Arts and Recreation Services,i_Industry_Total,Rolling mean employees,36357,COUNT
+2016,R,Arts and Recreation Services,i_Industry_Total,Salaries and wages paid,1283,DOLLARS(millions)
+2016,R,Arts and Recreation Services,i_Industry_Total,"Sales, government funding, grants and subsidies",7026,DOLLARS(millions)
+2016,R,Arts and Recreation Services,i_Industry_Total,Total income,8111,DOLLARS(millions)
+2016,R,Arts and Recreation Services,i_Industry_Total,Total expenditure,6977,DOLLARS(millions)
+2016,R,Arts and Recreation Services,i_Industry_Total,Operating profit before tax,966,DOLLARS(millions)
+2016,R,Arts and Recreation Services,i_Industry_Total,Total assets,10005,DOLLARS(millions)
+2016,R,Arts and Recreation Services,i_Industry_Total,Fixed tangible assets,6792,DOLLARS(millions)
+2016,S,Other Services,a_0,Activity unit,9648,COUNT
+2016,S,Other Services,a_0,Rolling mean employees,0,COUNT
+2016,S,Other Services,a_0,Salaries and wages paid,197,DOLLARS(millions)
+2016,S,Other Services,a_0,"Sales, government funding, grants and subsidies",1094,DOLLARS(millions)
+2016,S,Other Services,a_0,Total income,1328,DOLLARS(millions)
+2016,S,Other Services,a_0,Total expenditure,1125,DOLLARS(millions)
+2016,S,Other Services,a_0,Operating profit before tax,190,DOLLARS(millions)
+2016,S,Other Services,a_0,Total assets,2835,DOLLARS(millions)
+2016,S,Other Services,a_0,Fixed tangible assets,1047,DOLLARS(millions)
+2016,S,Other Services,b_1-5,Activity unit,8958,COUNT
+2016,S,Other Services,b_1-5,Rolling mean employees,20193,COUNT
+2016,S,Other Services,b_1-5,Salaries and wages paid,884,DOLLARS(millions)
+2016,S,Other Services,b_1-5,"Sales, government funding, grants and subsidies",2689,DOLLARS(millions)
+2016,S,Other Services,b_1-5,Total income,2988,DOLLARS(millions)
+2016,S,Other Services,b_1-5,Total expenditure,2648,DOLLARS(millions)
+2016,S,Other Services,b_1-5,Operating profit before tax,264,DOLLARS(millions)
+2016,S,Other Services,b_1-5,Total assets,2841,DOLLARS(millions)
+2016,S,Other Services,b_1-5,Fixed tangible assets,935,DOLLARS(millions)
+2016,S,Other Services,c_6-9,Activity unit,1479,COUNT
+2016,S,Other Services,c_6-9,Rolling mean employees,10329,COUNT
+2016,S,Other Services,c_6-9,Salaries and wages paid,429,DOLLARS(millions)
+2016,S,Other Services,c_6-9,"Sales, government funding, grants and subsidies",1229,DOLLARS(millions)
+2016,S,Other Services,c_6-9,Total income,1289,DOLLARS(millions)
+2016,S,Other Services,c_6-9,Total expenditure,1198,DOLLARS(millions)
+2016,S,Other Services,c_6-9,Operating profit before tax,97,DOLLARS(millions)
+2016,S,Other Services,c_6-9,Total assets,1051,DOLLARS(millions)
+2016,S,Other Services,c_6-9,Fixed tangible assets,212,DOLLARS(millions)
+2016,S,Other Services,d_10-19,Activity unit,828,COUNT
+2016,S,Other Services,d_10-19,Rolling mean employees,10788,COUNT
+2016,S,Other Services,d_10-19,Salaries and wages paid,456,DOLLARS(millions)
+2016,S,Other Services,d_10-19,"Sales, government funding, grants and subsidies",1353,DOLLARS(millions)
+2016,S,Other Services,d_10-19,Total income,1517,DOLLARS(millions)
+2016,S,Other Services,d_10-19,Total expenditure,1350,DOLLARS(millions)
+2016,S,Other Services,d_10-19,Operating profit before tax,104,DOLLARS(millions)
+2016,S,Other Services,d_10-19,Total assets,2048,DOLLARS(millions)
+2016,S,Other Services,d_10-19,Fixed tangible assets,467,DOLLARS(millions)
+2016,S,Other Services,e_20-49,Activity unit,276,COUNT
+2016,S,Other Services,e_20-49,Rolling mean employees,7815,COUNT
+2016,S,Other Services,e_20-49,Salaries and wages paid,364,DOLLARS(millions)
+2016,S,Other Services,e_20-49,"Sales, government funding, grants and subsidies",1007,DOLLARS(millions)
+2016,S,Other Services,e_20-49,Total income,1292,DOLLARS(millions)
+2016,S,Other Services,e_20-49,Total expenditure,1166,DOLLARS(millions)
+2016,S,Other Services,e_20-49,Operating profit before tax,2,DOLLARS(millions)
+2016,S,Other Services,e_20-49,Total assets,2248,DOLLARS(millions)
+2016,S,Other Services,e_20-49,Fixed tangible assets,285,DOLLARS(millions)
+2016,S,Other Services,f_50-99,Activity unit,51,COUNT
+2016,S,Other Services,f_50-99,Rolling mean employees,3390,COUNT
+2016,S,Other Services,f_50-99,Salaries and wages paid,164,DOLLARS(millions)
+2016,S,Other Services,f_50-99,"Sales, government funding, grants and subsidies",388,DOLLARS(millions)
+2016,S,Other Services,f_50-99,Total income,451,DOLLARS(millions)
+2016,S,Other Services,f_50-99,Total expenditure,434,DOLLARS(millions)
+2016,S,Other Services,f_50-99,Operating profit before tax,18,DOLLARS(millions)
+2016,S,Other Services,f_50-99,Total assets,350,DOLLARS(millions)
+2016,S,Other Services,f_50-99,Fixed tangible assets,124,DOLLARS(millions)
+2016,S,Other Services,g_100-199,Activity unit,21,COUNT
+2016,S,Other Services,g_100-199,Rolling mean employees,2679,COUNT
+2016,S,Other Services,g_100-199,Salaries and wages paid,132,DOLLARS(millions)
+2016,S,Other Services,g_100-199,"Sales, government funding, grants and subsidies",170,DOLLARS(millions)
+2016,S,Other Services,g_100-199,Total income,329,DOLLARS(millions)
+2016,S,Other Services,g_100-199,Total expenditure,317,DOLLARS(millions)
+2016,S,Other Services,g_100-199,Operating profit before tax,16,DOLLARS(millions)
+2016,S,Other Services,g_100-199,Total assets,237,DOLLARS(millions)
+2016,S,Other Services,g_100-199,Fixed tangible assets,77,DOLLARS(millions)
+2016,S,Other Services,h_200+,Activity unit,6,COUNT
+2016,S,Other Services,h_200+,Rolling mean employees,2820,COUNT
+2016,S,Other Services,h_200+,Salaries and wages paid,152,DOLLARS(millions)
+2016,S,Other Services,h_200+,"Sales, government funding, grants and subsidies",390,DOLLARS(millions)
+2016,S,Other Services,h_200+,Total income,473,DOLLARS(millions)
+2016,S,Other Services,h_200+,Total expenditure,441,DOLLARS(millions)
+2016,S,Other Services,h_200+,Operating profit before tax,17,DOLLARS(millions)
+2016,S,Other Services,h_200+,Total assets,594,DOLLARS(millions)
+2016,S,Other Services,h_200+,Fixed tangible assets,173,DOLLARS(millions)
+2016,S,Other Services,i_Industry_Total,Activity unit,21273,COUNT
+2016,S,Other Services,i_Industry_Total,Rolling mean employees,58011,COUNT
+2016,S,Other Services,i_Industry_Total,Salaries and wages paid,2779,DOLLARS(millions)
+2016,S,Other Services,i_Industry_Total,"Sales, government funding, grants and subsidies",8318,DOLLARS(millions)
+2016,S,Other Services,i_Industry_Total,Total income,9668,DOLLARS(millions)
+2016,S,Other Services,i_Industry_Total,Total expenditure,8679,DOLLARS(millions)
+2016,S,Other Services,i_Industry_Total,Operating profit before tax,708,DOLLARS(millions)
+2016,S,Other Services,i_Industry_Total,Total assets,12204,DOLLARS(millions)
+2016,S,Other Services,i_Industry_Total,Fixed tangible assets,3321,DOLLARS(millions)
+2016,all,All Industries,j_Grand_Total,Activity unit,473073,COUNT
+2016,all,All Industries,j_Grand_Total,Rolling mean employees,1716477,COUNT
+2016,all,All Industries,j_Grand_Total,Salaries and wages paid,93912,DOLLARS(millions)
+2016,all,All Industries,j_Grand_Total,"Sales, government funding, grants and subsidies",532207,DOLLARS(millions)
+2016,all,All Industries,j_Grand_Total,Total income,606511,DOLLARS(millions)
+2016,all,All Industries,j_Grand_Total,Total expenditure,537086,DOLLARS(millions)
+2016,all,All Industries,j_Grand_Total,Operating profit before tax,66186,DOLLARS(millions)
+2016,all,All Industries,j_Grand_Total,Total assets,1946267,DOLLARS(millions)
+2016,all,All Industries,j_Grand_Total,Fixed tangible assets,442723,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",a_0,Activity unit,43527,COUNT
+2017,A,"Agriculture, Forestry and Fishing",a_0,Rolling mean employees,0,COUNT
+2017,A,"Agriculture, Forestry and Fishing",a_0,Salaries and wages paid,368,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",a_0,"Sales, government funding, grants and subsidies",9737,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",a_0,Total income,11491,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",a_0,Total expenditure,8358,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",a_0,Operating profit before tax,1801,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",a_0,Total assets,68098,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",a_0,Fixed tangible assets,37997,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",b_1-5,Activity unit,20856,COUNT
+2017,A,"Agriculture, Forestry and Fishing",b_1-5,Rolling mean employees,38565,COUNT
+2017,A,"Agriculture, Forestry and Fishing",b_1-5,Salaries and wages paid,1839,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",b_1-5,"Sales, government funding, grants and subsidies",14774,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",b_1-5,Total income,15376,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",b_1-5,Total expenditure,13663,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",b_1-5,Operating profit before tax,1610,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",b_1-5,Total assets,62275,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",b_1-5,Fixed tangible assets,37526,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",c_6-9,Activity unit,2127,COUNT
+2017,A,"Agriculture, Forestry and Fishing",c_6-9,Rolling mean employees,14928,COUNT
+2017,A,"Agriculture, Forestry and Fishing",c_6-9,Salaries and wages paid,635,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",c_6-9,"Sales, government funding, grants and subsidies",3603,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",c_6-9,Total income,3746,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",c_6-9,Total expenditure,3381,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",c_6-9,Operating profit before tax,337,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",c_6-9,Total assets,12897,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",c_6-9,Fixed tangible assets,8036,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",d_10-19,Activity unit,1254,COUNT
+2017,A,"Agriculture, Forestry and Fishing",d_10-19,Rolling mean employees,16245,COUNT
+2017,A,"Agriculture, Forestry and Fishing",d_10-19,Salaries and wages paid,662,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",d_10-19,"Sales, government funding, grants and subsidies",3302,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",d_10-19,Total income,3472,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",d_10-19,Total expenditure,3068,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",d_10-19,Operating profit before tax,293,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",d_10-19,Total assets,9099,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",d_10-19,Fixed tangible assets,4885,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",e_20-49,Activity unit,585,COUNT
+2017,A,"Agriculture, Forestry and Fishing",e_20-49,Rolling mean employees,17151,COUNT
+2017,A,"Agriculture, Forestry and Fishing",e_20-49,Salaries and wages paid,624,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",e_20-49,"Sales, government funding, grants and subsidies",2779,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",e_20-49,Total income,2909,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",e_20-49,Total expenditure,2647,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",e_20-49,Operating profit before tax,225,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",e_20-49,Total assets,6414,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",e_20-49,Fixed tangible assets,2907,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",f_50-99,Activity unit,138,COUNT
+2017,A,"Agriculture, Forestry and Fishing",f_50-99,Rolling mean employees,9384,COUNT
+2017,A,"Agriculture, Forestry and Fishing",f_50-99,Salaries and wages paid,303,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",f_50-99,"Sales, government funding, grants and subsidies",1247,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",f_50-99,Total income,1284,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",f_50-99,Total expenditure,1148,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",f_50-99,Operating profit before tax,135,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",f_50-99,Total assets,2965,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",f_50-99,Fixed tangible assets,1180,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",g_100-199,Activity unit,39,COUNT
+2017,A,"Agriculture, Forestry and Fishing",g_100-199,Rolling mean employees,5400,COUNT
+2017,A,"Agriculture, Forestry and Fishing",g_100-199,Salaries and wages paid,158,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",g_100-199,"Sales, government funding, grants and subsidies",557,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",g_100-199,Total income,612,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",g_100-199,Total expenditure,539,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",g_100-199,Operating profit before tax,46,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",g_100-199,Total assets,916,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",g_100-199,Fixed tangible assets,C,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",h_200+,Activity unit,21,COUNT
+2017,A,"Agriculture, Forestry and Fishing",h_200+,Rolling mean employees,9546,COUNT
+2017,A,"Agriculture, Forestry and Fishing",h_200+,Salaries and wages paid,328,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",h_200+,"Sales, government funding, grants and subsidies",1299,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",h_200+,Total income,1390,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",h_200+,Total expenditure,1292,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",h_200+,Operating profit before tax,103,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",h_200+,Total assets,3112,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",h_200+,Fixed tangible assets,C,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",i_Industry_Total,Activity unit,68550,COUNT
+2017,A,"Agriculture, Forestry and Fishing",i_Industry_Total,Rolling mean employees,111222,COUNT
+2017,A,"Agriculture, Forestry and Fishing",i_Industry_Total,Salaries and wages paid,4916,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",i_Industry_Total,"Sales, government funding, grants and subsidies",37299,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",i_Industry_Total,Total income,40278,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",i_Industry_Total,Total expenditure,34097,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",i_Industry_Total,Operating profit before tax,4550,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",i_Industry_Total,Total assets,165776,DOLLARS(millions)
+2017,A,"Agriculture, Forestry and Fishing",i_Industry_Total,Fixed tangible assets,94309,DOLLARS(millions)
+2017,B,Mining,a_0,Activity unit,387,COUNT
+2017,B,Mining,a_0,Rolling mean employees,0,COUNT
+2017,B,Mining,a_0,Salaries and wages paid,65,DOLLARS(millions)
+2017,B,Mining,a_0,"Sales, government funding, grants and subsidies",925,DOLLARS(millions)
+2017,B,Mining,a_0,Total income,1163,DOLLARS(millions)
+2017,B,Mining,a_0,Total expenditure,1099,DOLLARS(millions)
+2017,B,Mining,a_0,Operating profit before tax,-74,DOLLARS(millions)
+2017,B,Mining,a_0,Total assets,C,DOLLARS(millions)
+2017,B,Mining,a_0,Fixed tangible assets,1974,DOLLARS(millions)
+2017,B,Mining,b_1-5,Activity unit,159,COUNT
+2017,B,Mining,b_1-5,Rolling mean employees,276,COUNT
+2017,B,Mining,b_1-5,Salaries and wages paid,37,DOLLARS(millions)
+2017,B,Mining,b_1-5,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2017,B,Mining,b_1-5,Total income,233,DOLLARS(millions)
+2017,B,Mining,b_1-5,Total expenditure,206,DOLLARS(millions)
+2017,B,Mining,b_1-5,Operating profit before tax,27,DOLLARS(millions)
+2017,B,Mining,b_1-5,Total assets,C,DOLLARS(millions)
+2017,B,Mining,b_1-5,Fixed tangible assets,410,DOLLARS(millions)
+2017,B,Mining,c_6-9,Activity unit,42,COUNT
+2017,B,Mining,c_6-9,Rolling mean employees,276,COUNT
+2017,B,Mining,c_6-9,Salaries and wages paid,C,DOLLARS(millions)
+2017,B,Mining,c_6-9,"Sales, government funding, grants and subsidies",85,DOLLARS(millions)
+2017,B,Mining,c_6-9,Total income,C,DOLLARS(millions)
+2017,B,Mining,c_6-9,Total expenditure,C,DOLLARS(millions)
+2017,B,Mining,c_6-9,Operating profit before tax,0,DOLLARS(millions)
+2017,B,Mining,c_6-9,Total assets,C,DOLLARS(millions)
+2017,B,Mining,c_6-9,Fixed tangible assets,74,DOLLARS(millions)
+2017,B,Mining,d_10-19,Activity unit,33,COUNT
+2017,B,Mining,d_10-19,Rolling mean employees,489,COUNT
+2017,B,Mining,d_10-19,Salaries and wages paid,36,DOLLARS(millions)
+2017,B,Mining,d_10-19,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2017,B,Mining,d_10-19,Total income,191,DOLLARS(millions)
+2017,B,Mining,d_10-19,Total expenditure,322,DOLLARS(millions)
+2017,B,Mining,d_10-19,Operating profit before tax,23,DOLLARS(millions)
+2017,B,Mining,d_10-19,Total assets,C,DOLLARS(millions)
+2017,B,Mining,d_10-19,Fixed tangible assets,145,DOLLARS(millions)
+2017,B,Mining,e_20-49,Activity unit,24,COUNT
+2017,B,Mining,e_20-49,Rolling mean employees,684,COUNT
+2017,B,Mining,e_20-49,Salaries and wages paid,62,DOLLARS(millions)
+2017,B,Mining,e_20-49,"Sales, government funding, grants and subsidies",566,DOLLARS(millions)
+2017,B,Mining,e_20-49,Total income,610,DOLLARS(millions)
+2017,B,Mining,e_20-49,Total expenditure,443,DOLLARS(millions)
+2017,B,Mining,e_20-49,Operating profit before tax,132,DOLLARS(millions)
+2017,B,Mining,e_20-49,Total assets,C,DOLLARS(millions)
+2017,B,Mining,e_20-49,Fixed tangible assets,646,DOLLARS(millions)
+2017,B,Mining,f_50-99,Activity unit,12,COUNT
+2017,B,Mining,f_50-99,Rolling mean employees,951,COUNT
+2017,B,Mining,f_50-99,Salaries and wages paid,132,DOLLARS(millions)
+2017,B,Mining,f_50-99,"Sales, government funding, grants and subsidies",1244,DOLLARS(millions)
+2017,B,Mining,f_50-99,Total income,1521,DOLLARS(millions)
+2017,B,Mining,f_50-99,Total expenditure,1446,DOLLARS(millions)
+2017,B,Mining,f_50-99,Operating profit before tax,305,DOLLARS(millions)
+2017,B,Mining,f_50-99,Total assets,C,DOLLARS(millions)
+2017,B,Mining,f_50-99,Fixed tangible assets,1927,DOLLARS(millions)
+2017,B,Mining,g_100-199,Activity unit,3,COUNT
+2017,B,Mining,g_100-199,Rolling mean employees,402,COUNT
+2017,B,Mining,g_100-199,Salaries and wages paid,C,DOLLARS(millions)
+2017,B,Mining,g_100-199,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2017,B,Mining,g_100-199,Total income,C,DOLLARS(millions)
+2017,B,Mining,g_100-199,Total expenditure,C,DOLLARS(millions)
+2017,B,Mining,g_100-199,Operating profit before tax,C,DOLLARS(millions)
+2017,B,Mining,g_100-199,Total assets,C,DOLLARS(millions)
+2017,B,Mining,g_100-199,Fixed tangible assets,94,DOLLARS(millions)
+2017,B,Mining,h_200+,Activity unit,6,COUNT
+2017,B,Mining,h_200+,Rolling mean employees,1953,COUNT
+2017,B,Mining,h_200+,Salaries and wages paid,228,DOLLARS(millions)
+2017,B,Mining,h_200+,"Sales, government funding, grants and subsidies",1449,DOLLARS(millions)
+2017,B,Mining,h_200+,Total income,1529,DOLLARS(millions)
+2017,B,Mining,h_200+,Total expenditure,1431,DOLLARS(millions)
+2017,B,Mining,h_200+,Operating profit before tax,C,DOLLARS(millions)
+2017,B,Mining,h_200+,Total assets,C,DOLLARS(millions)
+2017,B,Mining,h_200+,Fixed tangible assets,C,DOLLARS(millions)
+2017,B,Mining,i_Industry_Total,Activity unit,666,COUNT
+2017,B,Mining,i_Industry_Total,Rolling mean employees,5034,COUNT
+2017,B,Mining,i_Industry_Total,Salaries and wages paid,615,DOLLARS(millions)
+2017,B,Mining,i_Industry_Total,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2017,B,Mining,i_Industry_Total,Total income,5529,DOLLARS(millions)
+2017,B,Mining,i_Industry_Total,Total expenditure,5192,DOLLARS(millions)
+2017,B,Mining,i_Industry_Total,Operating profit before tax,C,DOLLARS(millions)
+2017,B,Mining,i_Industry_Total,Total assets,38389,DOLLARS(millions)
+2017,B,Mining,i_Industry_Total,Fixed tangible assets,C,DOLLARS(millions)
+2017,C,Manufacturing,a_0,Activity unit,8922,COUNT
+2017,C,Manufacturing,a_0,Rolling mean employees,0,COUNT
+2017,C,Manufacturing,a_0,Salaries and wages paid,304,DOLLARS(millions)
+2017,C,Manufacturing,a_0,"Sales, government funding, grants and subsidies",2278,DOLLARS(millions)
+2017,C,Manufacturing,a_0,Total income,2325,DOLLARS(millions)
+2017,C,Manufacturing,a_0,Total expenditure,2061,DOLLARS(millions)
+2017,C,Manufacturing,a_0,Operating profit before tax,247,DOLLARS(millions)
+2017,C,Manufacturing,a_0,Total assets,2263,DOLLARS(millions)
+2017,C,Manufacturing,a_0,Fixed tangible assets,858,DOLLARS(millions)
+2017,C,Manufacturing,b_1-5,Activity unit,6699,COUNT
+2017,C,Manufacturing,b_1-5,Rolling mean employees,15135,COUNT
+2017,C,Manufacturing,b_1-5,Salaries and wages paid,786,DOLLARS(millions)
+2017,C,Manufacturing,b_1-5,"Sales, government funding, grants and subsidies",4187,DOLLARS(millions)
+2017,C,Manufacturing,b_1-5,Total income,4227,DOLLARS(millions)
+2017,C,Manufacturing,b_1-5,Total expenditure,3952,DOLLARS(millions)
+2017,C,Manufacturing,b_1-5,Operating profit before tax,284,DOLLARS(millions)
+2017,C,Manufacturing,b_1-5,Total assets,2816,DOLLARS(millions)
+2017,C,Manufacturing,b_1-5,Fixed tangible assets,741,DOLLARS(millions)
+2017,C,Manufacturing,c_6-9,Activity unit,1878,COUNT
+2017,C,Manufacturing,c_6-9,Rolling mean employees,13671,COUNT
+2017,C,Manufacturing,c_6-9,Salaries and wages paid,646,DOLLARS(millions)
+2017,C,Manufacturing,c_6-9,"Sales, government funding, grants and subsidies",2792,DOLLARS(millions)
+2017,C,Manufacturing,c_6-9,Total income,2807,DOLLARS(millions)
+2017,C,Manufacturing,c_6-9,Total expenditure,2577,DOLLARS(millions)
+2017,C,Manufacturing,c_6-9,Operating profit before tax,247,DOLLARS(millions)
+2017,C,Manufacturing,c_6-9,Total assets,1738,DOLLARS(millions)
+2017,C,Manufacturing,c_6-9,Fixed tangible assets,416,DOLLARS(millions)
+2017,C,Manufacturing,d_10-19,Activity unit,1785,COUNT
+2017,C,Manufacturing,d_10-19,Rolling mean employees,24426,COUNT
+2017,C,Manufacturing,d_10-19,Salaries and wages paid,1203,DOLLARS(millions)
+2017,C,Manufacturing,d_10-19,"Sales, government funding, grants and subsidies",4746,DOLLARS(millions)
+2017,C,Manufacturing,d_10-19,Total income,4773,DOLLARS(millions)
+2017,C,Manufacturing,d_10-19,Total expenditure,4502,DOLLARS(millions)
+2017,C,Manufacturing,d_10-19,Operating profit before tax,331,DOLLARS(millions)
+2017,C,Manufacturing,d_10-19,Total assets,3061,DOLLARS(millions)
+2017,C,Manufacturing,d_10-19,Fixed tangible assets,705,DOLLARS(millions)
+2017,C,Manufacturing,e_20-49,Activity unit,1212,COUNT
+2017,C,Manufacturing,e_20-49,Rolling mean employees,36177,COUNT
+2017,C,Manufacturing,e_20-49,Salaries and wages paid,1889,DOLLARS(millions)
+2017,C,Manufacturing,e_20-49,"Sales, government funding, grants and subsidies",8822,DOLLARS(millions)
+2017,C,Manufacturing,e_20-49,Total income,8910,DOLLARS(millions)
+2017,C,Manufacturing,e_20-49,Total expenditure,8162,DOLLARS(millions)
+2017,C,Manufacturing,e_20-49,Operating profit before tax,824,DOLLARS(millions)
+2017,C,Manufacturing,e_20-49,Total assets,6462,DOLLARS(millions)
+2017,C,Manufacturing,e_20-49,Fixed tangible assets,1702,DOLLARS(millions)
+2017,C,Manufacturing,f_50-99,Activity unit,423,COUNT
+2017,C,Manufacturing,f_50-99,Rolling mean employees,28836,COUNT
+2017,C,Manufacturing,f_50-99,Salaries and wages paid,1676,DOLLARS(millions)
+2017,C,Manufacturing,f_50-99,"Sales, government funding, grants and subsidies",11316,DOLLARS(millions)
+2017,C,Manufacturing,f_50-99,Total income,11443,DOLLARS(millions)
+2017,C,Manufacturing,f_50-99,Total expenditure,10981,DOLLARS(millions)
+2017,C,Manufacturing,f_50-99,Operating profit before tax,688,DOLLARS(millions)
+2017,C,Manufacturing,f_50-99,Total assets,8366,DOLLARS(millions)
+2017,C,Manufacturing,f_50-99,Fixed tangible assets,2309,DOLLARS(millions)
+2017,C,Manufacturing,g_100-199,Activity unit,165,COUNT
+2017,C,Manufacturing,g_100-199,Rolling mean employees,22728,COUNT
+2017,C,Manufacturing,g_100-199,Salaries and wages paid,1553,DOLLARS(millions)
+2017,C,Manufacturing,g_100-199,"Sales, government funding, grants and subsidies",9565,DOLLARS(millions)
+2017,C,Manufacturing,g_100-199,Total income,9668,DOLLARS(millions)
+2017,C,Manufacturing,g_100-199,Total expenditure,9077,DOLLARS(millions)
+2017,C,Manufacturing,g_100-199,Operating profit before tax,621,DOLLARS(millions)
+2017,C,Manufacturing,g_100-199,Total assets,8246,DOLLARS(millions)
+2017,C,Manufacturing,g_100-199,Fixed tangible assets,2632,DOLLARS(millions)
+2017,C,Manufacturing,h_200+,Activity unit,147,COUNT
+2017,C,Manufacturing,h_200+,Rolling mean employees,87459,COUNT
+2017,C,Manufacturing,h_200+,Salaries and wages paid,6492,DOLLARS(millions)
+2017,C,Manufacturing,h_200+,"Sales, government funding, grants and subsidies",59356,DOLLARS(millions)
+2017,C,Manufacturing,h_200+,Total income,60740,DOLLARS(millions)
+2017,C,Manufacturing,h_200+,Total expenditure,56767,DOLLARS(millions)
+2017,C,Manufacturing,h_200+,Operating profit before tax,4027,DOLLARS(millions)
+2017,C,Manufacturing,h_200+,Total assets,49466,DOLLARS(millions)
+2017,C,Manufacturing,h_200+,Fixed tangible assets,18387,DOLLARS(millions)
+2017,C,Manufacturing,i_Industry_Total,Activity unit,21234,COUNT
+2017,C,Manufacturing,i_Industry_Total,Rolling mean employees,228435,COUNT
+2017,C,Manufacturing,i_Industry_Total,Salaries and wages paid,14549,DOLLARS(millions)
+2017,C,Manufacturing,i_Industry_Total,"Sales, government funding, grants and subsidies",103063,DOLLARS(millions)
+2017,C,Manufacturing,i_Industry_Total,Total income,104892,DOLLARS(millions)
+2017,C,Manufacturing,i_Industry_Total,Total expenditure,98077,DOLLARS(millions)
+2017,C,Manufacturing,i_Industry_Total,Operating profit before tax,7270,DOLLARS(millions)
+2017,C,Manufacturing,i_Industry_Total,Total assets,82418,DOLLARS(millions)
+2017,C,Manufacturing,i_Industry_Total,Fixed tangible assets,27750,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",a_0,Activity unit,561,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",a_0,Rolling mean employees,0,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",a_0,Salaries and wages paid,60,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",a_0,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",a_0,Total income,2345,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",a_0,Total expenditure,1994,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",a_0,Operating profit before tax,366,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",a_0,Total assets,8497,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",a_0,Fixed tangible assets,7017,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",b_1-5,Activity unit,366,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",b_1-5,Rolling mean employees,696,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",b_1-5,Salaries and wages paid,39,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",b_1-5,"Sales, government funding, grants and subsidies",217,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",b_1-5,Total income,219,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",b_1-5,Total expenditure,196,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",b_1-5,Operating profit before tax,24,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",b_1-5,Total assets,357,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",b_1-5,Fixed tangible assets,231,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",c_6-9,Activity unit,57,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",c_6-9,Rolling mean employees,402,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",c_6-9,Salaries and wages paid,22,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",c_6-9,"Sales, government funding, grants and subsidies",143,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",c_6-9,Total income,146,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",c_6-9,Total expenditure,142,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",c_6-9,Operating profit before tax,3,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",c_6-9,Total assets,237,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",c_6-9,Fixed tangible assets,127,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",d_10-19,Activity unit,60,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",d_10-19,Rolling mean employees,807,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",d_10-19,Salaries and wages paid,43,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",d_10-19,"Sales, government funding, grants and subsidies",214,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",d_10-19,Total income,247,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",d_10-19,Total expenditure,192,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",d_10-19,Operating profit before tax,31,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",d_10-19,Total assets,461,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",d_10-19,Fixed tangible assets,322,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",e_20-49,Activity unit,30,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",e_20-49,Rolling mean employees,849,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",e_20-49,Salaries and wages paid,45,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",e_20-49,"Sales, government funding, grants and subsidies",294,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",e_20-49,Total income,303,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",e_20-49,Total expenditure,285,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",e_20-49,Operating profit before tax,17,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",e_20-49,Total assets,724,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",e_20-49,Fixed tangible assets,531,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",f_50-99,Activity unit,18,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",f_50-99,Rolling mean employees,1338,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",f_50-99,Salaries and wages paid,101,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",f_50-99,"Sales, government funding, grants and subsidies",634,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",f_50-99,Total income,651,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",f_50-99,Total expenditure,553,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",f_50-99,Operating profit before tax,C,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",f_50-99,Total assets,1690,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",f_50-99,Fixed tangible assets,1261,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",g_100-199,Activity unit,9,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",g_100-199,Rolling mean employees,1512,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",g_100-199,Salaries and wages paid,109,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",g_100-199,"Sales, government funding, grants and subsidies",842,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",g_100-199,Total income,866,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",g_100-199,Total expenditure,682,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",g_100-199,Operating profit before tax,191,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",g_100-199,Total assets,3939,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",g_100-199,Fixed tangible assets,3447,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",h_200+,Activity unit,18,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",h_200+,Rolling mean employees,11352,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",h_200+,Salaries and wages paid,961,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",h_200+,"Sales, government funding, grants and subsidies",12545,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",h_200+,Total income,14346,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",h_200+,Total expenditure,11122,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",h_200+,Operating profit before tax,3078,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",h_200+,Total assets,49871,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",h_200+,Fixed tangible assets,41011,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Activity unit,1116,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Rolling mean employees,16959,COUNT
+2017,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Salaries and wages paid,1380,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,"Sales, government funding, grants and subsidies",C,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Total income,19123,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Total expenditure,15168,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Operating profit before tax,C,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Total assets,65777,DOLLARS(millions)
+2017,D,"Electricity, Gas, Water and Waste Services",i_Industry_Total,Fixed tangible assets,53946,DOLLARS(millions)
+2017,E,Construction,a_0,Activity unit,33828,COUNT
+2017,E,Construction,a_0,Rolling mean employees,0,COUNT
+2017,E,Construction,a_0,Salaries and wages paid,1239,DOLLARS(millions)
+2017,E,Construction,a_0,"Sales, government funding, grants and subsidies",11032,DOLLARS(millions)
+2017,E,Construction,a_0,Total income,11200,DOLLARS(millions)
+2017,E,Construction,a_0,Total expenditure,9890,DOLLARS(millions)
+2017,E,Construction,a_0,Operating profit before tax,1610,DOLLARS(millions)
+2017,E,Construction,a_0,Total assets,12977,DOLLARS(millions)
+2017,E,Construction,a_0,Fixed tangible assets,3918,DOLLARS(millions)
+2017,E,Construction,b_1-5,Activity unit,19224,COUNT
+2017,E,Construction,b_1-5,Rolling mean employees,36354,COUNT
+2017,E,Construction,b_1-5,Salaries and wages paid,2428,DOLLARS(millions)
+2017,E,Construction,b_1-5,"Sales, government funding, grants and subsidies",11203,DOLLARS(millions)
+2017,E,Construction,b_1-5,Total income,11281,DOLLARS(millions)
+2017,E,Construction,b_1-5,Total expenditure,10442,DOLLARS(millions)
+2017,E,Construction,b_1-5,Operating profit before tax,1095,DOLLARS(millions)
+2017,E,Construction,b_1-5,Total assets,7264,DOLLARS(millions)
+2017,E,Construction,b_1-5,Fixed tangible assets,1681,DOLLARS(millions)
+2017,E,Construction,c_6-9,Activity unit,2634,COUNT
+2017,E,Construction,c_6-9,Rolling mean employees,18669,COUNT
+2017,E,Construction,c_6-9,Salaries and wages paid,1022,DOLLARS(millions)
+2017,E,Construction,c_6-9,"Sales, government funding, grants and subsidies",4498,DOLLARS(millions)
+2017,E,Construction,c_6-9,Total income,4510,DOLLARS(millions)
+2017,E,Construction,c_6-9,Total expenditure,4246,DOLLARS(millions)
+2017,E,Construction,c_6-9,Operating profit before tax,326,DOLLARS(millions)
+2017,E,Construction,c_6-9,Total assets,1863,DOLLARS(millions)
+2017,E,Construction,c_6-9,Fixed tangible assets,455,DOLLARS(millions)
+2017,E,Construction,d_10-19,Activity unit,1950,COUNT
+2017,E,Construction,d_10-19,Rolling mean employees,25419,COUNT
+2017,E,Construction,d_10-19,Salaries and wages paid,1450,DOLLARS(millions)
+2017,E,Construction,d_10-19,"Sales, government funding, grants and subsidies",6254,DOLLARS(millions)
+2017,E,Construction,d_10-19,Total income,6281,DOLLARS(millions)
+2017,E,Construction,d_10-19,Total expenditure,5955,DOLLARS(millions)
+2017,E,Construction,d_10-19,Operating profit before tax,457,DOLLARS(millions)
+2017,E,Construction,d_10-19,Total assets,3016,DOLLARS(millions)
+2017,E,Construction,d_10-19,Fixed tangible assets,814,DOLLARS(millions)
+2017,E,Construction,e_20-49,Activity unit,843,COUNT
+2017,E,Construction,e_20-49,Rolling mean employees,24654,COUNT
+2017,E,Construction,e_20-49,Salaries and wages paid,1426,DOLLARS(millions)
+2017,E,Construction,e_20-49,"Sales, government funding, grants and subsidies",6598,DOLLARS(millions)
+2017,E,Construction,e_20-49,Total income,6645,DOLLARS(millions)
+2017,E,Construction,e_20-49,Total expenditure,6327,DOLLARS(millions)
+2017,E,Construction,e_20-49,Operating profit before tax,435,DOLLARS(millions)
+2017,E,Construction,e_20-49,Total assets,2779,DOLLARS(millions)
+2017,E,Construction,e_20-49,Fixed tangible assets,613,DOLLARS(millions)
+2017,E,Construction,f_50-99,Activity unit,207,COUNT
+2017,E,Construction,f_50-99,Rolling mean employees,14010,COUNT
+2017,E,Construction,f_50-99,Salaries and wages paid,857,DOLLARS(millions)
+2017,E,Construction,f_50-99,"Sales, government funding, grants and subsidies",4063,DOLLARS(millions)
+2017,E,Construction,f_50-99,Total income,4079,DOLLARS(millions)
+2017,E,Construction,f_50-99,Total expenditure,3900,DOLLARS(millions)
+2017,E,Construction,f_50-99,Operating profit before tax,212,DOLLARS(millions)
+2017,E,Construction,f_50-99,Total assets,1741,DOLLARS(millions)
+2017,E,Construction,f_50-99,Fixed tangible assets,442,DOLLARS(millions)
+2017,E,Construction,g_100-199,Activity unit,57,COUNT
+2017,E,Construction,g_100-199,Rolling mean employees,7611,COUNT
+2017,E,Construction,g_100-199,Salaries and wages paid,528,DOLLARS(millions)
+2017,E,Construction,g_100-199,"Sales, government funding, grants and subsidies",3209,DOLLARS(millions)
+2017,E,Construction,g_100-199,Total income,3226,DOLLARS(millions)
+2017,E,Construction,g_100-199,Total expenditure,3120,DOLLARS(millions)
+2017,E,Construction,g_100-199,Operating profit before tax,333,DOLLARS(millions)
+2017,E,Construction,g_100-199,Total assets,1924,DOLLARS(millions)
+2017,E,Construction,g_100-199,Fixed tangible assets,371,DOLLARS(millions)
+2017,E,Construction,h_200+,Activity unit,36,COUNT
+2017,E,Construction,h_200+,Rolling mean employees,26529,COUNT
+2017,E,Construction,h_200+,Salaries and wages paid,2219,DOLLARS(millions)
+2017,E,Construction,h_200+,"Sales, government funding, grants and subsidies",9191,DOLLARS(millions)
+2017,E,Construction,h_200+,Total income,9246,DOLLARS(millions)
+2017,E,Construction,h_200+,Total expenditure,9242,DOLLARS(millions)
+2017,E,Construction,h_200+,Operating profit before tax,5,DOLLARS(millions)
+2017,E,Construction,h_200+,Total assets,4016,DOLLARS(millions)
+2017,E,Construction,h_200+,Fixed tangible assets,922,DOLLARS(millions)
+2017,E,Construction,i_Industry_Total,Activity unit,58779,COUNT
+2017,E,Construction,i_Industry_Total,Rolling mean employees,153246,COUNT
+2017,E,Construction,i_Industry_Total,Salaries and wages paid,11169,DOLLARS(millions)
+2017,E,Construction,i_Industry_Total,"Sales, government funding, grants and subsidies",56049,DOLLARS(millions)
+2017,E,Construction,i_Industry_Total,Total income,56467,DOLLARS(millions)
+2017,E,Construction,i_Industry_Total,Total expenditure,53120,DOLLARS(millions)
+2017,E,Construction,i_Industry_Total,Operating profit before tax,4473,DOLLARS(millions)
+2017,E,Construction,i_Industry_Total,Total assets,35580,DOLLARS(millions)
+2017,E,Construction,i_Industry_Total,Fixed tangible assets,9217,DOLLARS(millions)
+2017,F,Wholesale Trade,a_0,Activity unit,8547,COUNT
+2017,F,Wholesale Trade,a_0,Rolling mean employees,0,COUNT
+2017,F,Wholesale Trade,a_0,Salaries and wages paid,337,DOLLARS(millions)
+2017,F,Wholesale Trade,a_0,"Sales, government funding, grants and subsidies",7509,DOLLARS(millions)
+2017,F,Wholesale Trade,a_0,Total income,7564,DOLLARS(millions)
+2017,F,Wholesale Trade,a_0,Total expenditure,7119,DOLLARS(millions)
+2017,F,Wholesale Trade,a_0,Operating profit before tax,503,DOLLARS(millions)
+2017,F,Wholesale Trade,a_0,Total assets,4839,DOLLARS(millions)
+2017,F,Wholesale Trade,a_0,Fixed tangible assets,1040,DOLLARS(millions)
+2017,F,Wholesale Trade,b_1-5,Activity unit,5529,COUNT
+2017,F,Wholesale Trade,b_1-5,Rolling mean employees,11988,COUNT
+2017,F,Wholesale Trade,b_1-5,Salaries and wages paid,782,DOLLARS(millions)
+2017,F,Wholesale Trade,b_1-5,"Sales, government funding, grants and subsidies",8735,DOLLARS(millions)
+2017,F,Wholesale Trade,b_1-5,Total income,8768,DOLLARS(millions)
+2017,F,Wholesale Trade,b_1-5,Total expenditure,8264,DOLLARS(millions)
+2017,F,Wholesale Trade,b_1-5,Operating profit before tax,540,DOLLARS(millions)
+2017,F,Wholesale Trade,b_1-5,Total assets,4625,DOLLARS(millions)
+2017,F,Wholesale Trade,b_1-5,Fixed tangible assets,508,DOLLARS(millions)
+2017,F,Wholesale Trade,c_6-9,Activity unit,1272,COUNT
+2017,F,Wholesale Trade,c_6-9,Rolling mean employees,9171,COUNT
+2017,F,Wholesale Trade,c_6-9,Salaries and wages paid,525,DOLLARS(millions)
+2017,F,Wholesale Trade,c_6-9,"Sales, government funding, grants and subsidies",5163,DOLLARS(millions)
+2017,F,Wholesale Trade,c_6-9,Total income,5194,DOLLARS(millions)
+2017,F,Wholesale Trade,c_6-9,Total expenditure,4920,DOLLARS(millions)
+2017,F,Wholesale Trade,c_6-9,Operating profit before tax,327,DOLLARS(millions)
+2017,F,Wholesale Trade,c_6-9,Total assets,2576,DOLLARS(millions)
+2017,F,Wholesale Trade,c_6-9,Fixed tangible assets,353,DOLLARS(millions)
+2017,F,Wholesale Trade,d_10-19,Activity unit,1137,COUNT
+2017,F,Wholesale Trade,d_10-19,Rolling mean employees,15348,COUNT
+2017,F,Wholesale Trade,d_10-19,Salaries and wages paid,950,DOLLARS(millions)
+2017,F,Wholesale Trade,d_10-19,"Sales, government funding, grants and subsidies",9530,DOLLARS(millions)
+2017,F,Wholesale Trade,d_10-19,Total income,9626,DOLLARS(millions)
+2017,F,Wholesale Trade,d_10-19,Total expenditure,9093,DOLLARS(millions)
+2017,F,Wholesale Trade,d_10-19,Operating profit before tax,540,DOLLARS(millions)
+2017,F,Wholesale Trade,d_10-19,Total assets,4920,DOLLARS(millions)
+2017,F,Wholesale Trade,d_10-19,Fixed tangible assets,383,DOLLARS(millions)
+2017,F,Wholesale Trade,e_20-49,Activity unit,681,COUNT
+2017,F,Wholesale Trade,e_20-49,Rolling mean employees,20292,COUNT
+2017,F,Wholesale Trade,e_20-49,Salaries and wages paid,1392,DOLLARS(millions)
+2017,F,Wholesale Trade,e_20-49,"Sales, government funding, grants and subsidies",14996,DOLLARS(millions)
+2017,F,Wholesale Trade,e_20-49,Total income,15090,DOLLARS(millions)
+2017,F,Wholesale Trade,e_20-49,Total expenditure,14653,DOLLARS(millions)
+2017,F,Wholesale Trade,e_20-49,Operating profit before tax,667,DOLLARS(millions)
+2017,F,Wholesale Trade,e_20-49,Total assets,7950,DOLLARS(millions)
+2017,F,Wholesale Trade,e_20-49,Fixed tangible assets,856,DOLLARS(millions)
+2017,F,Wholesale Trade,f_50-99,Activity unit,234,COUNT
+2017,F,Wholesale Trade,f_50-99,Rolling mean employees,16242,COUNT
+2017,F,Wholesale Trade,f_50-99,Salaries and wages paid,1042,DOLLARS(millions)
+2017,F,Wholesale Trade,f_50-99,"Sales, government funding, grants and subsidies",12723,DOLLARS(millions)
+2017,F,Wholesale Trade,f_50-99,Total income,12799,DOLLARS(millions)
+2017,F,Wholesale Trade,f_50-99,Total expenditure,12466,DOLLARS(millions)
+2017,F,Wholesale Trade,f_50-99,Operating profit before tax,503,DOLLARS(millions)
+2017,F,Wholesale Trade,f_50-99,Total assets,6745,DOLLARS(millions)
+2017,F,Wholesale Trade,f_50-99,Fixed tangible assets,650,DOLLARS(millions)
+2017,F,Wholesale Trade,g_100-199,Activity unit,69,COUNT
+2017,F,Wholesale Trade,g_100-199,Rolling mean employees,9321,COUNT
+2017,F,Wholesale Trade,g_100-199,Salaries and wages paid,608,DOLLARS(millions)
+2017,F,Wholesale Trade,g_100-199,"Sales, government funding, grants and subsidies",6159,DOLLARS(millions)
+2017,F,Wholesale Trade,g_100-199,Total income,6317,DOLLARS(millions)
+2017,F,Wholesale Trade,g_100-199,Total expenditure,6058,DOLLARS(millions)
+2017,F,Wholesale Trade,g_100-199,Operating profit before tax,281,DOLLARS(millions)
+2017,F,Wholesale Trade,g_100-199,Total assets,3674,DOLLARS(millions)
+2017,F,Wholesale Trade,g_100-199,Fixed tangible assets,273,DOLLARS(millions)
+2017,F,Wholesale Trade,h_200+,Activity unit,57,COUNT
+2017,F,Wholesale Trade,h_200+,Rolling mean employees,27216,COUNT
+2017,F,Wholesale Trade,h_200+,Salaries and wages paid,1796,DOLLARS(millions)
+2017,F,Wholesale Trade,h_200+,"Sales, government funding, grants and subsidies",32285,DOLLARS(millions)
+2017,F,Wholesale Trade,h_200+,Total income,32473,DOLLARS(millions)
+2017,F,Wholesale Trade,h_200+,Total expenditure,31833,DOLLARS(millions)
+2017,F,Wholesale Trade,h_200+,Operating profit before tax,781,DOLLARS(millions)
+2017,F,Wholesale Trade,h_200+,Total assets,11789,DOLLARS(millions)
+2017,F,Wholesale Trade,h_200+,Fixed tangible assets,1864,DOLLARS(millions)
+2017,F,Wholesale Trade,i_Industry_Total,Activity unit,17529,COUNT
+2017,F,Wholesale Trade,i_Industry_Total,Rolling mean employees,109572,COUNT
+2017,F,Wholesale Trade,i_Industry_Total,Salaries and wages paid,7433,DOLLARS(millions)
+2017,F,Wholesale Trade,i_Industry_Total,"Sales, government funding, grants and subsidies",97101,DOLLARS(millions)
+2017,F,Wholesale Trade,i_Industry_Total,Total income,97833,DOLLARS(millions)
+2017,F,Wholesale Trade,i_Industry_Total,Total expenditure,94406,DOLLARS(millions)
+2017,F,Wholesale Trade,i_Industry_Total,Operating profit before tax,4142,DOLLARS(millions)
+2017,F,Wholesale Trade,i_Industry_Total,Total assets,47116,DOLLARS(millions)
+2017,F,Wholesale Trade,i_Industry_Total,Fixed tangible assets,5926,DOLLARS(millions)
+2017,G,Retail Trade,a_0,Activity unit,11787,COUNT
+2017,G,Retail Trade,a_0,Rolling mean employees,0,COUNT
+2017,G,Retail Trade,a_0,Salaries and wages paid,236,DOLLARS(millions)
+2017,G,Retail Trade,a_0,"Sales, government funding, grants and subsidies",3014,DOLLARS(millions)
+2017,G,Retail Trade,a_0,Total income,3048,DOLLARS(millions)
+2017,G,Retail Trade,a_0,Total expenditure,2884,DOLLARS(millions)
+2017,G,Retail Trade,a_0,Operating profit before tax,196,DOLLARS(millions)
+2017,G,Retail Trade,a_0,Total assets,2430,DOLLARS(millions)
+2017,G,Retail Trade,a_0,Fixed tangible assets,922,DOLLARS(millions)
+2017,G,Retail Trade,b_1-5,Activity unit,10821,COUNT
+2017,G,Retail Trade,b_1-5,Rolling mean employees,24420,COUNT
+2017,G,Retail Trade,b_1-5,Salaries and wages paid,960,DOLLARS(millions)
+2017,G,Retail Trade,b_1-5,"Sales, government funding, grants and subsidies",7892,DOLLARS(millions)
+2017,G,Retail Trade,b_1-5,Total income,7925,DOLLARS(millions)
+2017,G,Retail Trade,b_1-5,Total expenditure,7720,DOLLARS(millions)
+2017,G,Retail Trade,b_1-5,Operating profit before tax,265,DOLLARS(millions)
+2017,G,Retail Trade,b_1-5,Total assets,3430,DOLLARS(millions)
+2017,G,Retail Trade,b_1-5,Fixed tangible assets,690,DOLLARS(millions)
+2017,G,Retail Trade,c_6-9,Activity unit,2202,COUNT
+2017,G,Retail Trade,c_6-9,Rolling mean employees,15822,COUNT
+2017,G,Retail Trade,c_6-9,Salaries and wages paid,594,DOLLARS(millions)
+2017,G,Retail Trade,c_6-9,"Sales, government funding, grants and subsidies",4424,DOLLARS(millions)
+2017,G,Retail Trade,c_6-9,Total income,4437,DOLLARS(millions)
+2017,G,Retail Trade,c_6-9,Total expenditure,4288,DOLLARS(millions)
+2017,G,Retail Trade,c_6-9,Operating profit before tax,184,DOLLARS(millions)
+2017,G,Retail Trade,c_6-9,Total assets,1531,DOLLARS(millions)
+2017,G,Retail Trade,c_6-9,Fixed tangible assets,261,DOLLARS(millions)
+2017,G,Retail Trade,d_10-19,Activity unit,1704,COUNT
+2017,G,Retail Trade,d_10-19,Rolling mean employees,22746,COUNT
+2017,G,Retail Trade,d_10-19,Salaries and wages paid,837,DOLLARS(millions)
+2017,G,Retail Trade,d_10-19,"Sales, government funding, grants and subsidies",6870,DOLLARS(millions)
+2017,G,Retail Trade,d_10-19,Total income,6888,DOLLARS(millions)
+2017,G,Retail Trade,d_10-19,Total expenditure,6600,DOLLARS(millions)
+2017,G,Retail Trade,d_10-19,Operating profit before tax,312,DOLLARS(millions)
+2017,G,Retail Trade,d_10-19,Total assets,2397,DOLLARS(millions)
+2017,G,Retail Trade,d_10-19,Fixed tangible assets,410,DOLLARS(millions)
+2017,G,Retail Trade,e_20-49,Activity unit,672,COUNT
+2017,G,Retail Trade,e_20-49,Rolling mean employees,19023,COUNT
+2017,G,Retail Trade,e_20-49,Salaries and wages paid,754,DOLLARS(millions)
+2017,G,Retail Trade,e_20-49,"Sales, government funding, grants and subsidies",7652,DOLLARS(millions)
+2017,G,Retail Trade,e_20-49,Total income,7676,DOLLARS(millions)
+2017,G,Retail Trade,e_20-49,Total expenditure,7415,DOLLARS(millions)
+2017,G,Retail Trade,e_20-49,Operating profit before tax,313,DOLLARS(millions)
+2017,G,Retail Trade,e_20-49,Total assets,2483,DOLLARS(millions)
+2017,G,Retail Trade,e_20-49,Fixed tangible assets,451,DOLLARS(millions)
+2017,G,Retail Trade,f_50-99,Activity unit,261,COUNT
+2017,G,Retail Trade,f_50-99,Rolling mean employees,18285,COUNT
+2017,G,Retail Trade,f_50-99,Salaries and wages paid,649,DOLLARS(millions)
+2017,G,Retail Trade,f_50-99,"Sales, government funding, grants and subsidies",6465,DOLLARS(millions)
+2017,G,Retail Trade,f_50-99,Total income,6489,DOLLARS(millions)
+2017,G,Retail Trade,f_50-99,Total expenditure,6296,DOLLARS(millions)
+2017,G,Retail Trade,f_50-99,Operating profit before tax,274,DOLLARS(millions)
+2017,G,Retail Trade,f_50-99,Total assets,1970,DOLLARS(millions)
+2017,G,Retail Trade,f_50-99,Fixed tangible assets,341,DOLLARS(millions)
+2017,G,Retail Trade,g_100-199,Activity unit,192,COUNT
+2017,G,Retail Trade,g_100-199,Rolling mean employees,26901,COUNT
+2017,G,Retail Trade,g_100-199,Salaries and wages paid,920,DOLLARS(millions)
+2017,G,Retail Trade,g_100-199,"Sales, government funding, grants and subsidies",9104,DOLLARS(millions)
+2017,G,Retail Trade,g_100-199,Total income,9149,DOLLARS(millions)
+2017,G,Retail Trade,g_100-199,Total expenditure,8971,DOLLARS(millions)
+2017,G,Retail Trade,g_100-199,Operating profit before tax,291,DOLLARS(millions)
+2017,G,Retail Trade,g_100-199,Total assets,2911,DOLLARS(millions)
+2017,G,Retail Trade,g_100-199,Fixed tangible assets,541,DOLLARS(millions)
+2017,G,Retail Trade,h_200+,Activity unit,126,COUNT
+2017,G,Retail Trade,h_200+,Rolling mean employees,82020,COUNT
+2017,G,Retail Trade,h_200+,Salaries and wages paid,2984,DOLLARS(millions)
+2017,G,Retail Trade,h_200+,"Sales, government funding, grants and subsidies",24856,DOLLARS(millions)
+2017,G,Retail Trade,h_200+,Total income,24984,DOLLARS(millions)
+2017,G,Retail Trade,h_200+,Total expenditure,23858,DOLLARS(millions)
+2017,G,Retail Trade,h_200+,Operating profit before tax,1297,DOLLARS(millions)
+2017,G,Retail Trade,h_200+,Total assets,9676,DOLLARS(millions)
+2017,G,Retail Trade,h_200+,Fixed tangible assets,2194,DOLLARS(millions)
+2017,G,Retail Trade,i_Industry_Total,Activity unit,27765,COUNT
+2017,G,Retail Trade,i_Industry_Total,Rolling mean employees,209220,COUNT
+2017,G,Retail Trade,i_Industry_Total,Salaries and wages paid,7934,DOLLARS(millions)
+2017,G,Retail Trade,i_Industry_Total,"Sales, government funding, grants and subsidies",70277,DOLLARS(millions)
+2017,G,Retail Trade,i_Industry_Total,Total income,70596,DOLLARS(millions)
+2017,G,Retail Trade,i_Industry_Total,Total expenditure,68034,DOLLARS(millions)
+2017,G,Retail Trade,i_Industry_Total,Operating profit before tax,3130,DOLLARS(millions)
+2017,G,Retail Trade,i_Industry_Total,Total assets,26827,DOLLARS(millions)
+2017,G,Retail Trade,i_Industry_Total,Fixed tangible assets,5811,DOLLARS(millions)
+2017,H,Accommodation and Food Services,a_0,Activity unit,6228,COUNT
+2017,H,Accommodation and Food Services,a_0,Rolling mean employees,0,COUNT
+2017,H,Accommodation and Food Services,a_0,Salaries and wages paid,146,DOLLARS(millions)
+2017,H,Accommodation and Food Services,a_0,"Sales, government funding, grants and subsidies",952,DOLLARS(millions)
+2017,H,Accommodation and Food Services,a_0,Total income,1000,DOLLARS(millions)
+2017,H,Accommodation and Food Services,a_0,Total expenditure,871,DOLLARS(millions)
+2017,H,Accommodation and Food Services,a_0,Operating profit before tax,104,DOLLARS(millions)
+2017,H,Accommodation and Food Services,a_0,Total assets,2701,DOLLARS(millions)
+2017,H,Accommodation and Food Services,a_0,Fixed tangible assets,1897,DOLLARS(millions)
+2017,H,Accommodation and Food Services,b_1-5,Activity unit,8109,COUNT
+2017,H,Accommodation and Food Services,b_1-5,Rolling mean employees,20460,COUNT
+2017,H,Accommodation and Food Services,b_1-5,Salaries and wages paid,519,DOLLARS(millions)
+2017,H,Accommodation and Food Services,b_1-5,"Sales, government funding, grants and subsidies",2174,DOLLARS(millions)
+2017,H,Accommodation and Food Services,b_1-5,Total income,2210,DOLLARS(millions)
+2017,H,Accommodation and Food Services,b_1-5,Total expenditure,2098,DOLLARS(millions)
+2017,H,Accommodation and Food Services,b_1-5,Operating profit before tax,94,DOLLARS(millions)
+2017,H,Accommodation and Food Services,b_1-5,Total assets,2263,DOLLARS(millions)
+2017,H,Accommodation and Food Services,b_1-5,Fixed tangible assets,1278,DOLLARS(millions)
+2017,H,Accommodation and Food Services,c_6-9,Activity unit,2829,COUNT
+2017,H,Accommodation and Food Services,c_6-9,Rolling mean employees,20496,COUNT
+2017,H,Accommodation and Food Services,c_6-9,Salaries and wages paid,484,DOLLARS(millions)
+2017,H,Accommodation and Food Services,c_6-9,"Sales, government funding, grants and subsidies",1561,DOLLARS(millions)
+2017,H,Accommodation and Food Services,c_6-9,Total income,1576,DOLLARS(millions)
+2017,H,Accommodation and Food Services,c_6-9,Total expenditure,1522,DOLLARS(millions)
+2017,H,Accommodation and Food Services,c_6-9,Operating profit before tax,47,DOLLARS(millions)
+2017,H,Accommodation and Food Services,c_6-9,Total assets,999,DOLLARS(millions)
+2017,H,Accommodation and Food Services,c_6-9,Fixed tangible assets,493,DOLLARS(millions)
+2017,H,Accommodation and Food Services,d_10-19,Activity unit,2565,COUNT
+2017,H,Accommodation and Food Services,d_10-19,Rolling mean employees,34104,COUNT
+2017,H,Accommodation and Food Services,d_10-19,Salaries and wages paid,852,DOLLARS(millions)
+2017,H,Accommodation and Food Services,d_10-19,"Sales, government funding, grants and subsidies",2485,DOLLARS(millions)
+2017,H,Accommodation and Food Services,d_10-19,Total income,2506,DOLLARS(millions)
+2017,H,Accommodation and Food Services,d_10-19,Total expenditure,2413,DOLLARS(millions)
+2017,H,Accommodation and Food Services,d_10-19,Operating profit before tax,87,DOLLARS(millions)
+2017,H,Accommodation and Food Services,d_10-19,Total assets,1710,DOLLARS(millions)
+2017,H,Accommodation and Food Services,d_10-19,Fixed tangible assets,985,DOLLARS(millions)
+2017,H,Accommodation and Food Services,e_20-49,Activity unit,1224,COUNT
+2017,H,Accommodation and Food Services,e_20-49,Rolling mean employees,34236,COUNT
+2017,H,Accommodation and Food Services,e_20-49,Salaries and wages paid,863,DOLLARS(millions)
+2017,H,Accommodation and Food Services,e_20-49,"Sales, government funding, grants and subsidies",2689,DOLLARS(millions)
+2017,H,Accommodation and Food Services,e_20-49,Total income,2725,DOLLARS(millions)
+2017,H,Accommodation and Food Services,e_20-49,Total expenditure,2545,DOLLARS(millions)
+2017,H,Accommodation and Food Services,e_20-49,Operating profit before tax,184,DOLLARS(millions)
+2017,H,Accommodation and Food Services,e_20-49,Total assets,1917,DOLLARS(millions)
+2017,H,Accommodation and Food Services,e_20-49,Fixed tangible assets,1135,DOLLARS(millions)
+2017,H,Accommodation and Food Services,f_50-99,Activity unit,186,COUNT
+2017,H,Accommodation and Food Services,f_50-99,Rolling mean employees,12876,COUNT
+2017,H,Accommodation and Food Services,f_50-99,Salaries and wages paid,365,DOLLARS(millions)
+2017,H,Accommodation and Food Services,f_50-99,"Sales, government funding, grants and subsidies",1148,DOLLARS(millions)
+2017,H,Accommodation and Food Services,f_50-99,Total income,1172,DOLLARS(millions)
+2017,H,Accommodation and Food Services,f_50-99,Total expenditure,1067,DOLLARS(millions)
+2017,H,Accommodation and Food Services,f_50-99,Operating profit before tax,104,DOLLARS(millions)
+2017,H,Accommodation and Food Services,f_50-99,Total assets,1215,DOLLARS(millions)
+2017,H,Accommodation and Food Services,f_50-99,Fixed tangible assets,725,DOLLARS(millions)
+2017,H,Accommodation and Food Services,g_100-199,Activity unit,75,COUNT
+2017,H,Accommodation and Food Services,g_100-199,Rolling mean employees,10569,COUNT
+2017,H,Accommodation and Food Services,g_100-199,Salaries and wages paid,299,DOLLARS(millions)
+2017,H,Accommodation and Food Services,g_100-199,"Sales, government funding, grants and subsidies",1068,DOLLARS(millions)
+2017,H,Accommodation and Food Services,g_100-199,Total income,1078,DOLLARS(millions)
+2017,H,Accommodation and Food Services,g_100-199,Total expenditure,919,DOLLARS(millions)
+2017,H,Accommodation and Food Services,g_100-199,Operating profit before tax,170,DOLLARS(millions)
+2017,H,Accommodation and Food Services,g_100-199,Total assets,1292,DOLLARS(millions)
+2017,H,Accommodation and Food Services,g_100-199,Fixed tangible assets,741,DOLLARS(millions)
+2017,H,Accommodation and Food Services,h_200+,Activity unit,33,COUNT
+2017,H,Accommodation and Food Services,h_200+,Rolling mean employees,21315,COUNT
+2017,H,Accommodation and Food Services,h_200+,Salaries and wages paid,602,DOLLARS(millions)
+2017,H,Accommodation and Food Services,h_200+,"Sales, government funding, grants and subsidies",2140,DOLLARS(millions)
+2017,H,Accommodation and Food Services,h_200+,Total income,2161,DOLLARS(millions)
+2017,H,Accommodation and Food Services,h_200+,Total expenditure,1907,DOLLARS(millions)
+2017,H,Accommodation and Food Services,h_200+,Operating profit before tax,252,DOLLARS(millions)
+2017,H,Accommodation and Food Services,h_200+,Total assets,2895,DOLLARS(millions)
+2017,H,Accommodation and Food Services,h_200+,Fixed tangible assets,1842,DOLLARS(millions)
+2017,H,Accommodation and Food Services,i_Industry_Total,Activity unit,21246,COUNT
+2017,H,Accommodation and Food Services,i_Industry_Total,Rolling mean employees,154056,COUNT
+2017,H,Accommodation and Food Services,i_Industry_Total,Salaries and wages paid,4131,DOLLARS(millions)
+2017,H,Accommodation and Food Services,i_Industry_Total,"Sales, government funding, grants and subsidies",14217,DOLLARS(millions)
+2017,H,Accommodation and Food Services,i_Industry_Total,Total income,14429,DOLLARS(millions)
+2017,H,Accommodation and Food Services,i_Industry_Total,Total expenditure,13343,DOLLARS(millions)
+2017,H,Accommodation and Food Services,i_Industry_Total,Operating profit before tax,1042,DOLLARS(millions)
+2017,H,Accommodation and Food Services,i_Industry_Total,Total assets,14992,DOLLARS(millions)
+2017,H,Accommodation and Food Services,i_Industry_Total,Fixed tangible assets,9095,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",a_0,Activity unit,10236,COUNT
+2017,I,"Transport, Postal and Warehousing",a_0,Rolling mean employees,0,COUNT
+2017,I,"Transport, Postal and Warehousing",a_0,Salaries and wages paid,136,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",a_0,"Sales, government funding, grants and subsidies",1494,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",a_0,Total income,1523,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",a_0,Total expenditure,1211,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",a_0,Operating profit before tax,309,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",a_0,Total assets,6079,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",a_0,Fixed tangible assets,5068,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",b_1-5,Activity unit,4047,COUNT
+2017,I,"Transport, Postal and Warehousing",b_1-5,Rolling mean employees,7788,COUNT
+2017,I,"Transport, Postal and Warehousing",b_1-5,Salaries and wages paid,415,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",b_1-5,"Sales, government funding, grants and subsidies",1647,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",b_1-5,Total income,1683,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",b_1-5,Total expenditure,1609,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",b_1-5,Operating profit before tax,77,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",b_1-5,Total assets,2079,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",b_1-5,Fixed tangible assets,1161,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",c_6-9,Activity unit,609,COUNT
+2017,I,"Transport, Postal and Warehousing",c_6-9,Rolling mean employees,4290,COUNT
+2017,I,"Transport, Postal and Warehousing",c_6-9,Salaries and wages paid,191,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",c_6-9,"Sales, government funding, grants and subsidies",788,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",c_6-9,Total income,793,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",c_6-9,Total expenditure,677,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",c_6-9,Operating profit before tax,147,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",c_6-9,Total assets,790,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",c_6-9,Fixed tangible assets,342,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",d_10-19,Activity unit,573,COUNT
+2017,I,"Transport, Postal and Warehousing",d_10-19,Rolling mean employees,7392,COUNT
+2017,I,"Transport, Postal and Warehousing",d_10-19,Salaries and wages paid,376,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",d_10-19,"Sales, government funding, grants and subsidies",1483,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",d_10-19,Total income,1503,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",d_10-19,Total expenditure,1412,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",d_10-19,Operating profit before tax,94,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",d_10-19,Total assets,1382,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",d_10-19,Fixed tangible assets,691,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",e_20-49,Activity unit,381,COUNT
+2017,I,"Transport, Postal and Warehousing",e_20-49,Rolling mean employees,11559,COUNT
+2017,I,"Transport, Postal and Warehousing",e_20-49,Salaries and wages paid,661,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",e_20-49,"Sales, government funding, grants and subsidies",2159,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",e_20-49,Total income,2189,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",e_20-49,Total expenditure,2033,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",e_20-49,Operating profit before tax,135,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",e_20-49,Total assets,2562,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",e_20-49,Fixed tangible assets,1611,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",f_50-99,Activity unit,114,COUNT
+2017,I,"Transport, Postal and Warehousing",f_50-99,Rolling mean employees,7839,COUNT
+2017,I,"Transport, Postal and Warehousing",f_50-99,Salaries and wages paid,444,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",f_50-99,"Sales, government funding, grants and subsidies",1699,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",f_50-99,Total income,1721,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",f_50-99,Total expenditure,1510,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",f_50-99,Operating profit before tax,214,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",f_50-99,Total assets,1652,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",f_50-99,Fixed tangible assets,850,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",g_100-199,Activity unit,63,COUNT
+2017,I,"Transport, Postal and Warehousing",g_100-199,Rolling mean employees,8559,COUNT
+2017,I,"Transport, Postal and Warehousing",g_100-199,Salaries and wages paid,515,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",g_100-199,"Sales, government funding, grants and subsidies",1803,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",g_100-199,Total income,1853,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",g_100-199,Total expenditure,1722,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",g_100-199,Operating profit before tax,153,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",g_100-199,Total assets,2787,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",g_100-199,Fixed tangible assets,1867,DOLLARS(millions)
+2017,I,"Transport, Postal and Warehousing",h_200+,Activity unit,69,COUNT

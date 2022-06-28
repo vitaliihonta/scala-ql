@@ -22,7 +22,8 @@ case class ExcelReadContext(
   headers:                Map[String, Int],
   cellResolutionStrategy: CellResolutionStrategy,
   location:               CodecPath,
-  currentOffset:          Int)
+  currentOffset:          Int,
+  documentRowNumber:      Int)
     extends TableApiContext[ExcelReadContext]
     with ExcelContext { self =>
 
@@ -40,10 +41,10 @@ case class ExcelReadContext(
       )
 
   def cannotDecodeError(cause: String): ExcelDecoderException.CannotDecode =
-    new ExcelDecoderException.CannotDecode(location, cause)
+    new ExcelDecoderException.CannotDecode(location, documentRowNumber, cause)
 
   def fieldNotFoundError: ExcelDecoderException.FieldNotFound =
-    new ExcelDecoderException.FieldNotFound(location)
+    new ExcelDecoderException.FieldNotFound(location, documentRowNumber)
 
   def accumulatingError(name: String, errors: List[ExcelDecoderException]): ExcelDecoderException.Accumulating = {
     def flatten(errors: List[ExcelDecoderException], acc: List[ExcelDecoderException]): List[ExcelDecoderException] =

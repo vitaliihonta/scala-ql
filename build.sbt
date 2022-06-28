@@ -310,8 +310,9 @@ ThisBuild / updateSiteVariables := {
 
   val variables =
     Map[String, String](
-      "organization"  -> (ThisBuild / organization).value,
-      "latestVersion" -> (ThisBuild / version).value
+      "organization"       -> (ThisBuild / organization).value,
+      "latestVersion"      -> (ThisBuild / version).value,
+      "downloadReportsBaseUrl" -> "https://scala-ql.vhonta.dev/assets"
     )
 
   val fileHeader =

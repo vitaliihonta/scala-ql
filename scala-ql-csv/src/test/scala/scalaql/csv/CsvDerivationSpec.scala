@@ -29,7 +29,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
 
   "CsvDecoder" should {
     "decode correctly with default config" in {
-      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal, caseSensitive = true)
 
       CsvDecoder[Person]
         .read(
@@ -54,7 +54,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "decode correctly with naming" in {
-      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.SnakeCase)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.SnakeCase, caseSensitive = true)
 
       CsvDecoder[Person]
         .read(
@@ -79,7 +79,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "decode correctly for nested fields" in {
-      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal, caseSensitive = true)
 
       CsvDecoder[NestedPerson]
         .read(
@@ -108,7 +108,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "decode options correctly" in {
-      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal, caseSensitive = true)
       CsvDecoder[PersonWithOption]
         .read(
           Map(
@@ -125,7 +125,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "decode nested options correctly" in {
-      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal, caseSensitive = true)
       CsvDecoder[NestedPersonOption]
         .read(
           Map(
@@ -175,7 +175,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "decode handling errors" in {
-      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal, caseSensitive = true)
 
       val result = CsvDecoder[Person]
         .read(
@@ -201,7 +201,7 @@ class CsvDerivationSpec extends ScalaqlUnitSpec {
     }
 
     "decode nested options handling errors" in {
-      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal)
+      implicit val context: CsvReadContext = CsvReadContext.initial(Naming.Literal, caseSensitive = true)
 
       val result = CsvDecoder[NestedPersonOption]
         .read(
