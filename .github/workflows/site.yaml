@@ -3,11 +3,6 @@ on:
   push:
     tags: [ "*" ]
   workflow_dispatch:    
-    inputs:
-      environment:
-        description: 'Choose an environment to deploy to: <dev|staging|prod>'
-        required: true
-        default: 'dev'
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -27,18 +22,14 @@ jobs:
             ~/.ivy2/cache
             ~/.coursier
           key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
-#       - name: Compile
-#         run: sbt +compile
-#       - name: Generate doc
-#         run: sbt docs/mdoc
-#       - name: Generate site
-#         working-directory: 'website'
-#         run: yarn install && yarn run build
+      - name: Compile
+        run: sbt +compile
+      - name: Generate doc
+        run: sbt docs/mdoc
+      - name: Generate site
+        working-directory: 'website'
+        run: yarn install && yarn run build
+      - name: Install wrangler
+        run: npm i -g wrangler
       - name: Publish
-        uses: cloudflare/wrangler-action@2.0.0
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: --version
-#           command: pages publish --env ${{ github.event.inputs.environment }} --project-name=scala-ql --commit-dirty=true build/
-          workingDirectory: 'website'
+        run: npx wrangler pages publish --project-name=scala-ql --commit-dirty=true build/
