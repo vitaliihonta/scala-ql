@@ -4,8 +4,7 @@
       "core/overview",
       "core/basics",
       "core/aggregations",
-      "core/joins",
-      "core/diving-deeper"
+      "core/joins"
     ],
     "CSV": [
       "csv/overview",
@@ -27,8 +26,13 @@
     "HTML": [
       "html/overview",
       "html/writing",
-      "html/nested",
       "html/styling"
+    ],
+    "Advanced": [
+      "advanced/aliasing",
+      "advanced/multiple-formats",
+      "advanced/arrow-composition",
+      "advanced/sub-select"
     ]
   }
 }

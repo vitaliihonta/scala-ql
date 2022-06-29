@@ -1,6 +1,6 @@
 # Writing HTML files
 
-In this examples you will learn how to generate HTML reports based on your data.
+In these examples you will learn how to generate HTML reports based on your data.
 
 Start by importing `scalaql`:
 

@@ -2,11 +2,12 @@ package scalaql.syntax
 
 import scalaql.{Query, QueryResult, forbiddenInheritance}
 import scalaql.describe.Describe
+import scalaql.utils.EachSyntax
 import scalaql.visualization.ShowAsTable
 import scala.language.implicitConversions
 
 @forbiddenInheritance
-trait ScalaqlSyntax extends ScalaqlAliases with ScalaqlDsl with OrderingSyntax with AliasingSyntax {
+trait ScalaqlSyntax extends ScalaqlAliases with ScalaqlDsl with OrderingSyntax with AliasingSyntax with EachSyntax {
 
   final implicit def RunSyntax[In, Out](self: QueryResult[In, Out]): RunSyntax[In, Out] =
     new RunSyntax[In, Out](self)
