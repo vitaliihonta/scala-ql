@@ -41,8 +41,11 @@ val query: Query[From[Student] with From[Faculty], FacultyStats] =
     .join(select[Faculty])
     .on(_.faculty == _.name)
     .groupBy { case (_, faculty) => faculty.name }
-    .aggregate((_, studentsWithFaculties) => studentsWithFaculties.avgBy { case (student, _) => student.grade })
-    .map((FacultyStats.apply _).tupled)
+    .aggregate { (faculty, studentsWithFaculties) =>
+      studentsWithFaculties
+        .avgBy { case (student, _) => student.grade }
+        .map(avgGrade => FacultyStats(faculty, avgGrade))
+    }
 
 val studentsPath = Paths.get("students.csv")
 val facultiesPath = Paths.get("faculties.json")
@@ -83,7 +86,7 @@ export default function Home() {
           <div className={styles.getStarted}>
             <Link
               className="button button--outline button--primary button--lg"
-              to={useBaseUrl('docs/overview')}
+              to={useBaseUrl('docs/core/overview')}
             >
               Get Started
             </Link>
@@ -107,7 +110,7 @@ export default function Home() {
       <div className={styles.gettingStartedSection}>
         <div className="container padding-vert--xl text--left">
           <div className="row">
-            <div className="col col--6 col--offset-1">
+            <div className="col col--10 col--offset-1">
               <h2>Get started easily</h2>
               <p>Here is an example of how to query data from various sources.</p>
               <br />

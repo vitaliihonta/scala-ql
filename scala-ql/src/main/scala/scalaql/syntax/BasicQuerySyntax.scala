@@ -21,4 +21,7 @@ final class BasicQuerySyntax[In, Out](private val self: Query[In, Out]) extends 
 
   def foreach(f: => (Out => Unit)): QueryResult[In, Unit] =
     new QueryResult.Foreach(self, () => f)
+
+  def toMapBy[K](f: Out => K): QueryResult[In, Map[K, Out]] =
+    new QueryResult.CollectMap(self.map(out => f(out) -> out))
 }

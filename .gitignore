@@ -14,6 +14,6 @@ scala-ql-excel/src/test/out/*.xlsx
 website/build/
 website/node_modules/
 website/.docusaurus
-website/yarn.lock
-website/package-lock.json
+yarn.lock
+package-lock.json
 website/variables.js

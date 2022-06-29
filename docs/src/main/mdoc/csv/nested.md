@@ -1,4 +1,4 @@
-# Writing nested case classes
+# Writing nested case classes into CSV
 
 ScalaQL allows you to write nested case classes into CSV files.
 It will automatically flatten headers and rows when writing to a file.
@@ -37,15 +37,16 @@ val nestedAggregation: Query[From[Student], FacultyInfoNested] =
   select[Student]
     .groupBy(_.faculty)
     .aggregate((faculty, students) =>
-      students.avgBy(_.age.toDouble) &&
+      (
+        students.avgBy(_.age.toDouble) &&
         students.sumBy(_.grade)
+      ).map { case (avgAge, totalGrade) =>
+        FacultyInfoNested(
+          FacultyDescription(faculty),
+          FacultyInfoStats(avgAge, totalGrade)
+        )      
+      }
     )
-    .map { case (faculty, avgAge, totalGrade) => 
-       FacultyInfoNested(
-         FacultyDescription(faculty),
-         FacultyInfoStats(avgAge, totalGrade)
-       )
-    }
 ```
 
 It will produce the following CSV file:

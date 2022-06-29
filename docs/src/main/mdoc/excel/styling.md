@@ -96,8 +96,8 @@ val reportAggregation: Query[From[OrderInfo], OrderReport] = select[OrderInfo]
           OrdersPerDate(date, totalProfit, ordersList)
         }
       )
+      .map(ordersPerDate => OrderReport(region, ordersPerDate))
   }
-  .map((OrderReport.apply _).tupled)
 ```
 
 Then write the file as usual:

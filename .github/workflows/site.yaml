@@ -24,11 +24,8 @@ jobs:
           key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
       - name: Compile
         run: sbt +compile
-      - name: Generate doc
-        run: sbt docs/mdoc
       - name: Generate site
-        working-directory: 'website'
-        run: npm install && npm run build
+        run: make build-site
       - name: Publish
         uses: cloudflare/wrangler-action@2.0.0
         with:

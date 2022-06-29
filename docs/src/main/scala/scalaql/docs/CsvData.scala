@@ -1,6 +1,8 @@
 package scalaql.docs
 
-object CsvData {
+import scala.util.Try
+
+object CsvData extends App {
   case class EnterpriseSurvey(
     year:               Int,
     industryCodeAnzsic: String,
@@ -8,5 +10,9 @@ object CsvData {
     rmeSizeGrp:         String,
     variable:           String,
     value:              String,
-    unit:               String)
+    unit:               String) {
+
+    def decimalValue: BigDecimal =
+      Try(BigDecimal(value)).toOption.getOrElse(BigDecimal(0))
+  }
 }

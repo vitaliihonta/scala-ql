@@ -3,7 +3,9 @@ package scalaql
 import izumi.reflect.Tag
 import izumi.reflect.macrortti.LightTypeTag
 
-final class From[A] private (private[scalaql] val inputs: Map[LightTypeTag, Iterable[Any]]) extends Serializable {
+final class From[A] private[scalaql] (private[scalaql] val inputs: Map[LightTypeTag, Iterable[Any]])
+    extends Serializable {
+
   private[scalaql] def get(tag: LightTypeTag): Iterable[Any] = inputs(tag)
 }
 
