@@ -193,8 +193,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       val query: Query[From[Person], PeopleStats] = select[Person]
         .groupBy(_.profession)
-        .aggregate((profession, person) => person.avgBy(_.age.toDouble))
-        .map((PeopleStats.apply _).tupled)
+        .aggregate((profession, person) => person.avgBy(_.age.toDouble).map(PeopleStats(profession, _)))
 
       val expectedResult =
         people.groupBy(_.profession).map { case (profession, people) =>
@@ -210,6 +209,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query: Query[From[Person], (Profession, Double, Set[Profession], Set[Industry])] = select[Person]
         .groupBy(_.profession)
         .aggregate { (profession, person) =>
+          person.const(profession) &&
           person.avgBy(_.age.toDouble) &&
           person.distinctBy(_.profession) &&
           person.flatDistinctBy(_.profession.industries)
@@ -234,6 +234,8 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query: Query[From[Person], (Profession, Int, Set[Profession], Double, Int)] = select[Person]
         .groupBy(_.profession, _.age)
         .aggregate { case ((profession, age), person) =>
+          person.const(profession) &&
+          person.const(age) &&
           person.distinctBy(_.profession) &&
           person.avgBy(_.age.toDouble) &&
           person.sumBy(_.age)

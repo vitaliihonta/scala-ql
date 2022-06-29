@@ -117,32 +117,29 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
 
       select[Person]
         .groupBy(_.isProgrammer)
-        .aggregate { (_, people) =>
-          people.report(_.birthDay.getYear) { (bdayYear, people) =>
-            people.const(bdayYear) &&
-            people.avgBy(_.workingExperienceYears.toDouble) &&
-            people.toList
-          }
-        }
-        .map { case (isProgrammer, stats) =>
-          PeopleStats(
-            isProgrammer,
-            stats.map { case (birthYear, avgWorkingExperienceYears, people) =>
-              PeopleStatsPerIsProgrammer(
-                birthYear,
-                avgWorkingExperienceYears,
-                people.map { person =>
-                  PersonRecord(
-                    id = person.id,
-                    name = person.name,
-                    workingExperienceYears = person.workingExperienceYears,
-                    birthDay = person.birthDay,
-                    createdAt = person.createdAt
-                  )
-                }
-              )
+        .aggregate { (isProgrammer, people) =>
+          people
+            .report(_.birthDay.getYear) { (birthYear, people) =>
+              (
+                people.avgBy(_.workingExperienceYears.toDouble) &&
+                  people.toList
+              ).map { case (avgWorkingExperienceYears, people) =>
+                PeopleStatsPerIsProgrammer(
+                  birthYear,
+                  avgWorkingExperienceYears,
+                  people.map { person =>
+                    PersonRecord(
+                      id = person.id,
+                      name = person.name,
+                      workingExperienceYears = person.workingExperienceYears,
+                      birthDay = person.birthDay,
+                      createdAt = person.createdAt
+                    )
+                  }
+                )
+              }
             }
-          )
+            .map(PeopleStats(isProgrammer, _))
         }
         .foreach(
           html.write[PeopleStats].string(resultBuilder)
@@ -238,32 +235,29 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
 
       select[Person]
         .groupBy(_.isProgrammer)
-        .aggregate { (_, people) =>
-          people.report(_.birthDay.getYear) { (bdayYear, people) =>
-            people.const(bdayYear) &&
-            people.avgBy(_.workingExperienceYears.toDouble) &&
-            people.toList
-          }
-        }
-        .map { case (isProgrammer, stats) =>
-          PeopleStats(
-            isProgrammer,
-            stats.map { case (birthYear, avgWorkingExperienceYears, people) =>
-              PeopleStatsPerIsProgrammer(
-                birthYear,
-                avgWorkingExperienceYears,
-                people.map { person =>
-                  PersonRecord(
-                    id = person.id,
-                    name = person.name,
-                    workingExperienceYears = person.workingExperienceYears,
-                    birthDay = person.birthDay,
-                    createdAt = person.createdAt
-                  )
-                }
-              )
+        .aggregate { (isProgrammer, people) =>
+          people
+            .report(_.birthDay.getYear) { (birthYear, people) =>
+              (
+                people.avgBy(_.workingExperienceYears.toDouble) &&
+                  people.toList
+              ).map { case (avgWorkingExperienceYears, people) =>
+                PeopleStatsPerIsProgrammer(
+                  birthYear,
+                  avgWorkingExperienceYears,
+                  people.map { person =>
+                    PersonRecord(
+                      id = person.id,
+                      name = person.name,
+                      workingExperienceYears = person.workingExperienceYears,
+                      birthDay = person.birthDay,
+                      createdAt = person.createdAt
+                    )
+                  }
+                )
+              }
             }
-          )
+            .map(PeopleStats(isProgrammer, _))
         }
         .foreach(
           html

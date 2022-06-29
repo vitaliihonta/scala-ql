@@ -12,8 +12,11 @@ object FilesExample extends App {
       .join(select[Faculty])
       .on(_.faculty == _.name)
       .groupBy { case (_, faculty) => faculty.name }
-      .aggregate((_, studentsWithFaculties) => studentsWithFaculties.avgBy { case (student, _) => student.grade })
-      .map((FacultyStats.apply _).tupled)
+      .aggregate { (faculty, studentsWithFaculties) =>
+        studentsWithFaculties
+          .avgBy { case (student, _) => student.grade }
+          .map(avgGrade => FacultyStats(faculty, avgGrade))
+      }
 
   val studentsPath  = Paths.get("examples/src/main/resources/students.csv")
   val facultiesPath = Paths.get("examples/src/main/resources/faculties.json")

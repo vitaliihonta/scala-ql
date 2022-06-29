@@ -38,6 +38,11 @@ object TupleFlatten extends LowPriorityTupled0 {
     TupleFlatten.create[((A, B, C), (D, E, F)), (A, B, C, D, E, F)] { case ((a, b, c), (d, e, f)) =>
       (a, b, c, d, e, f)
     }
+
+  implicit def tupled4Plus1[A, B, C, D, E]: TupleFlatten.Aux[((A, B, C, D), E), (A, B, C, D, E)] =
+    TupleFlatten.create[((A, B, C, D), E), (A, B, C, D, E)] { case ((a, b, c, d), e) =>
+      (a, b, c, d, e)
+    }
   // todo: make up to 7
 }
 

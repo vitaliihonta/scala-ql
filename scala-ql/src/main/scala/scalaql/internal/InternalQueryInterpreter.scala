@@ -108,7 +108,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         while (step.check() && grouped.hasNext) {
           val (gr, ys)   = grouped.next()
           val aggregated = agg(gr, AggregationView.create[out0]).apply(ys.toList)
-          step.next(tupled(gr -> aggregated))
+          step.next(tupled(aggregated))
         }
 
       case query: Query.JoinedQuery[In, out0, out1, Out] =>

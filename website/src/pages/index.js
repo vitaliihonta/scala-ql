@@ -41,8 +41,11 @@ val query: Query[From[Student] with From[Faculty], FacultyStats] =
     .join(select[Faculty])
     .on(_.faculty == _.name)
     .groupBy { case (_, faculty) => faculty.name }
-    .aggregate((_, studentsWithFaculties) => studentsWithFaculties.avgBy { case (student, _) => student.grade })
-    .map((FacultyStats.apply _).tupled)
+    .aggregate { (faculty, studentsWithFaculties) =>
+      studentsWithFaculties
+        .avgBy { case (student, _) => student.grade }
+        .map(avgGrade => FacultyStats(faculty, avgGrade))
+    }
 
 val studentsPath = Paths.get("students.csv")
 val facultiesPath = Paths.get("faculties.json")

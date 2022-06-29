@@ -213,7 +213,7 @@ object Query {
     private[scalaql] val source: Query[In, Out0],
     private[scalaql] val group:  GroupBy[Out0, G],
     private[scalaql] val agg:    Aggregate[G, Out0, Out1],
-    private[scalaql] val tupled: TupleFlatten.Aux[(G, Out1), Out2])
+    private[scalaql] val tupled: TupleFlatten.Aux[Out1, Out2])
       extends Query[In, Out2] {
 
     override def toString: String = s"$source -> AGGREGATE"
@@ -223,7 +223,7 @@ object Query {
 
     def aggregate[B](
       f:               Aggregate[G, Out, B] @uncheckedVariance
-    )(implicit tupled: TupleFlatten[(G, B)]
+    )(implicit tupled: TupleFlatten[B]
     ): Query[In, tupled.Out]
   }
 
@@ -232,7 +232,7 @@ object Query {
     private[scalaql] val group:  GroupBy[Out, G])
       extends GroupByQuery[In, Out, G] {
 
-    override def aggregate[B](f: Aggregate[G, Out, B])(implicit tupled: TupleFlatten[(G, B)]): Query[In, tupled.Out] =
+    override def aggregate[B](f: Aggregate[G, Out, B])(implicit tupled: TupleFlatten[B]): Query[In, tupled.Out] =
       new AggregateQuery[In, Out, G, B, tupled.Out](source, group, f, tupled)
   }
 

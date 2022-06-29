@@ -11,12 +11,13 @@ object AndThenMain extends App {
 
   val query1: Query[From[Student], FacultyInfo] = select[Student]
     .groupBy(_.faculty)
-    .aggregate((_, student) =>
-      student.avgBy(_.age.toDouble) &&
-        student.avgBy(_.grade) &&
-        student.map(_.specialization).distinct
+    .aggregate((faculty, student) =>
+      (
+        student.avgBy(_.age.toDouble) &&
+          student.avgBy(_.grade) &&
+          student.map(_.specialization).distinct
+      ).map { case (avgAge, avgGrade, specs) => FacultyInfo(faculty, avgAge, avgGrade, specs) }
     )
-    .map((FacultyInfo.apply _).tupled)
 
   val query2: Query[From[FacultyInfo], SpecializationInfo] = select[FacultyInfo]
     .mapConcat(facultyInfo => facultyInfo.specs.map(facultyInfo.faculty -> _))

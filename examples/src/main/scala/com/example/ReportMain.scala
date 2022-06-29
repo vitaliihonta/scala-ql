@@ -20,8 +20,8 @@ object ReportMain extends App {
             }
           )
           .combine((age, cascadeInfos) => cascadeInfos.toList.map(ByAge(age, _)))
+          .map(byAge => ByFaculty(faculty, byAge))
       }
-      .map((ByFaculty.apply _).tupled)
       .sortBy(_.faculty)(desc)
 
   query

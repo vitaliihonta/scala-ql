@@ -59,8 +59,8 @@ val reportAggregation: Query[From[OrderInfo], OrderReport] = select[OrderInfo]
           OrdersPerDate(date, totalProfit, ordersList)
         }
       )
+      .map(ordersPerDate => OrderReport(region, ordersPerDate))
   }
-  .map((OrderReport.apply _).tupled)
 ```
 
 Then you could simply write it to an Excel file:  

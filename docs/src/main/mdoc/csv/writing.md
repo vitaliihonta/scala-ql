@@ -36,10 +36,11 @@ val aggregation: Query[From[Student], FacultyInfo] =
   select[Student]
     .groupBy(_.faculty)
     .aggregate((faculty, students) =>
-      students.avgBy(_.age.toDouble) &&
+      (
+        students.avgBy(_.age.toDouble) &&
         students.sumBy(_.grade)
+      ).map{ case (avgAge, totalGrade) => FacultyInfo(faculty, avgAge, totalGrade) }
     )
-    .map(FacultyInfo.tupled)
 ```
 
 Then you could write the result into a CSV file as follows:
@@ -97,10 +98,11 @@ val aggregation: Query[From[Student], FacultyInfo] =
   select[Student]
     .groupBy(_.faculty)
     .aggregate((faculty, students) =>
-      students.avgBy(_.age.toDouble) &&
+      (
+        students.avgBy(_.age.toDouble) &&
         students.sumBy(_.grade)
+      ).map{ case (avgAge, totalGrade) => FacultyInfo(faculty, avgAge, totalGrade) }
     )
-    .map(FacultyInfo.tupled)
 ```
 
 This is how to produce a CSV file with snake_case headers:

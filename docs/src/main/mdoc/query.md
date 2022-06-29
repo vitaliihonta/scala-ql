@@ -72,11 +72,12 @@ val query: Query[From[Student], FacultyInfo] =
   select[Student]
     .groupBy(_.faculty)
     .aggregate((faculty, students) =>
-      students.avgBy(_.age.toDouble) &&
+      (
+        students.avgBy(_.age.toDouble) &&
         students.sumBy(_.grade) &&
         students.map(_.specialization).toList
+      ).map { case (avgAge, totalGrade, specializations) => FacultyInfo(faculty, avgAge, totalGrade, specializations) }
     )
-    .map(FacultyInfo.tupled)
 ```
 
 Then you could print the results to the console:

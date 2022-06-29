@@ -11,11 +11,14 @@ object Main extends App {
       .where(_.age >= 18)
       .groupBy(_.faculty)
       .aggregate((faculty, students) =>
-        students.avgBy(_.age.toDouble) &&
-          students.sumBy(_.grade) &&
-          students.map(_.specialization).toList
+        (
+          students.avgBy(_.age.toDouble) &&
+            students.sumBy(_.grade) &&
+            students.map(_.specialization).toList
+        ).map { case (avgAge, totalGrade, specializations) =>
+          FacultyInfo(faculty, avgAge, totalGrade, specializations)
+        }
       )
-      .map(FacultyInfo.tupled)
 
   println {
     query
