@@ -304,7 +304,7 @@ object Query {
     private[scalaql] val on:       (Out, Out2) => Boolean)
       extends JoinedQuery[In, Out, Out2, (Out, Out2)] {
 
-    override def toString: String = s"($left $joinType JOIN $right)"
+    override def toString: String = s"(($left) $joinType JOIN ($right))"
 
   }
 

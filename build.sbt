@@ -101,8 +101,7 @@ lazy val root = project
       `scala-ql-csv`.projectRefs ++
       `scala-ql-json`.projectRefs ++
       `scala-ql-excel`.projectRefs ++
-      `scala-ql-html`.projectRefs ++
-      examples.projectRefs: _*
+      `scala-ql-html`.projectRefs: _*
   )
   .aggregate(
     docs
@@ -139,23 +138,6 @@ lazy val coverage = project
     `scala-ql-excel`.jvm(scala213),
     `scala-ql-html`.jvm(scala213)
   )
-
-lazy val examples =
-  projectMatrix
-    .in(file("examples"))
-    .dependsOn(
-      `scala-ql`,
-      `scala-ql-csv`,
-      `scala-ql-json`,
-      `scala-ql-excel`,
-      `scala-ql-html`
-    )
-    .settings(baseSettings, crossCompileSettings, noPublishSettings)
-    .settings(
-      libraryDependencies ++= Seq(
-      )
-    )
-    .jvmPlatform(scalaVersions = allScalaVersions)
 
 lazy val `scala-ql` =
   projectMatrix
@@ -310,8 +292,8 @@ ThisBuild / updateSiteVariables := {
 
   val variables =
     Map[String, String](
-      "organization"       -> (ThisBuild / organization).value,
-      "latestVersion"      -> (ThisBuild / version).value,
+      "organization"           -> (ThisBuild / organization).value,
+      "latestVersion"          -> (ThisBuild / version).value,
       "downloadReportsBaseUrl" -> "https://scala-ql.vhonta.dev/assets"
     )
 
