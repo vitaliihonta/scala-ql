@@ -24,6 +24,12 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         while (step.check() && outputs.hasNext)
           step.next(outputs.next())
 
+      case query: Query.AliasedQuery[In, ?] =>
+        val input   = ToFrom.transform(in)
+        val outputs = input.get(query.inputAliasedTag).asInstanceOf[Iterable[Out]].iterator
+        while (step.check() && outputs.hasNext)
+          step.next(outputs.next())
+
       case query: Query.Accumulate[In, mid, s, Out] =>
         var state = query.initialState
         interpret[In, mid](in, query.source) {
@@ -32,6 +38,16 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           }
         }
         query.getResults(state).foreach(step.next)
+
+      case query: Query.StatefulConcatMap[In, mid, s, Out] =>
+        var state = query.initialState
+        interpret[In, mid](in, query.source) {
+          Step.always[mid] { elem =>
+            val (newState, outs) = query.process(state, elem)
+            state = newState
+            outs.foreach(step.next)
+          }
+        }
 
       case query: Query.UnionQuery[In, Out] =>
         import query.*
@@ -113,42 +129,42 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
 
       case query: Query.JoinedQuery[In, out0, out1, Out] =>
         import query.*
-        val leftBuffer  = ListBuffer.empty[out0]
+
         val rightBuffer = ListBuffer.empty[out1]
 
-        interpret[In, out0](in, left)(
-          Step.always[out0](leftBuffer += _)
-        )
         interpret[In, out1](in, right)(
           Step.always[out1](rightBuffer += _)
         )
 
-        // todo: optimize join
-        val leftValues = leftBuffer.iterator
-        while (step.check() && leftValues.hasNext) {
-          val x = leftValues.next()
-          query match {
-            case query: Query.InnerJoinedQuery[In, out0, out1] =>
-              import query.*
-              joinType match {
-                case Query.InnerJoin =>
-                  rightBuffer
-                    .find(on(x, _))
-                    .foreach(y => step.next((x, y)))
+        interpret[In, out0](in, left)(
+          Step[out0](
+            check = () => step.check(),
+            next = { x =>
+              query match {
+                case query: Query.InnerJoinedQuery[In, out0, out1] =>
+                  import query.*
+                  joinType match {
+                    case Query.InnerJoin =>
+                      rightBuffer
+                        .filter(on(x, _))
+                        .foreach(y => step.next((x, y)))
 
-                case Query.CrossJoin =>
-                  rightBuffer
-                    .foreach(y => if (on(x, y)) step.next((x, y)))
-              }
+                    case Query.CrossJoin =>
+                      rightBuffer
+                        .foreach(y => if (on(x, y)) step.next((x, y)))
+                  }
 
-            case query: Query.LeftJoinedQuery[In, out0, out1] =>
-              import query.*
-              step.next {
-                x -> rightBuffer
-                  .find(on(x, _))
+                case query: Query.LeftJoinedQuery[In, out0, out1] =>
+                  import query.*
+                  val rightValues = rightBuffer
+                    .filter(on(x, _))
+
+                  if (rightValues.isEmpty) step.next(x -> None)
+                  else rightValues.foreach(y => step.next(x -> Some(y)))
               }
-          }
-        }
+            }
+          )
+        )
     }
   }
 }

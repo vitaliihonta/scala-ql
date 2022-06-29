@@ -312,7 +312,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
           .filter(_.age >= 18)
           .flatMap { person =>
             companies
-              .find(company => person.profession.industries contains company.industry)
+              .filter(company => person.profession.industries contains company.industry)
               .map(company => (person, company))
           }
 
@@ -352,9 +352,10 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val expectedResult =
         people
           .filter(_.age >= 18)
-          .map { person =>
-            person -> companies
-              .find(company => person.profession.industries contains company.industry)
+          .flatMap { person =>
+            val joined = companies.filter(company => person.profession.industries contains company.industry)
+            if (joined.isEmpty) List(person -> None)
+            else joined.map(c => person -> Some(c))
           }
 
       query.toList.run(from(people) & from(companies)) should contain theSameElementsAs expectedResult
@@ -371,7 +372,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         people
           .flatMap { p1 =>
             people
-              .find(p2 => p1.profession == p2.profession)
+              .filter(p2 => p1.profession == p2.profession)
               .map(p2 => (p1, p2))
           }
 
@@ -413,7 +414,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
         peopleUnion.flatMap { p =>
           workspaces
-            .find(_.employee == p.name)
+            .filter(_.employee == p.name)
             .map(result(p, _))
         }
       }
@@ -446,7 +447,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         workspaces
           .flatMap { workspace =>
             offices
-              .find(_.location == workspace.office)
+              .filter(_.location == workspace.office)
               .filter(_.floors > 2)
               .map(_.company)
           }

@@ -41,6 +41,29 @@ sealed trait Query[-In, +Out] {
   ): Query[In, B] =
     new Query.Accumulate[In, Out, S, B](this, initialState, modifyState, getResults)
 
+  def statefulMap[S, B](
+    initialState: S
+  )(process:      (S, Out) => (S, B)
+  ): Query[In, B] = statefulMapConcat(initialState) { (state, out) =>
+    val (newState, next) = process(state, out)
+    newState -> List(next)
+  }
+
+  def statefulMapConcat[S, B](
+    initialState: S
+  )(process:      (S, Out) => (S, Iterable[B])
+  ): Query[In, B] = new Query.StatefulConcatMap[In, Out, S, B](this, initialState, process)
+
+  def deduplicate: Query[In, Out] =
+    deduplicateBy(identity[Out])
+
+  def deduplicateBy[K](f: Out => K): Query[In, Out] =
+    statefulMapConcat(initialState = Set.empty[K]) { (keys, out) =>
+      val key = f(out)
+      if (keys.contains(key)) keys -> Nil
+      else (keys + key)            -> List(out)
+    }
+
   def ++[In2 <: In, Out0 >: Out](that: Query[In2, Out0]): Query[In2, Out0] =
     union(that)
 
@@ -101,6 +124,15 @@ object Query {
     override def toString: String = s"FROM(${inputTag.shortName})"
   }
 
+  final class AliasedQuery[In, U](
+    private[scalaql] val inputInfo:       LightTypeTag,
+    private[scalaql] val inputAliasedTag: LightTypeTag,
+    private[scalaql] val alias:           LightTypeTag)
+      extends Query[From[@@[In, U]], In] {
+
+    override def toString: String = s"FROM($inputInfo AS ${alias.shortName})"
+  }
+
   final class MapQuery[In, Out0, Out1](
     private[scalaql] val source:  Query[In, Out0],
     private[scalaql] val project: Out0 => Out1)
@@ -156,6 +188,17 @@ object Query {
             case true  => p(out)
           }
       )
+  }
+
+  final class StatefulConcatMap[In, Out, S, B](
+    private[scalaql] val source:       Query[In, Out],
+    private[scalaql] val initialState: S,
+    private[scalaql] val process:      (S, Out) => (S, Iterable[B]))
+      extends Query[In, B] {
+
+    override def toString: String = s"$source -> STATEFUL_MAP_CONCAT(initial_state=$initialState)"
+
+    // TODO: optimize
   }
 
   final class Accumulate[In, Out, S, B](

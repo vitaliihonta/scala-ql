@@ -6,7 +6,7 @@ import scalaql.visualization.ShowAsTable
 import scala.language.implicitConversions
 
 @forbiddenInheritance
-trait ScalaqlSyntax extends ScalaqlAliases with ScalaqlDsl with OrderingSyntax {
+trait ScalaqlSyntax extends ScalaqlAliases with ScalaqlDsl with OrderingSyntax with AliasingSyntax {
 
   final implicit def RunSyntax[In, Out](self: QueryResult[In, Out]): RunSyntax[In, Out] =
     new RunSyntax[In, Out](self)
