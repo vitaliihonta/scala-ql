@@ -39,7 +39,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         }
         query.getResults(state).foreach(step.next)
 
-      case query: Query.StatefulConcatMap[In, mid, s, Out] =>
+      case query: Query.StatefulMapConcat[In, mid, s, Out] =>
         var state = query.initialState
         interpret[In, mid](in, query.source) {
           Step.always[mid] { elem =>
@@ -63,12 +63,21 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         val input = ToFrom.transform(in) and From.singleTag(outATag, tmpBuffer.toList)
         interpret[From[out0], Out](input.asInstanceOf[From[out0]], right)(step)
 
-      case query: Query.MapWhereQuery[In, out0, Out] =>
+      case query: Query.CollectQuery[In, out0, Out] =>
         import query.*
         interpret[In, out0](in, source)(
           Step[out0](
             check = step.check,
-            next = out0 => mapFilterFunc(out0).foreach(step.next)
+            next = out0 => collectFunc.andThen(step.next).applyOrElse[out0, Unit](out0, _ => ())
+          )
+        )
+
+      case query: Query.WhereQuery[In, Out] =>
+        import query.*
+        interpret[In, Out](in, source)(
+          Step[Out](
+            check = step.check,
+            next = out0 => if (filterFunc(out0)) step.next(out0)
           )
         )
 

@@ -2,6 +2,7 @@ package scalaql
 
 import izumi.reflect.Tag
 import izumi.reflect.macrortti.LightTypeTag
+import scalaql.internal.PartialFunctionAndThenCompat
 import scalaql.utils.TupleFlatten
 import spire.algebra.Order
 import scala.annotation.unchecked.uncheckedVariance
@@ -11,25 +12,27 @@ sealed trait Query[-In, +Out] {
   def map[B](f: Out => B): Query[In, B] =
     new Query.MapQuery[In, Out, B](this, f)
 
-  def mapFilter[B](f: Out => Option[B]): Query[In, B] =
-    new Query.MapWhereQuery[In, Out, B](this, f)
-
   def collect[B](pf: PartialFunction[Out, B]): Query[In, B] =
-    mapFilter(pf.lift)
+    new Query.CollectQuery[In, Out, B](this, pf)
 
   def where(p: Predicate[Out]): Query[In, Out] =
-    mapFilter(x => Some(x).filter(p))
+    new Query.WhereQuery[In, Out](this, p)
 
   def withFilter(p: Predicate[Out]): Query[In, Out] = where(p)
 
   def whereNot(p: Predicate[Out]): Query[In, Out] =
-    where(!p(_))
+    new Query.WhereQuery[In, Out](this, !p(_), nameHint = Some("WHERE_NOT"))
 
-  def mapConcat[B](f: Out => Iterable[B]): Query[In, B] =
-    flatMap(out => new Query.Const[B](f(out)))
+  def mapConcat[B](f: Out => Iterable[B])(implicit In: Tag[In] @uncheckedVariance): Query[In, B] =
+    new Query.FlatMapQuery[In, Out, B](
+      this,
+      out => new Query.Const[B](f(out)),
+      In.tag,
+      nameHint = Some("MAP_CONCAT")
+    )
 
-  def flatMap[In2 <: In, B](f: Out => Query[In2, B]): Query[In2, B] =
-    new Query.FlatMapQuery[In2, Out, B](this, f)
+  def flatMap[In2 <: In: Tag, B](f: Out => Query[In2, B]): Query[In2, B] =
+    new Query.FlatMapQuery[In2, Out, B](this, f, Tag[In2].tag)
 
   def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
     new Query.WhereSubQuery[In2, Out](this, p)
@@ -44,25 +47,35 @@ sealed trait Query[-In, +Out] {
   def statefulMap[S, B](
     initialState: S
   )(process:      (S, Out) => (S, B)
-  ): Query[In, B] = statefulMapConcat(initialState) { (state, out) =>
-    val (newState, next) = process(state, out)
-    newState -> List(next)
-  }
+  ): Query[In, B] =
+    new Query.StatefulMapConcat[In, Out, S, B](
+      this,
+      initialState,
+      process = { (state, out) =>
+        val (newState, next) = process(state, out)
+        newState -> List(next)
+      },
+      nameHint = Some(s"STATEFUL_MAP($initialState)")
+    )
 
   def statefulMapConcat[S, B](
     initialState: S
   )(process:      (S, Out) => (S, Iterable[B])
-  ): Query[In, B] = new Query.StatefulConcatMap[In, Out, S, B](this, initialState, process)
+  ): Query[In, B] = new Query.StatefulMapConcat[In, Out, S, B](this, initialState, process, nameHint = None)
 
-  def deduplicate: Query[In, Out] =
-    deduplicateBy(identity[Out])
+  def deduplicate: Query[In, Out] = deduplicateBy(identity[Out])
 
   def deduplicateBy[K](f: Out => K): Query[In, Out] =
-    statefulMapConcat(initialState = Set.empty[K]) { (keys, out) =>
-      val key = f(out)
-      if (keys.contains(key)) keys -> Nil
-      else (keys + key)            -> List(out)
-    }
+    new Query.StatefulMapConcat[In, Out, Set[K], Out](
+      this,
+      initialState = Set.empty[K],
+      process = { (keys, out) =>
+        val key = f(out)
+        if (keys.contains(key)) keys -> Nil
+        else (keys + key)            -> List(out)
+      },
+      nameHint = Some("DEDUPLICATE")
+    )
 
   def ++[In2 <: In, Out0 >: Out](that: Query[In2, Out0]): Query[In2, Out0] =
     union(that)
@@ -146,27 +159,61 @@ object Query {
 
   final class FlatMapQuery[In, Out0, Out1](
     private[scalaql] val source:   Query[In, Out0],
-    private[scalaql] val projectM: Out0 => Query[In, Out1])
+    private[scalaql] val projectM: Out0 => Query[In, Out1],
+    private[scalaql] val inTag:    LightTypeTag,
+    nameHint:                      Option[String] = None)
       extends Query[In, Out1] {
 
     override def map[B](f: Out1 => B): Query[In, B] =
-      new FlatMapQuery[In, Out0, B](source, projectM(_).map(f))
+      new FlatMapQuery[In, Out0, B](source, projectM(_).map(f), inTag)
 
     override def where(p: Predicate[Out1]): Query[In, Out1] =
-      new FlatMapQuery[In, Out0, Out1](source, projectM(_).where(p))
+      new FlatMapQuery[In, Out0, Out1](source, projectM(_).where(p), inTag)
 
-    override def toString: String = s"$source -> FLATMAP"
+    override def toString: String = {
+      val description = nameHint.getOrElse(s"FLATMAP($inTag)")
+      s"$source -> $description"
+    }
   }
 
-  final class MapWhereQuery[In, Out, Out1](
-    private[scalaql] val source:        Query[In, Out],
-    private[scalaql] val mapFilterFunc: Out => Option[Out1])
+  final class WhereQuery[In, Out](
+    private[scalaql] val source:     Query[In, Out],
+    private[scalaql] val filterFunc: Predicate[Out],
+    nameHint:                        Option[String] = None)
+      extends Query[In, Out] {
+
+    override def where(p: Predicate[Out]): Query[In, Out] =
+      new WhereQuery[In, Out](source, out => filterFunc(out) && p(out))
+
+    override def toString: String = {
+      val description = nameHint.getOrElse("WHERE")
+      s"$source -> $description"
+    }
+  }
+
+  final class CollectQuery[In, Out, Out1](
+    private[scalaql] val source:      Query[In, Out],
+    private[scalaql] val collectFunc: PartialFunction[Out, Out1])
       extends Query[In, Out1] {
 
-    override def mapFilter[B](g: Out1 => Option[B]): Query[In, B] =
-      new MapWhereQuery[In, Out, B](source, mapFilterFunc(_).flatMap(g))
+    override def collect[B](pf: PartialFunction[Out1, B]): Query[In, B] =
+      new CollectQuery[In, Out, B](
+        source,
+        PartialFunctionAndThenCompat.andThen(collectFunc, pf)
+      )
 
-    override def toString: String = s"$source -> MAP_WHERE"
+    override def where(p: Predicate[Out1]): Query[In, Out1] =
+      new CollectQuery[In, Out, Out1](
+        source,
+        PartialFunctionAndThenCompat.andThen[Out, Out1, Out1](
+          collectFunc,
+          {
+            case out1 if p(out1) => out1
+          }
+        )
+      )
+
+    override def toString: String = s"$source -> COLLECT"
   }
 
   final class WhereSubQuery[In, Out](
@@ -190,13 +237,17 @@ object Query {
       )
   }
 
-  final class StatefulConcatMap[In, Out, S, B](
+  final class StatefulMapConcat[In, Out, S, B](
     private[scalaql] val source:       Query[In, Out],
     private[scalaql] val initialState: S,
-    private[scalaql] val process:      (S, Out) => (S, Iterable[B]))
+    private[scalaql] val process:      (S, Out) => (S, Iterable[B]),
+    nameHint:                          Option[String])
       extends Query[In, B] {
 
-    override def toString: String = s"$source -> STATEFUL_MAP_CONCAT(initial_state=$initialState)"
+    override def toString: String = {
+      val description = nameHint.getOrElse(s"STATEFUL_MAP_CONCAT(initial_state=$initialState)")
+      s"$source -> $description"
+    }
 
     // TODO: optimize
   }
@@ -218,7 +269,7 @@ object Query {
         getResults(_).map(f)
       )
 
-    override def mapConcat[C](f: B => Iterable[C]): Query[In, C] =
+    override def mapConcat[C](f: B => Iterable[C])(implicit In: Tag[In] @uncheckedVariance): Query[In, C] =
       new Query.Accumulate[In, Out, S, C](
         source,
         initialState,
@@ -226,12 +277,12 @@ object Query {
         getResults(_).flatMap(f)
       )
 
-    override def mapFilter[C](f: B => Option[C]): Query[In, C] =
+    override def collect[C](pf: PartialFunction[B, C]): Query[In, C] =
       new Query.Accumulate[In, Out, S, C](
         source,
         initialState,
         modifyState,
-        getResults(_).flatMap(f(_).toList)
+        getResults(_).collect(pf)
       )
 
     override def where(p: Predicate[B]): Query[In, B] =
@@ -320,7 +371,7 @@ object Query {
     private[scalaql] val on:    (Out, Out2) => Boolean)
       extends JoinedQuery[In, Out, Out2, (Out, Option[Out2])] {
 
-    override def toString: String = s"($left LEFT JOIN $right)"
+    override def toString: String = s"(($left) LEFT JOIN ($right))"
 
   }
 
@@ -333,8 +384,8 @@ object Query {
     override def map[B](f: Out => B): Query[In, B] =
       new UnionQuery[In, B](left.map(f), right.map(f))
 
-    override def mapFilter[B](f: Out => Option[B]): Query[In, B] =
-      new UnionQuery[In, B](left.mapFilter(f), right.mapFilter(f))
+    override def collect[B](pf: PartialFunction[Out, B]): Query[In, B] =
+      new UnionQuery[In, B](left.collect(pf), right.collect(pf))
 
     override def union[In2 <: In, Out0 >: Out](that: Query[In2, Out0]): Query[In2, Out0] =
       new UnionQuery[In2, Out0](left, right union that)
@@ -342,7 +393,7 @@ object Query {
     override def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
       new UnionQuery[In2, Out](left.whereSubQuery(p), right.whereSubQuery(p))
 
-    override def toString: String = s"($left UNION $right)"
+    override def toString: String = s"(($left) UNION ($right))"
   }
 
   final class AndThenQuery[In0, OutA, OutB](
@@ -350,6 +401,8 @@ object Query {
     private[scalaql] val right:   Query[From[OutA], OutB],
     private[scalaql] val outATag: LightTypeTag)
       extends Query[In0, OutB] {
+
+    override def toString: String = s"(($left) AND_THEN ($right))"
 
     override def andThen[Out0 >: OutB: Tag, Out2](that: Query[From[Out0], Out2]): Query[In0, Out2] =
       new AndThenQuery[In0, OutA, Out2](
@@ -365,10 +418,17 @@ object Query {
         outATag
       )
 
-    override def mapFilter[B](f: OutB => Option[B]): Query[In0, B] =
+    override def where(p: Predicate[OutB]): Query[In0, OutB] =
+      new AndThenQuery[In0, OutA, OutB](
+        left,
+        right.where(p),
+        outATag
+      )
+
+    override def collect[B](pf: PartialFunction[OutB, B]): Query[In0, B] =
       new AndThenQuery[In0, OutA, B](
         left,
-        right.mapFilter(f),
+        right.collect(pf),
         outATag
       )
   }

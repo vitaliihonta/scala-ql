@@ -5,7 +5,7 @@ help:
 
 .PHONY: gen-doc
 gen-doc:
-	sbt docs/mdoc
+	SBT_OPTS="-Xmx4G -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=2G -Xss32M" sbt docs/mdoc
 
 .PHONY: clean
 clean:
