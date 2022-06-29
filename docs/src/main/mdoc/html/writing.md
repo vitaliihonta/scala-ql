@@ -1,4 +1,4 @@
-# Writing files
+# Writing HTML files
 
 In this examples you will learn how to generate HTML reports based on your data.
 

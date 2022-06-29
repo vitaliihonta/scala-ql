@@ -1,4 +1,4 @@
-# Writing files
+# Writing Excel files
 
 Start by importing `scalaql`:
 

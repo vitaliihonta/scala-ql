@@ -1,2 +1,2 @@
-# Writing nested case classes
+# Writing nested case classes into HTML files
 TBD

@@ -110,7 +110,7 @@ export default function Home() {
       <div className={styles.gettingStartedSection}>
         <div className="container padding-vert--xl text--left">
           <div className="row">
-            <div className="col col--6 col--offset-1">
+            <div className="col col--10 col--offset-1">
               <h2>Get started easily</h2>
               <p>Here is an example of how to query data from various sources.</p>
               <br />

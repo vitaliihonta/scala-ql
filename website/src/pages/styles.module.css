@@ -45,7 +45,7 @@
 }
 
 .exampleCodeBlock {
-  width: max-content;
+  width: 100%;
 }
 
 html[data-theme='dark'] .gettingStartedSection {

@@ -16,5 +16,5 @@ build-site: gen-doc
 	cd website && npm install --save && npm run build
 
 .PHONY: start-site
-start-site: # gen-doc
+start-site: gen-doc
 	cd website && npm install --save && npm run start

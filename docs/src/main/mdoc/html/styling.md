@@ -1,2 +1,2 @@
-# Styling
+# Styling HTML documents
 TBD

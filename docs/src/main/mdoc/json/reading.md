@@ -1,4 +1,4 @@
-# Reading files
+# Reading JSON files
 
 ## Reading single file
 

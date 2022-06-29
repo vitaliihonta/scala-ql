@@ -1,4 +1,4 @@
-# Writing files
+# Writing CSV files
 
 Start by importing `scalaql`:
 

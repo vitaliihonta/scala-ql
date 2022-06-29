@@ -1,4 +1,4 @@
-# Writing files
+# Writing JSON files
 
 Start by importing `scalaql`:
 
