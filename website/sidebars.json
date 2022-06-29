@@ -1,8 +1,11 @@
 {
   "docs": {
     "Getting started": [
-      "overview",
-      "query"
+      "core/overview",
+      "core/basics",
+      "core/aggregations",
+      "core/joins",
+      "core/diving-deeper"
     ],
     "CSV": [
       "csv/overview",

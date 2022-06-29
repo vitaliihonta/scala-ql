@@ -86,7 +86,7 @@ export default function Home() {
           <div className={styles.getStarted}>
             <Link
               className="button button--outline button--primary button--lg"
-              to={useBaseUrl('docs/overview')}
+              to={useBaseUrl('docs/core/overview')}
             >
               Get Started
             </Link>

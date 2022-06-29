@@ -5,7 +5,11 @@ import com.example.Hogwarts.*
 
 object AndThenMain extends App {
 
-  case class FacultyInfo(faculty: String, avgAge: Double, avgGrade: Double, specs: Set[String])
+  case class FacultyInfo(
+    faculty:  String,
+    avgAge:   Double,
+    avgGrade: Double,
+    specs:    Set[String])
 
   case class SpecializationInfo(faculty: String, specialization: String)
 

@@ -98,7 +98,7 @@ object Query {
   }
 
   final class FromQuery[A](private[scalaql] val inputTag: LightTypeTag) extends Query[From[A], A] {
-    override def toString: String = s"FROM($inputTag)"
+    override def toString: String = s"FROM(${inputTag.shortName})"
   }
 
   final class MapQuery[In, Out0, Out1](
