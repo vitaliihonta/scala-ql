@@ -28,11 +28,10 @@ class VersionSpecificSpec extends ScalaqlUnitSpec {
       val people1 = arbitraryN[Person]
       val people2 = arbitraryN[Person]
 
-      val left   = select[Person].as("people1")
-      val right  = select[Person].as("people2")
-      val joined = left.join(right).on(_.age == _.age)
-
-      val peers = joined
+      val peers = select[Person]
+        .as("people1")
+        .join(select[Person].as("people2"))
+        .on(_.age == _.age)
         .map { case (left, right) =>
           Peer(
             who = left.name,

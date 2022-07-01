@@ -136,21 +136,21 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           step.next(tupled(aggregated))
         }
 
-      case query: Query.JoinedQuery[In, out0, out1, Out] =>
+      case query: Query.JoinedQuery[in0, in1, out0, out1, Out] =>
         import query.*
 
         val rightBuffer = ListBuffer.empty[out1]
 
-        interpret[In, out1](in, right)(
+        interpret[in1, out1](in.asInstanceOf[in1], right)(
           Step.always[out1](rightBuffer += _)
         )
 
-        interpret[In, out0](in, left)(
+        interpret[in0, out0](in.asInstanceOf[in0], left)(
           Step[out0](
             check = () => step.check(),
             next = { x =>
               query match {
-                case query: Query.InnerJoinedQuery[In, out0, out1] =>
+                case query: Query.InnerJoinedQuery[in0, in1, out0, out1] =>
                   import query.*
                   joinType match {
                     case Query.InnerJoin =>
@@ -163,7 +163,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
                         .foreach(y => if (on(x, y)) step.next((x, y)))
                   }
 
-                case query: Query.LeftJoinedQuery[In, out0, out1] =>
+                case query: Query.LeftJoinedQuery[in0, in1, out0, out1] =>
                   import query.*
                   val rightValues = rightBuffer
                     .filter(on(x, _))

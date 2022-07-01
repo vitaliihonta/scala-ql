@@ -3,7 +3,6 @@ package scalaql.syntax
 import izumi.reflect.Tag
 import scalaql.Query
 import scalaql.QueryResult
-import scalaql.SideEffect
 import scalaql.internal.FunctionK
 
 final class BasicQuerySyntax[In, Out](private val self: Query[In, Out]) extends AnyVal {

@@ -1,6 +1,6 @@
 package scalaql.syntax
 
-class WhereSyntax[A](private val self: A) extends AnyVal {
+final class WhereSyntax[A](private val self: A) extends AnyVal {
 
   def isIn(first: A, second: A, rest: A*): Boolean = {
     val values = first +: second +: rest

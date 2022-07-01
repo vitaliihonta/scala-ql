@@ -31,7 +31,7 @@ class VersionSpecificSpec extends ScalaqlUnitSpec {
       val people1 = arbitraryN[Person]
       val people2 = arbitraryN[Person]
 
-      val peers: Query[From[Person as left] & From[Person as right], Peer] =
+      val peers =
         select[Person]
           .as[left]
           .join(select[Person].as[right])
