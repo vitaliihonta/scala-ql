@@ -467,22 +467,26 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .where(_.age >= 18)
         .join(select[Company].deduplicateBy(_.name))
         .on(_.profession.industries contains _.industry)
+        .sortBy { case (p, _) => p.name }
 
       val expectedResult =
-        people
+        distinctBy(people)(_.name)
           .filter(_.age >= 18)
           .flatMap { person =>
-            companies
+            distinctBy(companies)(_.name)
               .filter(company => person.profession.industries contains company.industry)
               .map(company => (person, company))
           }
+          .sortBy { case (p, _) => p.name }
 
-      val duplicatedPeople    = Random.shuffle(people ++ people ++ people)
-      val duplicatedCompanies = Random.shuffle(companies ++ companies ++ companies)
+      val duplicatedPeople    = Random.shuffle(people.flatMap(p => List.fill(3)(p)))
+      val duplicatedCompanies = Random.shuffle(companies.flatMap(c => List.fill(3)(c)))
 
-      query.toList.run(
+      val actualResult = query.toList.run(
         from(duplicatedPeople) & from(duplicatedCompanies)
-      ) should contain theSameElementsAs expectedResult
+      )
+
+      actualResult should contain theSameElementsAs expectedResult
     }
 
     "correctly process query with statefulMapConcat" in {
@@ -501,4 +505,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
   }
+
+  private def distinctBy[A, B](values: List[A])(f: A => B): List[A] =
+    values.groupBy(f).map { case (_, v) => v.head }.toList
 }
