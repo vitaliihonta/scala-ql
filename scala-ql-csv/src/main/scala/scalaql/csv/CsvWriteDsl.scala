@@ -1,7 +1,8 @@
 package scalaql.csv
 
+import scalaql.Naming
 import scalaql.csv.internal.CsvDataSourceWriter
-import scalaql.sources.{DataSourceFilesWriteDslMixin, DataSourceJavaIOWriteDslMixin, DataSourceWriteDsl, Naming}
+import scalaql.sources.{DataSourceFilesWriteDslMixin, DataSourceJavaIOWriteDslMixin, DataSourceWriteDsl}
 import java.io.Writer
 
 class CsvWriteDsl[A](override val config: CsvWriteConfig)

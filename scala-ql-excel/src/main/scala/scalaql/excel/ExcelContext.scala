@@ -4,8 +4,7 @@ import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.FormulaEvaluator
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.Cell
-import scalaql.excel
-import scalaql.sources.Naming
+import scalaql.{Naming, excel}
 import scalaql.sources.columnar.{CodecPath, TableApiContext, TableApiWriteContext}
 
 sealed trait ExcelContext {

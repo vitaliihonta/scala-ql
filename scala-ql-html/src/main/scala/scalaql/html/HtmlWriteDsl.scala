@@ -1,7 +1,8 @@
 package scalaql.html
 
+import scalaql.Naming
 import scalaql.html.internal.HtmlDataSourceWriter
-import scalaql.sources.{DataSourceFilesWriteDslMixin, DataSourceJavaIOWriteDslMixin, DataSourceWriteDsl, Naming}
+import scalaql.sources.{DataSourceFilesWriteDslMixin, DataSourceJavaIOWriteDslMixin, DataSourceWriteDsl}
 import scalatags.Text.TypedTag
 import java.io.Writer
 

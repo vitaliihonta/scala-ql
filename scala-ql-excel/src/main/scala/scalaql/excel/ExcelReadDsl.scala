@@ -1,8 +1,10 @@
 package scalaql.excel
 
 import org.apache.poi.ss.usermodel.{Sheet, Workbook}
+import scalaql.Naming
 import scalaql.excel.internal.ExcelDataSourceReader
 import scalaql.sources.*
+
 import java.io.InputStream
 
 class ExcelReadDsl[A](override val config: ExcelReadConfig)

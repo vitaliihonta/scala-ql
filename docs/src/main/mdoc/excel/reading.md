@@ -6,7 +6,6 @@ Start by importing `scalaql`:
 
 ```scala mdoc
 import scalaql._
-import scalaql.sources.Naming
 import scalaql.excel.CellResolutionStrategy
 
 // Docs classes

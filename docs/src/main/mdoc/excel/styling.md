@@ -6,7 +6,6 @@ Start by importing `scalaql`:
 ```scala mdoc
 import scalaql._
 import scalaql.excel._
-import scalaql.sources.Naming
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.IndexedColors
 

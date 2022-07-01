@@ -50,7 +50,6 @@ You could also read multiple CSV files from an arbitrary nested directories usin
 Start with the following imports:
 ```scala mdoc:reset
 import scalaql._
-import scalaql.sources.Naming
 
 // Docs classes
 import scalaql.docs.CsvData._

@@ -1,6 +1,6 @@
 package scalaql.html
 
-import scalaql.sources.Naming
+import scalaql.Naming
 import scalatags.Text.TypedTag
 import scalatags.Text.all.*
 

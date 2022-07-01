@@ -62,7 +62,7 @@ For instance:
 
 ```scala mdoc
   // it's cartesian product, not a join
-val query: Query[From[Student] with From[Faculty], (Student, Faculty)] = 
+val flatMapQuery: Query[From[Student] with From[Faculty], (Student, Faculty)] = 
   for {
     student <- select[Student]
     if student.age >= 18
@@ -85,15 +85,15 @@ val input = from(students) & from(faculties)
 ```
 
 ```scala mdoc
-query
+flatMapQuery
   .show(truncate = false)
   .run(input)
 ```
 
-Note that you could also provide the input in-place, the semantic would be the same:
+## Explain
+As you can see from the examples, the `Query` is rendered like a sequence of operations.  
+If you would like to pretty print the `Query`, use the following:
 
-```scala mdoc:silent
-query
-  .show(truncate = false)
-  .run(from(students) & from(faculties))
+```scala mdoc
+println(flatMapQuery.explain.pretty)
 ```

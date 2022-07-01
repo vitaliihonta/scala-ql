@@ -49,18 +49,16 @@ abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
       )
     )
 
-  case class StringMapFilter(partial: PartialFunction[String, String]) {
-    val predicate: String => Option[String] = partial.lift
-  }
+  case class StringCollect(partial: PartialFunction[String, String])
 
-  protected implicit val arbitraryStringMapFilter: Arbitrary[StringMapFilter] =
+  protected implicit val arbitraryStringCollect: Arbitrary[StringCollect] =
     Arbitrary(
       Gen.oneOf(
         List(
-          StringMapFilter { case s if s.nonEmpty => s },
-          StringMapFilter { case s if s.nonEmpty => s.head.toString + s.toUpperCase },
-          StringMapFilter { case s if s.length % 2 == 0 => s.trim },
-          StringMapFilter { case s if s.reverse == s => s.toLowerCase }
+          StringCollect { case s if s.nonEmpty => s },
+          StringCollect { case s if s.nonEmpty => s.head.toString + s.toUpperCase },
+          StringCollect { case s if s.length % 2 == 0 => s.trim },
+          StringCollect { case s if s.reverse == s => s.toLowerCase }
         )
       )
     )
