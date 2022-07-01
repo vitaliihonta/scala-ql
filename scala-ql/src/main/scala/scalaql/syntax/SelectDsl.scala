@@ -1,6 +1,6 @@
 package scalaql.syntax
 
-import izumi.reflect.Tag
+import scalaql.Tag
 import scalaql.From
 import scalaql.Query
 
