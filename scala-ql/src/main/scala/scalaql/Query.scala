@@ -9,11 +9,15 @@ import scala.annotation.unchecked.uncheckedVariance
 
 sealed trait Query[-In, +Out] {
 
-  def map[B](f: Out => B): Query[In, B] =
-    new Query.MapQuery[In, Out, B](this, f)
+  def explain: QueryExplain
 
-  def collect[B](pf: PartialFunction[Out, B]): Query[In, B] =
-    new Query.CollectQuery[In, Out, B](this, pf)
+  override final def toString: String = explain.toString
+
+  def map[B: Tag](f: Out => B): Query[In, B] =
+    new Query.MapQuery[In, Out, B](this, f, Tag[B].tag)
+
+  def collect[B: Tag](pf: PartialFunction[Out, B]): Query[In, B] =
+    new Query.CollectQuery[In, Out, B](this, pf, Tag[B].tag)
 
   def where(p: Predicate[Out]): Query[In, Out] =
     new Query.WhereQuery[In, Out](this, p)
@@ -23,28 +27,36 @@ sealed trait Query[-In, +Out] {
   def whereNot(p: Predicate[Out]): Query[In, Out] =
     new Query.WhereQuery[In, Out](this, !p(_), nameHint = Some("WHERE_NOT"))
 
-  def mapConcat[B](f: Out => Iterable[B])(implicit In: Tag[In] @uncheckedVariance): Query[In, B] =
+  def mapConcat[B: Tag](f: Out => Iterable[B])(implicit In: Tag[In] @uncheckedVariance): Query[In, B] =
     new Query.FlatMapQuery[In, Out, B](
       this,
       out => new Query.Const[B](f(out)),
       In.tag,
+      Tag[B].tag,
       nameHint = Some("MAP_CONCAT")
     )
 
-  def flatMap[In2 <: In: Tag, B](f: Out => Query[In2, B]): Query[In2, B] =
-    new Query.FlatMapQuery[In2, Out, B](this, f, Tag[In2].tag)
+  def flatMap[In2 <: In: Tag, B: Tag](f: Out => Query[In2, B]): Query[In2, B] =
+    new Query.FlatMapQuery[In2, Out, B](this, f, Tag[In2].tag, Tag[B].tag)
 
   def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
     new Query.WhereSubQuery[In2, Out](this, p)
 
-  def accumulate[S, B](
+  def accumulate[S: Tag, B: Tag](
     initialState: S
   )(modifyState:  (S, Out) => S
   )(getResults:   S => Iterable[B]
   ): Query[In, B] =
-    new Query.Accumulate[In, Out, S, B](this, initialState, modifyState, getResults)
+    new Query.Accumulate[In, Out, S, B](
+      this,
+      initialState,
+      modifyState,
+      getResults,
+      Tag[S].tag,
+      Tag[B].tag
+    )
 
-  def statefulMap[S, B](
+  def statefulMap[S: Tag, B: Tag](
     initialState: S
   )(process:      (S, Out) => (S, B)
   ): Query[In, B] =
@@ -55,17 +67,26 @@ sealed trait Query[-In, +Out] {
         val (newState, next) = process(state, out)
         newState -> List(next)
       },
+      Tag[S].tag,
+      Tag[B].tag,
       nameHint = Some(s"STATEFUL_MAP($initialState)")
     )
 
-  def statefulMapConcat[S, B](
+  def statefulMapConcat[S: Tag, B: Tag](
     initialState: S
   )(process:      (S, Out) => (S, Iterable[B])
-  ): Query[In, B] = new Query.StatefulMapConcat[In, Out, S, B](this, initialState, process, nameHint = None)
+  ): Query[In, B] = new Query.StatefulMapConcat[In, Out, S, B](
+    this,
+    initialState,
+    process,
+    Tag[S].tag,
+    Tag[B].tag,
+    nameHint = None
+  )
 
-  def deduplicate: Query[In, Out] = deduplicateBy(identity[Out])
+  def deduplicate(implicit out: Tag[Out] @uncheckedVariance): Query[In, Out] = deduplicateBy(identity[Out])
 
-  def deduplicateBy[K](f: Out => K): Query[In, Out] =
+  def deduplicateBy[K: Tag](f: Out => K)(implicit out: Tag[Out] @uncheckedVariance): Query[In, Out] =
     new Query.StatefulMapConcat[In, Out, Set[K], Out](
       this,
       initialState = Set.empty[K],
@@ -74,7 +95,9 @@ sealed trait Query[-In, +Out] {
         if (keys.contains(key)) keys -> Nil
         else (keys + key)            -> List(out)
       },
-      nameHint = Some("DEDUPLICATE")
+      Tag[Set[K]].tag,
+      Tag[Out].tag,
+      nameHint = Some(s"DEDUPLICATE BY(${Tag[K].tag})")
     )
 
   def ++[In2 <: In, Out0 >: Out](that: Query[In2, Out0]): Query[In2, Out0] =
@@ -105,75 +128,83 @@ sealed trait Query[-In, +Out] {
     new Query.LeftJoinPartiallyApplied[In2, Out, Out2](this, that)
 
   def sorted(implicit order: Order[Out] @uncheckedVariance): Query[In, Out] =
-    sortBy(identity)
+    new Query.SortByQuery[In, Out, Out](this, identity, None)
 
-  def sortBy[B: Order](f: SortBy[Out, B]): Query[In, Out] =
-    new Query.SortByQuery[In, Out, B](this, f)
+  def sortBy[B: Order: Tag](f: SortBy[Out, B]): Query[In, Out] =
+    new Query.SortByQuery[In, Out, B](this, f, Some(Tag[B].tag))
 
-  def groupBy[A](f: GroupBy[Out, A]): Query.GroupByQuery[In, Out, A] =
-    new Query.GroupByQueryImpl[In, Out, A](this, f)
+  def groupBy[A: Tag](f: GroupBy[Out, A]): Query.GroupByQuery[In, Out, A] =
+    new Query.GroupByQueryImpl[In, Out, A](this, f, List(Tag[A].tag))
 
-  def groupBy[A, B](f: GroupBy[Out, A], g: GroupBy[Out, B]): Query.GroupByQuery[In, Out, (A, B)] =
-    new Query.GroupByQueryImpl[In, Out, (A, B)](this, x => (f(x), g(x)))
+  def groupBy[A: Tag, B: Tag](f: GroupBy[Out, A], g: GroupBy[Out, B]): Query.GroupByQuery[In, Out, (A, B)] =
+    new Query.GroupByQueryImpl[In, Out, (A, B)](this, x => (f(x), g(x)), List(Tag[A].tag, Tag[B].tag))
 
-  def groupBy[A, B, C](
+  def groupBy[A: Tag, B: Tag, C: Tag](
     f: GroupBy[Out, A],
     g: GroupBy[Out, B],
     h: GroupBy[Out, C]
   ): Query.GroupByQuery[In, Out, (A, B, C)] =
     new Query.GroupByQueryImpl[In, Out, (A, B, C)](
       this,
-      x => (f(x), g(x), h(x))
+      x => (f(x), g(x), h(x)),
+      List(Tag[A].tag, Tag[B].tag, Tag[C].tag)
     )
 }
 
 object Query {
 
   final class Const[A](private[scalaql] val values: Iterable[A]) extends Query[Any, A] {
-    override def toString: String = s"CONST($values)"
+    override def explain: QueryExplain = {
+      val truncatedValues = truncateToString(values)
+      QueryExplain.Single(s"CONST($truncatedValues)")
+    }
   }
 
   final class FromQuery[A](private[scalaql] val inputTag: LightTypeTag) extends Query[From[A], A] {
-    override def toString: String = s"FROM(${inputTag.shortName})"
+    override def explain: QueryExplain = QueryExplain.Single(s"FROM($inputTag)")
   }
 
   final class AliasedQuery[In, U](
     private[scalaql] val inputInfo:       LightTypeTag,
     private[scalaql] val inputAliasedTag: LightTypeTag,
     private[scalaql] val alias:           LightTypeTag)
-      extends Query[From[@@[In, U]], In] {
+      extends Query[From[as[In, U]], In] {
 
-    override def toString: String = s"FROM($inputInfo AS ${alias.shortName})"
+    override def explain: QueryExplain = QueryExplain.Single(s"FROM($inputInfo AS ${alias.shortName})")
   }
 
   final class MapQuery[In, Out0, Out1](
     private[scalaql] val source:  Query[In, Out0],
-    private[scalaql] val project: Out0 => Out1)
+    private[scalaql] val project: Out0 => Out1,
+    private[scalaql] val outTag:  LightTypeTag)
       extends Query[In, Out1] {
 
-    override def map[B](f: Out1 => B): Query[In, B] =
-      new MapQuery[In, Out0, B](source, project andThen f)
+    override def map[B: Tag](f: Out1 => B): Query[In, B] =
+      new MapQuery[In, Out0, B](source, project andThen f, Tag[B].tag)
 
-    override def toString: String = s"$source -> MAP"
+    override def explain: QueryExplain =
+      QueryExplain.Continuation(source.explain, QueryExplain.Single(s"MAP($outTag)"))
   }
 
   final class FlatMapQuery[In, Out0, Out1](
     private[scalaql] val source:   Query[In, Out0],
     private[scalaql] val projectM: Out0 => Query[In, Out1],
     private[scalaql] val inTag:    LightTypeTag,
+    private[scalaql] val outTag:   LightTypeTag,
     nameHint:                      Option[String] = None)
       extends Query[In, Out1] {
 
-    override def map[B](f: Out1 => B): Query[In, B] =
-      new FlatMapQuery[In, Out0, B](source, projectM(_).map(f), inTag)
+    override def map[B: Tag](f: Out1 => B): Query[In, B] =
+      new FlatMapQuery[In, Out0, B](source, projectM(_).map(f), inTag, Tag[B].tag)
 
     override def where(p: Predicate[Out1]): Query[In, Out1] =
-      new FlatMapQuery[In, Out0, Out1](source, projectM(_).where(p), inTag)
+      new FlatMapQuery[In, Out0, Out1](source, projectM(_).where(p), inTag, outTag)
 
-    override def toString: String = {
-      val description = nameHint.getOrElse(s"FLATMAP($inTag)")
-      s"$source -> $description"
-    }
+    override def explain: QueryExplain =
+      QueryExplain.Continuation(
+        source.explain,
+        QueryExplain.Single(nameHint.getOrElse(s"FLATMAP($inTag => $outTag)"))
+      )
   }
 
   final class WhereQuery[In, Out](
@@ -185,21 +216,21 @@ object Query {
     override def where(p: Predicate[Out]): Query[In, Out] =
       new WhereQuery[In, Out](source, out => filterFunc(out) && p(out))
 
-    override def toString: String = {
-      val description = nameHint.getOrElse("WHERE")
-      s"$source -> $description"
-    }
+    override def explain: QueryExplain =
+      QueryExplain.Continuation(source.explain, QueryExplain.Single(nameHint.getOrElse("WHERE")))
   }
 
   final class CollectQuery[In, Out, Out1](
     private[scalaql] val source:      Query[In, Out],
-    private[scalaql] val collectFunc: PartialFunction[Out, Out1])
+    private[scalaql] val collectFunc: PartialFunction[Out, Out1],
+    private[scalaql] val outTag:      LightTypeTag)
       extends Query[In, Out1] {
 
-    override def collect[B](pf: PartialFunction[Out1, B]): Query[In, B] =
+    override def collect[B: Tag](pf: PartialFunction[Out1, B]): Query[In, B] =
       new CollectQuery[In, Out, B](
         source,
-        PartialFunctionAndThenCompat.andThen(collectFunc, pf)
+        PartialFunctionAndThenCompat.andThen(collectFunc, pf),
+        Tag[B].tag
       )
 
     override def where(p: Predicate[Out1]): Query[In, Out1] =
@@ -210,10 +241,12 @@ object Query {
           {
             case out1 if p(out1) => out1
           }
-        )
+        ),
+        outTag
       )
 
-    override def toString: String = s"$source -> COLLECT"
+    override def explain: QueryExplain =
+      QueryExplain.Continuation(source.explain, QueryExplain.Single(s"COLLECT($outTag)"))
   }
 
   final class WhereSubQuery[In, Out](
@@ -224,7 +257,8 @@ object Query {
     override def where(p: Predicate[Out]): Query[In, Out] =
       new WhereSubQuery[In, Out](source, x => predicate(x).map(_ && p(x)))
 
-    override def toString: String = s"$source -> WHERE_SUBQUERY"
+    override def explain: QueryExplain =
+      QueryExplain.Continuation(source.explain, QueryExplain.Single("WHERE SUBQUERY"))
 
     override def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
       new WhereSubQuery[In2, Out](
@@ -241,13 +275,16 @@ object Query {
     private[scalaql] val source:       Query[In, Out],
     private[scalaql] val initialState: S,
     private[scalaql] val process:      (S, Out) => (S, Iterable[B]),
+    private[scalaql] val stateTag:     LightTypeTag,
+    private[scalaql] val outTag:       LightTypeTag,
     nameHint:                          Option[String])
       extends Query[In, B] {
 
-    override def toString: String = {
-      val description = nameHint.getOrElse(s"STATEFUL_MAP_CONCAT(initial_state=$initialState)")
-      s"$source -> $description"
-    }
+    override def explain: QueryExplain =
+      QueryExplain.Continuation(
+        source.explain,
+        QueryExplain.Single(nameHint.getOrElse(s"STATEFUL MAP CONCAT(initial = $initialState)"))
+      )
 
     // TODO: optimize
   }
@@ -256,33 +293,47 @@ object Query {
     private[scalaql] val source:       Query[In, Out],
     private[scalaql] val initialState: S,
     private[scalaql] val modifyState:  (S, Out) => S,
-    private[scalaql] val getResults:   S => Iterable[B])
+    private[scalaql] val getResults:   S => Iterable[B],
+    private[scalaql] val stateTag:     LightTypeTag,
+    private[scalaql] val outTag:       LightTypeTag)
       extends Query[In, B] {
 
-    override def toString: String = s"$source -> ACCUMULATE(initial_state=$initialState)"
+    override def explain: QueryExplain = {
+      val truncatedState = truncateToString(initialState)
+      QueryExplain.Continuation(
+        source.explain,
+        QueryExplain.Single(s"ACCUMULATE(initial: $stateTag = $truncatedState => $outTag)")
+      )
+    }
 
-    override def map[C](f: B => C): Query[In, C] =
+    override def map[C: Tag](f: B => C): Query[In, C] =
       new Query.Accumulate[In, Out, S, C](
         source,
         initialState,
         modifyState,
-        getResults(_).map(f)
+        getResults(_).map(f),
+        stateTag,
+        Tag[C].tag
       )
 
-    override def mapConcat[C](f: B => Iterable[C])(implicit In: Tag[In] @uncheckedVariance): Query[In, C] =
+    override def mapConcat[C: Tag](f: B => Iterable[C])(implicit In: Tag[In] @uncheckedVariance): Query[In, C] =
       new Query.Accumulate[In, Out, S, C](
         source,
         initialState,
         modifyState,
-        getResults(_).flatMap(f)
+        getResults(_).flatMap(f),
+        stateTag,
+        Tag[C].tag
       )
 
-    override def collect[C](pf: PartialFunction[B, C]): Query[In, C] =
+    override def collect[C: Tag](pf: PartialFunction[B, C]): Query[In, C] =
       new Query.Accumulate[In, Out, S, C](
         source,
         initialState,
         modifyState,
-        getResults(_).collect(pf)
+        getResults(_).collect(pf),
+        stateTag,
+        Tag[C].tag
       )
 
     override def where(p: Predicate[B]): Query[In, B] =
@@ -290,27 +341,45 @@ object Query {
         source,
         initialState,
         modifyState,
-        getResults(_).filter(p)
+        getResults(_).filter(p),
+        stateTag,
+        outTag
       )
   }
 
   final class SortByQuery[In, Out, By](
     private[scalaql] val source:         Query[In, Out],
-    private[scalaql] val sortBy:         SortBy[Out, By]
+    private[scalaql] val sortBy:         SortBy[Out, By],
+    private[scalaql] val sortingTag:     Option[LightTypeTag]
   )(private[scalaql] implicit val order: Order[By])
       extends Query[In, Out] {
 
-    override def toString: String = s"$source -> SORT_BY"
+    override def explain: QueryExplain = {
+      val sortBy = sortingTag.fold(ifEmpty = "")(by => s" BY($by)")
+      QueryExplain.Continuation(
+        source.explain,
+        QueryExplain.Single(s"SORT$sortBy")
+      )
+    }
   }
 
   final class AggregateQuery[In, Out0, G, Out1, Out2](
-    private[scalaql] val source: Query[In, Out0],
-    private[scalaql] val group:  GroupBy[Out0, G],
-    private[scalaql] val agg:    Aggregate[G, Out0, Out1],
-    private[scalaql] val tupled: TupleFlatten.Aux[Out1, Out2])
+    private[scalaql] val source:        Query[In, Out0],
+    private[scalaql] val group:         GroupBy[Out0, G],
+    private[scalaql] val agg:           Aggregate[G, Out0, Out1],
+    private[scalaql] val tupled:        TupleFlatten.Aux[Out1, Out2],
+    private[scalaql] val groupByString: String,
+    private[scalaql] val outTag:        LightTypeTag)
       extends Query[In, Out2] {
 
-    override def toString: String = s"$source -> AGGREGATE"
+    override def explain: QueryExplain =
+      QueryExplain.Continuation(
+        source.explain,
+        QueryExplain.Continuation(
+          QueryExplain.Single(groupByString),
+          QueryExplain.Single(s"AGGREGATE($outTag)")
+        )
+      )
   }
 
   sealed trait GroupByQuery[-In, +Out, +G] {
@@ -322,12 +391,31 @@ object Query {
   }
 
   final class GroupByQueryImpl[In, Out, G](
-    private[scalaql] val source: Query[In, Out],
-    private[scalaql] val group:  GroupBy[Out, G])
+    private[scalaql] val source:       Query[In, Out],
+    private[scalaql] val group:        GroupBy[Out, G],
+    private[scalaql] val groupingTags: List[LightTypeTag])
       extends GroupByQuery[In, Out, G] {
 
-    override def aggregate[B](f: Aggregate[G, Out, B])(implicit tupled: TupleFlatten[B]): Query[In, tupled.Out] =
-      new AggregateQuery[In, Out, G, B, tupled.Out](source, group, f, tupled)
+    override def aggregate[B](
+      f:               Aggregate[G, Out, B]
+    )(implicit tupled: TupleFlatten[B]
+    ): Query[In, tupled.Out] =
+      new AggregateQuery[In, Out, G, B, tupled.Out](
+        source,
+        group,
+        f,
+        tupled,
+        groupByString,
+        tupled.tag.tag
+      )
+
+    private def groupByString: String = {
+      val groups = tagsToString(groupingTags)
+      s"GROUP BY$groups"
+    }
+
+    override def toString: String =
+      QueryExplain.Continuation(source.explain, QueryExplain.Single(groupByString)).toString
   }
 
   final class InnerJoinPartiallyApplied[In, Out, Out2](
@@ -355,8 +443,12 @@ object Query {
     private[scalaql] val on:       (Out, Out2) => Boolean)
       extends JoinedQuery[In, Out, Out2, (Out, Out2)] {
 
-    override def toString: String = s"(($left) $joinType JOIN ($right))"
-
+    override def explain: QueryExplain =
+      QueryExplain.Operation(
+        left.explain,
+        right.explain,
+        s"$joinType JOIN"
+      )
   }
 
   final class LeftJoinPartiallyApplied[In, Out, Out2](left: Query[In, Out], right: Query[In, Out2]) {
@@ -371,7 +463,12 @@ object Query {
     private[scalaql] val on:    (Out, Out2) => Boolean)
       extends JoinedQuery[In, Out, Out2, (Out, Option[Out2])] {
 
-    override def toString: String = s"(($left) LEFT JOIN ($right))"
+    override def explain: QueryExplain =
+      QueryExplain.Operation(
+        left.explain,
+        right.explain,
+        "LEFT JOIN"
+      )
 
   }
 
@@ -381,10 +478,10 @@ object Query {
     override def where(p: Predicate[Out]): Query[In, Out] =
       new UnionQuery[In, Out](left.where(p), right.where(p))
 
-    override def map[B](f: Out => B): Query[In, B] =
+    override def map[B: Tag](f: Out => B): Query[In, B] =
       new UnionQuery[In, B](left.map(f), right.map(f))
 
-    override def collect[B](pf: PartialFunction[Out, B]): Query[In, B] =
+    override def collect[B: Tag](pf: PartialFunction[Out, B]): Query[In, B] =
       new UnionQuery[In, B](left.collect(pf), right.collect(pf))
 
     override def union[In2 <: In, Out0 >: Out](that: Query[In2, Out0]): Query[In2, Out0] =
@@ -393,7 +490,12 @@ object Query {
     override def whereSubQuery[In2 <: In](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
       new UnionQuery[In2, Out](left.whereSubQuery(p), right.whereSubQuery(p))
 
-    override def toString: String = s"(($left) UNION ($right))"
+    override def explain: QueryExplain =
+      QueryExplain.Operation(
+        left.explain,
+        right.explain,
+        "UNION"
+      )
   }
 
   final class AndThenQuery[In0, OutA, OutB](
@@ -402,7 +504,12 @@ object Query {
     private[scalaql] val outATag: LightTypeTag)
       extends Query[In0, OutB] {
 
-    override def toString: String = s"(($left) AND_THEN ($right))"
+    override def explain: QueryExplain =
+      QueryExplain.Operation(
+        left.explain,
+        right.explain,
+        "AND THEN"
+      )
 
     override def andThen[Out0 >: OutB: Tag, Out2](that: Query[From[Out0], Out2]): Query[In0, Out2] =
       new AndThenQuery[In0, OutA, Out2](
@@ -411,11 +518,11 @@ object Query {
         outATag
       )
 
-    override def map[B](f: OutB => B): Query[In0, B] =
+    override def map[B: Tag](f: OutB => B): Query[In0, B] =
       new AndThenQuery[In0, OutA, B](
         left,
         right.map(f),
-        outATag
+        Tag[B].tag
       )
 
     override def where(p: Predicate[OutB]): Query[In0, OutB] =
@@ -425,11 +532,21 @@ object Query {
         outATag
       )
 
-    override def collect[B](pf: PartialFunction[OutB, B]): Query[In0, B] =
+    override def collect[B: Tag](pf: PartialFunction[OutB, B]): Query[In0, B] =
       new AndThenQuery[In0, OutA, B](
         left,
         right.collect(pf),
-        outATag
+        Tag[B].tag
       )
+  }
+
+  private def tagsToString(tags: List[LightTypeTag]): String =
+    tags.mkString("(", ", ", ")")
+
+  private val DefaultStrLength: Int = 20
+  private def truncateToString(value: Any): String = {
+    val str = value.toString
+    if (str.length <= DefaultStrLength) str
+    else s"${str.take(DefaultStrLength)}... (${str.length - DefaultStrLength} symbols omitted)"
   }
 }

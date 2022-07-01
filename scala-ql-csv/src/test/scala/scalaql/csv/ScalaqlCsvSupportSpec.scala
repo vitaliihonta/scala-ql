@@ -1,8 +1,7 @@
 package scalaql.csv
 
-import scalaql.ScalaqlUnitSpec
+import scalaql.{Naming, ScalaqlUnitSpec}
 import scalaql.*
-import scalaql.sources.Naming
 
 import java.nio.file.Files
 import java.nio.file.Path

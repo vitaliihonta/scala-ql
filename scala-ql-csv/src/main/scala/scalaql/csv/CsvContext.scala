@@ -1,6 +1,6 @@
 package scalaql.csv
 
-import scalaql.sources.Naming
+import scalaql.Naming
 import scalaql.sources.columnar.{CodecPath, TableApiContext, TableApiWriteContext}
 
 case class CsvReadContext(location: CodecPath, naming: Naming, caseSensitive: Boolean)

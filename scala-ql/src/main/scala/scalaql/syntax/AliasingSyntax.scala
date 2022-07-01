@@ -6,7 +6,7 @@ import scala.language.implicitConversions
 
 trait AliasingSyntax {
 
-  type @@[T, U] = scalaql.syntax.@@[T, U]
+  type as[T, U] = scalaql.syntax.as[T, U]
 
   final implicit def QueryAliasing[In](self: Query[From[In], In]): QueryAliasing[In] =
     new QueryAliasing[In](self)
@@ -22,4 +22,4 @@ trait AliasingSyntax {
   * Original idea by Miles Sabin, see: https://gist.github.com/milessabin/89c9b47a91017973a35f
   */
 @showAsInfix
-final class @@[T, U](private val `dummy`: T) extends AnyVal
+final class as[T, U](private val `dummy`: T) extends AnyVal

@@ -1,4 +1,4 @@
-package scalaql.sources
+package scalaql
 
 import java.util.regex.Pattern
 

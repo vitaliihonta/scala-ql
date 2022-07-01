@@ -76,7 +76,6 @@ Start with the following imports:
 ```scala mdoc:reset
 import scalaql._
 import scalaql.csv.CsvWriteConfig
-import scalaql.sources.Naming
 
 // Docs classes
 import scalaql.docs.Hogwarts._

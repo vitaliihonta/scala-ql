@@ -7,7 +7,6 @@ Start by importing `scalaql`:
 ```scala mdoc
 import scalaql._
 import scalaql.html.HtmlStyling
-import scalaql.sources.Naming
 import scalatags.Text.styles._
 import scalatags.Text.implicits._
 

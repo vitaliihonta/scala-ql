@@ -7,6 +7,11 @@ final class From[A] private[scalaql] (private[scalaql] val inputs: Map[LightType
     extends Serializable {
 
   private[scalaql] def get(tag: LightTypeTag): Iterable[Any] = inputs(tag)
+
+  override def toString: String =
+    inputs.keys
+      .map(input => s"From[$input]")
+      .mkString(" & ")
 }
 
 object From {

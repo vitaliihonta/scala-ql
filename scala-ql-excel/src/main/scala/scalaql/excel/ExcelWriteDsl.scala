@@ -1,7 +1,9 @@
 package scalaql.excel
 
+import scalaql.Naming
 import scalaql.excel.internal.ExcelDataSourceWriter
 import scalaql.sources.*
+
 import java.io.OutputStream
 
 class ExcelWriteDsl[A](override val config: ExcelWriteConfig[A])

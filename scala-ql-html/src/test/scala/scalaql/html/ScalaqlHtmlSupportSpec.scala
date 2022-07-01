@@ -1,7 +1,6 @@
 package scalaql.html
 
 import scalaql.*
-import scalaql.sources.Naming
 import scalatags.Text.all.{html => _, select => _, *}
 import java.time.LocalDate
 import java.time.LocalDateTime

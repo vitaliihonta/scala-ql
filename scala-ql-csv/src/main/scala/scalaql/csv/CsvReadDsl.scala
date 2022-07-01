@@ -1,7 +1,8 @@
 package scalaql.csv
 
+import scalaql.Naming
 import scalaql.csv.internal.CsvDataSourceReader
-import scalaql.sources.{DataSourceFilesReadDslMixin, DataSourceJavaIOReadDslMixin, DataSourceReadDsl, Naming}
+import scalaql.sources.{DataSourceFilesReadDslMixin, DataSourceJavaIOReadDslMixin, DataSourceReadDsl}
 import java.io.Reader
 
 class CsvReadDsl[A](override val config: CsvReadConfig)

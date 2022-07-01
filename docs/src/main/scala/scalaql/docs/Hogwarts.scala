@@ -37,7 +37,7 @@ object Hogwarts {
     age = 19,
     faculty = Gryffindor.name,
     grade = 85.1,
-    specialization = "learning",
+    specialization = "getting into troubles",
     birthDay = LocalDate.of(1980, 7, 31)
   )
 

@@ -6,7 +6,6 @@ Start by importing `scalaql`:
 
 ```scala mdoc
 import scalaql._
-import scalaql.sources.Naming
 
 // Docs classes
 import scalaql.docs.DocUtils._

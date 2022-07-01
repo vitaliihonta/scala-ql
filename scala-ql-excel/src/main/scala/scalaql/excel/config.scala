@@ -4,7 +4,7 @@ import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
-import scalaql.sources.Naming
+import scalaql.Naming
 import scalaql.sources.columnar.CodecPath
 import java.util.regex.Pattern
 

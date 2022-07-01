@@ -1,6 +1,6 @@
 package scalaql.csv
 
-import scalaql.sources.Naming
+import scalaql.Naming
 
 sealed abstract class Quoting(private[scalaql] val toTototoshi: com.github.tototoshi.csv.Quoting)
     extends Product

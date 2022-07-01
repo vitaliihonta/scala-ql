@@ -1,7 +1,6 @@
 package scalaql.csv
 
-import scalaql.ScalaqlUnitSpec
-import scalaql.sources.Naming
+import scalaql.{Naming, ScalaqlUnitSpec}
 
 import java.time.LocalDate
 import java.time.LocalDateTime

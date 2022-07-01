@@ -2,8 +2,9 @@ package scalaql.excel.internal
 
 import org.apache.poi.ss.usermodel.{Cell, CellType, Row}
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import scalaql.Naming
 import scalaql.excel.{CellResolutionStrategy, ExcelDecoder, ExcelReadConfig, ExcelReadContext}
-import scalaql.sources.{DataSourceJavaInputStreamReader, DataSourceJavaInputStreamReaderFilesSupport, Naming}
+import scalaql.sources.{DataSourceJavaInputStreamReader, DataSourceJavaInputStreamReaderFilesSupport}
 import scalaql.sources.columnar.CodecPath
 import scala.jdk.CollectionConverters.*
 import java.io.InputStream
