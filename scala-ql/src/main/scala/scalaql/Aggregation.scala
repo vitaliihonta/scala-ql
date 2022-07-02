@@ -157,6 +157,20 @@ object Aggregation {
       MathUtils.std[B](xs.map(f))(ev).value
   }
 
+  final class Reduce[A](f: (A, A) => A) extends Aggregation[A] {
+    override type Out = A
+
+    override def apply(xs: Iterable[A]): A =
+      xs.reduce(f)
+  }
+
+  final class FoldLeft[A, B](initial: B, f: (B, A) => B) extends Aggregation[A] {
+    override type Out = B
+
+    override def apply(xs: Iterable[A]): B =
+      xs.foldLeft(initial)(f)
+  }
+
   final class Report1[A, B, U1](
     view1:  AggregationView[A]
   )(group1: A => B,
