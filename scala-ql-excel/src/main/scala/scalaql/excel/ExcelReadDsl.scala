@@ -4,7 +4,6 @@ import org.apache.poi.ss.usermodel.{Sheet, Workbook}
 import scalaql.Naming
 import scalaql.excel.internal.ExcelDataSourceReader
 import scalaql.sources.*
-
 import java.io.InputStream
 
 class ExcelReadDsl[A](override val config: ExcelReadConfig)
@@ -24,6 +23,14 @@ class ExcelReadDsl[A](override val config: ExcelReadConfig)
       ExcelReadDsl[A]
     ]
     with DataSourceFilesReadDslMixin[
+      A,
+      InputStream,
+      ExcelDecoder,
+      λ[a => ExcelReadConfig],
+      ExcelDataSourceReader,
+      ExcelReadDsl[A]
+    ]
+    with DataSourceHttpReadDslMixin[
       A,
       InputStream,
       ExcelDecoder,

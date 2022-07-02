@@ -94,3 +94,11 @@ trait DataSourceJavaOutputStreamWriteFilesSupport[Encoder[_], Config[_]]
     Files.newOutputStream(path, openOptions: _*)
 
 }
+
+trait DataSourceJavaInputStreamReaderHttpSupport[Decoder[_], Config[_]]
+    extends DataSourceReaderHttpSupport[InputStream, Decoder, Config] {
+  this: DataSourceReader[InputStream, Decoder, Config] =>
+
+  override def fromInputStream(is: InputStream, encoding: Charset): InputStream =
+    is
+}

@@ -48,6 +48,7 @@ students
 You could also read multiple CSV files from an arbitrary nested directories using GLOB pattern.
 
 Start with the following imports:
+
 ```scala mdoc:reset
 import scalaql._
 
@@ -81,6 +82,37 @@ enterpriseSurvey
         // In this case it's required to provide correct naming. 
         .option(Naming.SnakeCase)
         .directory(dir, globPattern = "**/*.csv")
+    )
+  )
+```
+
+## Reading from the Internet
+
+With `scalaql`, it's also easy to read data from the Internet, by providing and URL.
+
+This could be done as follows:
+
+```scala mdoc
+import java.net.URL
+
+case class WebsiteUser(
+  username: String, 
+  identifier: String, 
+  firstName: String, 
+  lastName: String)
+
+select[WebsiteUser]
+  .show(truncate = false)
+  .run(
+    from(
+      csv
+        .read[WebsiteUser]
+        .options(
+          delimiter = ';',
+          omitEmptyLines = true,
+          naming = Naming.WithSpacesLowerCase
+        )
+        .url(new URL("https://support.staffbase.com/hc/en-us/article_attachments/360009197031/username.csv"))
     )
   )
 ```

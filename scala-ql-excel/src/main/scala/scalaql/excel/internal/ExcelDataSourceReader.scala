@@ -4,8 +4,13 @@ import org.apache.poi.ss.usermodel.{Cell, CellType, Row}
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import scalaql.Naming
 import scalaql.excel.{CellResolutionStrategy, ExcelDecoder, ExcelReadConfig, ExcelReadContext}
-import scalaql.sources.{DataSourceJavaInputStreamReader, DataSourceJavaInputStreamReaderFilesSupport}
+import scalaql.sources.{
+  DataSourceJavaInputStreamReader,
+  DataSourceJavaInputStreamReaderFilesSupport,
+  DataSourceJavaInputStreamReaderHttpSupport
+}
 import scalaql.sources.columnar.CodecPath
+
 import scala.jdk.CollectionConverters.*
 import java.io.InputStream
 
@@ -13,7 +18,8 @@ object ExcelDataSourceReader extends ExcelDataSourceReader
 
 class ExcelDataSourceReader
     extends DataSourceJavaInputStreamReader[ExcelDecoder, λ[a => ExcelReadConfig]]
-    with DataSourceJavaInputStreamReaderFilesSupport[ExcelDecoder, λ[a => ExcelReadConfig]] {
+    with DataSourceJavaInputStreamReaderFilesSupport[ExcelDecoder, λ[a => ExcelReadConfig]]
+    with DataSourceJavaInputStreamReaderHttpSupport[ExcelDecoder, λ[a => ExcelReadConfig]] {
 
   protected def readImpl[A: ExcelDecoder](inputStream: InputStream)(implicit config: ExcelReadConfig): Iterable[A] = {
     val workbook    = new XSSFWorkbook(inputStream)

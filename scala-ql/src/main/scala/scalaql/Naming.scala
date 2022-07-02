@@ -40,6 +40,7 @@ object Naming {
     }
   }
 
+  final case object WithSpaces           extends WithSpaces(identity)
   final case object WithSpacesLowerCase  extends WithSpaces(_.toLowerCase)
   final case object WithSpacesCapitalize extends WithSpaces(_.capitalize)
 

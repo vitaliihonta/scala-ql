@@ -2,7 +2,16 @@ package scalaql.sources
 
 import scalaql.SideEffect
 
-import java.io.{ByteArrayOutputStream, OutputStreamWriter, Reader, StringReader, StringWriter, Writer}
+import java.io.{
+  ByteArrayOutputStream,
+  InputStream,
+  InputStreamReader,
+  OutputStreamWriter,
+  Reader,
+  StringReader,
+  StringWriter,
+  Writer
+}
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.OpenOption
@@ -94,4 +103,12 @@ trait DataSourceJavaIOWriterFilesSupport[Encoder[_], Config[_]]
   override def openFile(path: Path, encoding: Charset, openOptions: OpenOption*): Writer =
     Files.newBufferedWriter(path, encoding, openOptions: _*)
 
+}
+
+trait DataSourceJavaIOReaderHttpSupport[Decoder[_], Config[_]]
+    extends DataSourceReaderHttpSupport[Reader, Decoder, Config] {
+  this: DataSourceReader[Reader, Decoder, Config] =>
+
+  override def fromInputStream(is: InputStream, encoding: Charset): Reader =
+    new InputStreamReader(is, encoding)
 }
