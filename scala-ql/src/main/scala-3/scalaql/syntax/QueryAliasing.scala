@@ -1,6 +1,6 @@
 package scalaql.syntax
 
-import izumi.reflect.Tag
+import scalaql.Tag
 import scalaql.{From, Query}
 
 final class QueryAliasing[In](private val self: Query[From[In], In]) extends AnyVal {

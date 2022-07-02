@@ -1,6 +1,6 @@
 package scalaql.utils
 
-import izumi.reflect.Tag
+import scalaql.Tag
 import scala.annotation.implicitNotFound
 
 @implicitNotFound("Don't now how to flatten tuple ${A}")

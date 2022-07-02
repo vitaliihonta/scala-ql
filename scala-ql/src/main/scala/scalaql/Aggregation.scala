@@ -5,7 +5,6 @@ import spire.algebra.AdditiveMonoid
 import spire.algebra.Field
 import spire.algebra.MultiplicativeMonoid
 import spire.math.Fractional
-
 import scala.annotation.unchecked.uncheckedVariance
 
 sealed trait Aggregation[-A] { self =>

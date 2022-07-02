@@ -1,6 +1,5 @@
 package scalaql
 
-import izumi.reflect.Tag
 import izumi.reflect.macrortti.LightTypeTag
 import scalaql.internal.PartialFunctionAndThenCompat
 import scalaql.utils.TupleFlatten

@@ -1,6 +1,5 @@
 package scalaql
 
-import scalaql.Aggregation.Of
 import scalaql.syntax.{ReportPartiallyApplied2, ReportPartiallyApplied2Syntax}
 import spire.algebra.AdditiveMonoid
 import spire.algebra.Field
@@ -181,7 +180,7 @@ object AggregationView {
     override def report[B, C, U1](
       group1: Out => B,
       group2: Out => C
-    )(merge:  (B, C, AggregationView[Out]) => Of[Out, U1]
+    )(merge:  (B, C, AggregationView[Out]) => Aggregation.Of[Out, U1]
     ): ReportPartiallyApplied2[Out, B, C, U1] =
       delegate.report[B, C, U1](group1, group2)(merge)
   }

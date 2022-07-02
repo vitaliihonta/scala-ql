@@ -4,6 +4,7 @@ import scalaql.fixture.*
 
 import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable
+import scala.util.Random
 
 class BaseLineSpec extends ScalaqlUnitSpec {
   case class PeopleStats(profession: Profession, avgAge: Double)
@@ -456,5 +457,55 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       query.distinct.run(from(offices) & from(workspaces)) shouldEqual expectedResult
     }
+
+    "correctly process query with deduplicateBy" in {
+      val people    = arbitraryN[Person]
+      val companies = arbitraryN[Company]
+
+      val query = select[Person]
+        .deduplicateBy(_.name)
+        .where(_.age >= 18)
+        .join(select[Company].deduplicateBy(_.name))
+        .on(_.profession.industries contains _.industry)
+        .sortBy { case (p, _) => p.name }
+
+      val expectedResult =
+        distinctBy(people)(_.name)
+          .filter(_.age >= 18)
+          .flatMap { person =>
+            distinctBy(companies)(_.name)
+              .filter(company => person.profession.industries contains company.industry)
+              .map(company => (person, company))
+          }
+          .sortBy { case (p, _) => p.name }
+
+      val duplicatedPeople    = Random.shuffle(people.flatMap(p => List.fill(3)(p)))
+      val duplicatedCompanies = Random.shuffle(companies.flatMap(c => List.fill(3)(c)))
+
+      val actualResult = query.toList.run(
+        from(duplicatedPeople) & from(duplicatedCompanies)
+      )
+
+      actualResult should contain theSameElementsAs expectedResult
+    }
+
+    "correctly process query with statefulMapConcat" in {
+      val people = arbitraryN[Person]
+
+      val query = select[Person]
+        .statefulMapConcat(initialState = 1) { (n, person) =>
+          n + 1 -> List.fill(n)(person)
+        }
+
+      val expectedResult =
+        people.zipWithIndex.flatMap { case (person, n) =>
+          List.fill(n + 1)(person)
+        }
+
+      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
+    }
   }
+
+  private def distinctBy[A, B](values: List[A])(f: A => B): List[A] =
+    values.groupBy(f).map { case (_, v) => v.head }.toList
 }

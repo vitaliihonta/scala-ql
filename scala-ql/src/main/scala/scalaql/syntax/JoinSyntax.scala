@@ -1,6 +1,6 @@
 package scalaql.syntax
 
-import izumi.reflect.Tag
+import scalaql.Tag
 import scalaql.*
 
 class JoinSyntax[In <: From[?], Out](private val self: Query[In, Out]) extends AnyVal {
