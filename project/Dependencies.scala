@@ -48,5 +48,8 @@ object Dependencies {
   object Testing {
     val scalatest  = "org.scalatest"  %% "scalatest"  % "3.2.12" % Test
     val scalacheck = "org.scalacheck" %% "scalacheck" % "1.16.0" % Test
+
+    // Will be used only for testing some functionality
+    val apacheSpark = "org.apache.spark" %% "spark-sql" % "3.2.1" % Test
   }
 }
