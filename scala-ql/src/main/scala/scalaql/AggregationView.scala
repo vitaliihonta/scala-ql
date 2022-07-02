@@ -6,7 +6,7 @@ import spire.algebra.Field
 import spire.algebra.MultiplicativeMonoid
 import spire.math.Fractional
 
-sealed trait AggregationDsl[In, Out] {
+sealed trait AggregationDsl[In, Out] extends Serializable {
   def toList: Aggregation.Of[In, List[Out]]
 
   def distinct: Aggregation.Of[In, Set[Out]]
@@ -31,6 +31,10 @@ sealed trait AggregationDsl[In, Out] {
   def count(p: Out => Boolean): Aggregation.Of[In, Int]
 
   def size: Aggregation.Of[In, Int] = count(_ => true)
+
+  def reduce(f: (Out, Out) => Out): Aggregation.Of[In, Out]
+
+  def foldLeft[B](initial: B)(f: (B, Out) => B): Aggregation.Of[In, B]
 
   def custom[B](f: Iterable[Out] => B): Aggregation.Of[In, B]
 
@@ -111,6 +115,12 @@ object AggregationView {
     override def stdBy[B](f: A => B)(implicit ev: Fractional[B]): Aggregation.Of[A, B] =
       new Aggregation.StdBy[A, B](f, ev)
 
+    override def reduce(f: (A, A) => A): Aggregation.Of[A, A] =
+      new Aggregation.Reduce[A](f)
+
+    override def foldLeft[B](initial: B)(f: (B, A) => B): Aggregation.Of[A, B] =
+      new Aggregation.FoldLeft[A, B](initial, f)
+
     override def report[B, U1](
       group1: A => B
     )(agg1:   (B, AggregationView[A]) => Aggregation.Of[A, U1]
@@ -165,6 +175,12 @@ object AggregationView {
 
     override def stdBy[B](f: Out => B)(implicit ev: Fractional[B]): Aggregation.Of[A, B] =
       delegate.stdBy(f).contramap(project)
+
+    override def reduce(f: (Out, Out) => Out): Aggregation.Of[A, Out] =
+      delegate.reduce(f).contramap(project)
+
+    override def foldLeft[B](initial: B)(f: (B, Out) => B): Aggregation.Of[A, B] =
+      delegate.foldLeft(initial)(f).contramap(project)
 
     override def custom[B](f: Iterable[Out] => B): Aggregation.Of[A, B] =
       delegate.custom(f).contramap(project)

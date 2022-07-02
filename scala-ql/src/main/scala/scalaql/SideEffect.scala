@@ -12,6 +12,7 @@ final class SideEffect[R, S, A] private (
   private val onExits:           mutable.ListBuffer[() => Unit],
   private var capturedException: Throwable)
     extends AutoCloseable
+    with Serializable
     with (A => Unit) { self =>
 
   private lazy val resource = {

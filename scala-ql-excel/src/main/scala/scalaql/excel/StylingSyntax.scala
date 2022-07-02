@@ -4,7 +4,7 @@ import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.Workbook
 import scalaql.utils.GenericMutableConfigurator
 
-trait StylingSyntax {
+trait StylingSyntax extends Serializable {
   final type Styling = (Workbook, CellStyle) => Unit
 
   final def cellStyle: GenericMutableConfigurator[Workbook, CellStyle] =

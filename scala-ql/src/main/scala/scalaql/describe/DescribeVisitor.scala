@@ -4,7 +4,7 @@ import scalaql.utils.MathUtils
 import scala.collection.mutable
 import spire.math.Fractional
 
-trait DescribeVisitor {
+trait DescribeVisitor extends Serializable {
   def addNonNumeric(field: String, value: Any): this.type
 
   def addOrdered[A: Ordering](field:                 String, value: A): this.type
@@ -20,7 +20,7 @@ object DescribeVisitorImpl {
   )
 }
 
-sealed trait Stats {
+sealed trait Stats extends Serializable {
   def build(field: String, config: DescribeConfig): RowDescription
 }
 

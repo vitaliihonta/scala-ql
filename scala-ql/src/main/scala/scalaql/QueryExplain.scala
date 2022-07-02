@@ -2,7 +2,7 @@ package scalaql
 
 import scala.collection.mutable
 
-sealed trait QueryExplain {
+sealed trait QueryExplain extends Product with Serializable {
   override def toString: String =
     QueryExplain.render(this)
 }

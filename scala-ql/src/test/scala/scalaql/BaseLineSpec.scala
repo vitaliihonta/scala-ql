@@ -204,6 +204,35 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       query.toList.run(from(people)) shouldEqual expectedResult
     }
 
+    "correctly process groupBy + aggregate with foldLeft and reduce" in repeated {
+      val people = arbitraryN[Person]
+
+      val query = select[Person]
+        .groupBy(_.profession)
+        .aggregate((profession, people) =>
+          people.map(_.age).reduce(_ + _) &&
+            people
+              .foldLeft(Set.empty[Char]) { (letters, person) =>
+                letters ++ person.name.toLowerCase
+              }
+        )
+
+      val expectedResult =
+        people
+          .groupBy(_.profession)
+          .map { case (profession, people) =>
+            people.map(_.age).sum -> people
+              .foldLeft(Set.empty[Char]) { (letters, person) =>
+                letters ++ person.name.toLowerCase
+              }
+          }
+          .toList
+
+      query.toList.run(from(people)) should contain theSameElementsAs {
+        expectedResult
+      }
+    }
+
     "correctly process multiple aggregations" in repeated {
       val people = arbitraryN[Person]
 
@@ -458,7 +487,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       query.distinct.run(from(offices) & from(workspaces)) shouldEqual expectedResult
     }
 
-    "correctly process query with deduplicateBy" in {
+    "correctly process query with deduplicateBy" in repeated {
       val people    = arbitraryN[Person]
       val companies = arbitraryN[Company]
 
@@ -489,7 +518,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       actualResult should contain theSameElementsAs expectedResult
     }
 
-    "correctly process query with statefulMapConcat" in {
+    "correctly process query with statefulMapConcat" in repeated {
       val people = arbitraryN[Person]
 
       val query = select[Person]

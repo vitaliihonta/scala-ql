@@ -4,7 +4,7 @@ import scalaql.Tag
 import scala.annotation.implicitNotFound
 
 @implicitNotFound("Don't now how to flatten tuple ${A}")
-sealed trait TupleFlatten[-A] {
+sealed trait TupleFlatten[-A] extends Serializable {
   type Out
 
   def apply(x: A): Out
@@ -13,7 +13,7 @@ sealed trait TupleFlatten[-A] {
 }
 
 object TupleFlatten extends LowPriorityTupled0 {
-  type Aux[A, Out0] = TupleFlatten[A] { type Out = Out0 }
+  final type Aux[A, Out0] = TupleFlatten[A] { type Out = Out0 }
 
   private[scalaql] def create[A, Out0: Tag](f: A => Out0): TupleFlatten.Aux[A, Out0] =
     new TupleFlatten[A] {

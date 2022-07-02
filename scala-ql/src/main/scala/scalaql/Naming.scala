@@ -2,7 +2,7 @@ package scalaql
 
 import java.util.regex.Pattern
 
-sealed trait Naming {
+sealed trait Naming extends Serializable {
   def apply(s: String): String
 }
 

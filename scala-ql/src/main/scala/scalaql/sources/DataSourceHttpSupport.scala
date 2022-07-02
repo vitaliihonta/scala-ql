@@ -5,6 +5,7 @@ import java.net.URL
 import java.nio.charset.{Charset, StandardCharsets}
 
 trait DataSourceReaderHttpSupport[Source <: AutoCloseable, Decoder[_], Config[_]] {
+  this: DataSourceReader[Source, Decoder, Config] =>
 
   protected[scalaql] def fromInputStream(is: InputStream, encoding: Charset): Source
 }

@@ -1,6 +1,6 @@
 package scalaql.describe
 
-trait ToBigDecimal[A] {
+trait ToBigDecimal[A] extends Serializable {
   def apply(value: A): BigDecimal
 }
 

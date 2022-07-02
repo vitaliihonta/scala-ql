@@ -27,7 +27,7 @@ object CsvDecoderException {
       })
 }
 
-trait CsvDecoder[A] {
+trait CsvDecoder[A] extends Serializable {
   self =>
   def read(row: Map[String, String])(implicit ctx: CsvReadContext): CsvDecoder.Result[A]
 

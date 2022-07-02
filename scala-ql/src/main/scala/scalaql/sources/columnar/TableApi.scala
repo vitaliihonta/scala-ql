@@ -1,6 +1,6 @@
 package scalaql.sources.columnar
 
-trait TableRowApi[Cell, CellValue] {
+trait TableRowApi[Cell, CellValue] extends Serializable {
   def append(name: String, cellValue: CellValue): this.type
 
   def insert(idx: Int, name: String, value: CellValue): this.type
@@ -10,7 +10,7 @@ trait TableRowApi[Cell, CellValue] {
   def getCells: List[(String, Cell)]
 }
 
-trait TableApi[Cell, CellValue, Row <: TableRowApi[Cell, CellValue], RowValue] {
+trait TableApi[Cell, CellValue, Row <: TableRowApi[Cell, CellValue], RowValue] extends Serializable {
   def prependEmptyRow: Row
 
   def appendEmptyRow: this.type
@@ -24,7 +24,7 @@ trait TableApi[Cell, CellValue, Row <: TableRowApi[Cell, CellValue], RowValue] {
   def getRows: List[Row]
 }
 
-trait TableApiContext[Self <: TableApiContext[Self]] {
+trait TableApiContext[Self <: TableApiContext[Self]] extends Serializable {
   def location: CodecPath
 
   def enterField(name: String): Self
@@ -35,7 +35,7 @@ trait TableApiContext[Self <: TableApiContext[Self]] {
     location.fieldLocation
 }
 
-trait TableApiWriteContext[Self <: TableApiWriteContext[Self]] extends TableApiContext[Self] {
+trait TableApiWriteContext[Self <: TableApiWriteContext[Self]] extends TableApiContext[Self] with Serializable {
   def headers: List[String]
 }
 

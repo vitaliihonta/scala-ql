@@ -7,7 +7,7 @@ import spire.algebra.MultiplicativeMonoid
 import spire.math.Fractional
 import scala.annotation.unchecked.uncheckedVariance
 
-sealed trait Aggregation[-A] { self =>
+sealed trait Aggregation[-A] extends Serializable { self =>
   type Out
 
   def apply(xs: Iterable[A]): Out
@@ -26,7 +26,7 @@ sealed trait Aggregation[-A] { self =>
 }
 
 object Aggregation {
-  type Of[-A, +Out0] = Aggregation[A] { type Out = Out0 @uncheckedVariance }
+  final type Of[-A, +Out0] = Aggregation[A] { type Out = Out0 @uncheckedVariance }
 
   final class Const[A](value: A) extends Aggregation[Any] {
 
@@ -155,6 +155,20 @@ object Aggregation {
 
     override def apply(xs: Iterable[A]): B =
       MathUtils.std[B](xs.map(f))(ev).value
+  }
+
+  final class Reduce[A](f: (A, A) => A) extends Aggregation[A] {
+    override type Out = A
+
+    override def apply(xs: Iterable[A]): A =
+      xs.reduce(f)
+  }
+
+  final class FoldLeft[A, B](initial: B, f: (B, A) => B) extends Aggregation[A] {
+    override type Out = B
+
+    override def apply(xs: Iterable[A]): B =
+      xs.foldLeft(initial)(f)
   }
 
   final class Report1[A, B, U1](

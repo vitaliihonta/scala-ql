@@ -13,7 +13,7 @@ import scala.annotation.tailrec
 
 case class WriteResult(cellsWritten: Int)
 
-trait ExcelEncoder[A] {
+trait ExcelEncoder[A] extends Serializable {
   def headers: List[String]
 
   def write(value: A, into: ExcelTableApi)(implicit ctx: ExcelWriteContext): WriteResult

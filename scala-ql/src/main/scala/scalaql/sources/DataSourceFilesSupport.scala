@@ -7,7 +7,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.{FileSystems, Files, OpenOption, Path}
 import scala.jdk.CollectionConverters.*
 
-trait DataSourceReaderFilesSupport[Source <: AutoCloseable, Decoder[_], Config[_]] {
+trait DataSourceReaderFilesSupport[Source <: AutoCloseable, Decoder[_], Config[_]] extends Serializable {
   this: DataSourceReader[Source, Decoder, Config] =>
 
   protected[scalaql] def openFile(path: Path, encoding: Charset): Source
@@ -20,7 +20,8 @@ trait DataSourceFilesReadDslMixin[
   Decoder[_],
   Config[_],
   DSReader <: DataSourceReader[Source, Decoder, Config] & DataSourceReaderFilesSupport[Source, Decoder, Config],
-  Self <: DataSourceReadDsl[A, Source, Decoder, Config, DSReader, Self]] { self: Self =>
+  Self <: DataSourceReadDsl[A, Source, Decoder, Config, DSReader, Self]]
+    extends Serializable { self: Self =>
 
   def file(
     path:        Path,

@@ -3,7 +3,7 @@ package scalaql
 import scalaql.internal.FunctionK
 import scala.collection.mutable.ListBuffer
 
-sealed trait QueryResult[-In, +Out] {
+sealed trait QueryResult[-In, +Out] extends Serializable {
 
   def map[B](f: Out => B): QueryResult[In, B] =
     new QueryResult.Mapped[In, Out, B](this, f)

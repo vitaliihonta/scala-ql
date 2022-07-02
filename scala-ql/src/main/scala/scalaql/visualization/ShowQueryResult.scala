@@ -3,14 +3,13 @@ package scalaql.visualization
 import org.apache.commons.lang3.StringUtils
 import scalaql.SideEffect
 import scalaql.internalApi
-
 import scala.collection.mutable
 
 /** Mostly copy-paste from org.apache.spark.sql.Dataset#show
   */
 @internalApi
 object ShowQueryResult {
-  case class ShowState(
+  private case class ShowState(
     into:        ShowTable,
     rowsWritten: Int,
     writtenAll:  Boolean)

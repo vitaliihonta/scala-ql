@@ -5,7 +5,7 @@ import spire.syntax.all.*
 
 private[scalaql] object MathUtils {
 
-  case class Std[N](value: N, sum: N, mean: N, count: Int)
+  final case class Std[N](value: N, sum: N, mean: N, count: Int)
 
   def std[N: Fractional](values: Iterable[N]): Std[N] = {
     val sum            = values.qsum

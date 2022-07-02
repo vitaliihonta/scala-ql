@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait HtmlTableEncoder[A] { self =>
+trait HtmlTableEncoder[A] extends Serializable { self =>
   def headers: List[String]
 
   def write(value: A, into: HtmlTable)(implicit ctx: HtmlTableEncoderContext): Unit

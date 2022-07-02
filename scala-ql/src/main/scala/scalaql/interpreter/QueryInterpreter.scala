@@ -10,7 +10,7 @@ import scalaql.unstableApi
 import scala.collection.mutable.ListBuffer
 
 @unstableApi
-trait QueryInterpreter[Param[_]] {
+trait QueryInterpreter[Param[_]] extends Serializable {
   type Res[Out]
 
   def interpret[In: ToFrom, Out](in: In, query: Query[In, Out])(param: Param[Out]): Res[Out]
@@ -19,8 +19,8 @@ trait QueryInterpreter[Param[_]] {
 @unstableApi
 object QueryInterpreter {
 
-  type Aux[Param[_], Res0[_]] = QueryInterpreter[Param] { type Res[Out] = Res0[Out] }
-  type Nullary[Res0[_]]       = Aux[λ[a => Unit], Res0]
+  final type Aux[Param[_], Res0[_]] = QueryInterpreter[Param] { type Res[Out] = Res0[Out] }
+  final type Nullary[Res0[_]]       = Aux[λ[a => Unit], Res0]
 
   val runFind: QueryInterpreter.Aux[* => Boolean, Option]       = FindInterpreter
   val runForeach: QueryInterpreter.Aux[* => Unit, λ[a => Unit]] = ForeachInterpreter

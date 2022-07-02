@@ -7,7 +7,7 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.TableStyle
 
-trait ExcelStyling[-A] {
+trait ExcelStyling[-A] extends Serializable {
   def headerStyle(name: String): Option[Styling]
   def cellStyle(name:   String): Option[Styling]
 }

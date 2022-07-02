@@ -22,7 +22,7 @@ object DescribeContext {
   def initial: DescribeContext = DescribeContext(CodecPath.Root, Nil)
 }
 
-trait Describe[A] { self =>
+trait Describe[A] extends Serializable { self =>
   def apply(value: A, visitor: DescribeVisitor)(implicit ctx: DescribeContext): Unit
 
   def contramap[B](f: B => A): Describe[B] = new Describe[B] {

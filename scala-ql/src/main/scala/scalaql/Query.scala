@@ -6,7 +6,7 @@ import scalaql.utils.TupleFlatten
 import spire.algebra.Order
 import scala.annotation.unchecked.uncheckedVariance
 
-sealed abstract class Query[-In: Tag, +Out: Tag] {
+sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
 
   def explain: QueryExplain
 
