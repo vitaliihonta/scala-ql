@@ -37,7 +37,7 @@ object ExcelDecoderException {
       })
 }
 
-trait ExcelDecoder[A] {
+trait ExcelDecoder[A] extends Serializable {
   self =>
   def read(row: Row)(implicit ctx: ExcelReadContext): ExcelDecoder.Result[A]
 

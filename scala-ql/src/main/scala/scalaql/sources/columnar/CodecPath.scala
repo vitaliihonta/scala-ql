@@ -2,7 +2,7 @@ package scalaql.sources.columnar
 
 import scala.annotation.tailrec
 
-sealed trait CodecPath {
+sealed trait CodecPath extends Product with Serializable {
   def isRoot: Boolean
   def isIndex: Boolean
   def isField: Boolean

@@ -3,7 +3,7 @@ package scalaql
 import scala.annotation.implicitNotFound
 
 @implicitNotFound("Type ${A} is not allowed to be query input: should be Any or From[A] (..with From[B] with ..)")
-sealed trait ToFrom[A] {
+sealed trait ToFrom[A] extends Serializable {
   def transform(value: A): From[?]
 }
 

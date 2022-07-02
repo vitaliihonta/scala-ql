@@ -25,13 +25,14 @@ private[scalaql] object QueryResultRunner {
           }
           .asInstanceOf[Out]
 
-        if (function.isInstanceOf[AutoCloseable]) {
-          try
+        function match {
+          case closeable: AutoCloseable =>
+            try
+              run
+            finally
+              closeable.close()
+          case _ =>
             run
-          finally
-            function.asInstanceOf[AutoCloseable].close()
-        } else {
-          run
         }
 
       case queryResult: QueryResult.CollectMap[In, k, v] =>

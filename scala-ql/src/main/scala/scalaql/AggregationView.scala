@@ -1,13 +1,12 @@
 package scalaql
 
-import scalaql.Aggregation.Of
 import scalaql.syntax.{ReportPartiallyApplied2, ReportPartiallyApplied2Syntax}
 import spire.algebra.AdditiveMonoid
 import spire.algebra.Field
 import spire.algebra.MultiplicativeMonoid
 import spire.math.Fractional
 
-sealed trait AggregationDsl[In, Out] {
+sealed trait AggregationDsl[In, Out] extends Serializable {
   def toList: Aggregation.Of[In, List[Out]]
 
   def distinct: Aggregation.Of[In, Set[Out]]

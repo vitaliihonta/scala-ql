@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait CsvEncoder[A] { self =>
+trait CsvEncoder[A] extends Serializable { self =>
   def headers: List[String]
 
   def write(value: A)(implicit ctx: CsvWriteContext): CsvEncoder.Result

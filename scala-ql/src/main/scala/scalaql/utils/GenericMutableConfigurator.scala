@@ -1,6 +1,6 @@
 package scalaql.utils
 
-class GenericMutableConfigurator[C, A] private (build: (C, A) => Unit) extends ((C, A) => Unit) {
+class GenericMutableConfigurator[C, A] private (build: (C, A) => Unit) extends ((C, A) => Unit) with Serializable {
   override def apply(c: C, v1: A): Unit = build(c, v1)
 
   def andThen(f: A => Unit): GenericMutableConfigurator[C, A] =

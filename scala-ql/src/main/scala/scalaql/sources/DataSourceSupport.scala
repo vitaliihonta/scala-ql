@@ -15,13 +15,15 @@ trait DataSourceSupport[
   WriteDSL[A] <: DataSourceWriteDsl[A, Sink, Encoder, WriteConfig, DSWriter, WriteDSL[A]]]
     extends DataSourceReadSupport[Source, Decoder, ReadConfig, DSReader, ReadDSL]
     with DataSourceWriteSupport[Sink, Encoder, WriteConfig, DSWriter, WriteDSL]
+    with Serializable
 
 trait DataSourceReadSupport[
   Source <: AutoCloseable,
   Decoder[_],
   Config[_],
   DSReader <: DataSourceReader[Source, Decoder, Config],
-  DSL[A] <: DataSourceReadDsl[A, Source, Decoder, Config, DSReader, DSL[A]]] {
+  DSL[A] <: DataSourceReadDsl[A, Source, Decoder, Config, DSReader, DSL[A]]]
+    extends Serializable {
 
   def read[A]: DSL[A]
 }
@@ -31,7 +33,8 @@ trait DataSourceWriteSupport[
   Encoder[_],
   Config[_],
   DSWriter <: DataSourceWriter[Sink, Encoder, Config],
-  DSL[A] <: DataSourceWriteDsl[A, Sink, Encoder, Config, DSWriter, DSL[A]]] {
+  DSL[A] <: DataSourceWriteDsl[A, Sink, Encoder, Config, DSWriter, DSL[A]]]
+    extends Serializable {
 
   def write[A]: DSL[A]
 }
@@ -42,7 +45,8 @@ abstract class DataSourceReadDsl[
   Decoder[_],
   Config[_],
   DSReader <: DataSourceReader[Source, Decoder, Config],
-  Self <: DataSourceReadDsl[A, Source, Decoder, Config, DSReader, Self]] {
+  Self <: DataSourceReadDsl[A, Source, Decoder, Config, DSReader, Self]]
+    extends Serializable {
 
   protected def _reader: DSReader
 
@@ -54,7 +58,7 @@ abstract class DataSourceReadDsl[
     _reader.read[A](source)(ev, config)
 }
 
-trait DataSourceReader[Source <: AutoCloseable, Decoder[_], Config[_]] {
+trait DataSourceReader[Source <: AutoCloseable, Decoder[_], Config[_]] extends Serializable {
 
   /** Implement reading logic here. NOTE - no need to close the reader, it's handled in public methods
     */
@@ -76,7 +80,8 @@ abstract class DataSourceWriteDsl[
   Encoder[_],
   Config[_],
   DSWriter <: DataSourceWriter[Sink, Encoder, Config],
-  Self <: DataSourceWriteDsl[A, Sink, Encoder, Config, DSWriter, Self]] {
+  Self <: DataSourceWriteDsl[A, Sink, Encoder, Config, DSWriter, Self]]
+    extends Serializable {
 
   protected def _writer: DSWriter
 
@@ -88,7 +93,7 @@ abstract class DataSourceWriteDsl[
     _writer.write[A](sink)(ev, config)
 }
 
-trait DataSourceWriter[Sink, Encoder[_], Config[_]] {
+trait DataSourceWriter[Sink, Encoder[_], Config[_]] extends Serializable {
   def write[A: Encoder](
     sink:            => Sink
   )(implicit config: Config[A]

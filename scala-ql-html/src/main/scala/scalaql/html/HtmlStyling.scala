@@ -2,7 +2,7 @@ package scalaql.html
 
 import scalatags.Text.Modifier
 
-trait HtmlStyling[-A] {
+trait HtmlStyling[-A] extends Serializable {
   def headerStyle(name: String): List[Modifier]
   def fieldStyle(name:  String): List[Modifier]
 }
