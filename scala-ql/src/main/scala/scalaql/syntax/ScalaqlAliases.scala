@@ -9,7 +9,7 @@ import scala.annotation.unchecked.uncheckedVariance
 trait ScalaqlAliases {
   final type Predicate[-A] = A => Boolean
 
-  final type SortBy[-A, +B] = A => B
+  final type OrderBy[-A, +B] = A => B
 
   final type GroupBy[-A, +B] = A => B
 

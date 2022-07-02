@@ -19,7 +19,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
           .collect { case Person(name, _, Profession.Unemployed, _) =>
             s"Unemployed $name"
           }
-          .sorted
+          .ordered
 
       val expectedResult = people.collect { case Person(name, _, Profession.Unemployed, _) =>
         s"Unemployed $name"
@@ -112,7 +112,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query: Query[From[Person], Person] = select[Person]
         .where(_.profession == Profession.Developer)
         .where(_.age >= 18)
-        .sortBy(_.age)
+        .orderBy(_.age)
         .map(person => person.copy(name = s"Engineer ${person.name}"))
 
       val expectedResult =
@@ -501,7 +501,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .where(_.age >= 18)
         .join(select[Company].deduplicateBy(_.name))
         .on(_.profession.industries contains _.industry)
-        .sortBy { case (p, _) => p.name }
+        .orderBy { case (p, _) => p.name }
 
       val expectedResult =
         distinctBy(people)(_.name)

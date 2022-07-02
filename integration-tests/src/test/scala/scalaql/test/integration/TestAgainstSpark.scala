@@ -130,7 +130,7 @@ class TestAgainstSpark extends ScalaqlUnitSpec with BeforeAndAfterAll {
             avg_value = avgValue
           )
         }
-        .sortBy(e => e.industry_code_ANZSIC -> e.year)
+        .orderBy(e => e.industry_code_ANZSIC -> e.year)
         .show(truncate=false)
 //        .toList
         .run(readSurvey())

@@ -113,7 +113,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           )
         )
 
-      case query: Query.SortByQuery[In, Out, by] =>
+      case query: Query.OrderByQuery[In, Out, by] =>
         import query.*
 
         val tmpBuffer = ListBuffer.empty[Out]
@@ -121,7 +121,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           Step.always[Out](tmpBuffer += _)
         )
 
-        val outputs = tmpBuffer.sortBy[by](sortBy)(order.toOrdering).iterator
+        val outputs = tmpBuffer.sortBy[by](orderBy)(order.toOrdering).iterator
         while (step.check() && outputs.hasNext)
           step.next(outputs.next())
 

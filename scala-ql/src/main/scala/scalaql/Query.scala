@@ -322,18 +322,18 @@ object Query {
       )
   }
 
-  final class SortByQuery[In: Tag, Out: Tag, By](
+  final class OrderByQuery[In: Tag, Out: Tag, By](
     private[scalaql] val source:         Query[In, Out],
-    private[scalaql] val sortBy:         SortBy[Out, By],
-    private[scalaql] val sortingTag:     Option[LightTypeTag]
+    private[scalaql] val orderBy:        OrderBy[Out, By],
+    private[scalaql] val orderingTag:    Option[LightTypeTag]
   )(private[scalaql] implicit val order: Order[By])
       extends Query[In, Out] {
 
     override def explain: QueryExplain = {
-      val sortBy = sortingTag.fold(ifEmpty = "")(by => s" BY($by)")
+      val byClause = orderingTag.fold(ifEmpty = "")(by => s" BY($by)")
       QueryExplain.Continuation(
         source.explain,
-        QueryExplain.Single(s"SORT$sortBy")
+        QueryExplain.Single(s"ORDER$byClause")
       )
     }
   }
