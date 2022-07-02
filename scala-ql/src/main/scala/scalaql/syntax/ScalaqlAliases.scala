@@ -15,4 +15,7 @@ trait ScalaqlAliases {
 
   final type Aggregate[-G, -A, +B] =
     (G, AggregationView[A] @uncheckedVariance) => Aggregation.Of[A, B @uncheckedVariance]
+
+  final type Tag[A] = izumi.reflect.Tag[A]
+  final val Tag = izumi.reflect.Tag
 }

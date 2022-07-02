@@ -89,11 +89,3 @@ flatMapQuery
   .show(truncate = false)
   .run(input)
 ```
-
-## Explain
-As you can see from the examples, the `Query` is rendered like a sequence of operations.  
-If you would like to pretty print the `Query`, use the following:
-
-```scala mdoc
-println(flatMapQuery.explain.pretty)
-```

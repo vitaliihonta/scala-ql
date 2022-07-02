@@ -1,6 +1,5 @@
 package scalaql
 
-import izumi.reflect.Tag
 import izumi.reflect.macrortti.LightTypeTag
 
 final class From[A] private[scalaql] (private[scalaql] val inputs: Map[LightTypeTag, Iterable[Any]])

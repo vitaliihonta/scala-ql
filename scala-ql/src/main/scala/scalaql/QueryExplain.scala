@@ -5,9 +5,6 @@ import scala.collection.mutable
 sealed trait QueryExplain {
   override def toString: String =
     QueryExplain.render(this)
-
-  def pretty: String =
-    QueryExplain.render(this, QueryExplain.prettyConfig)
 }
 
 object QueryExplain {
@@ -39,15 +36,7 @@ object QueryExplain {
     afterRightOp = OnDepth.const("")
   )
 
-  val prettyConfig: Config = Config(
-    sep = depth => "\n" + ("   " * depth),
-    ident = OnDepth.const(" "),
-    beforeLeftOp = OnDepth.const(" "),
-    afterLeftOp = depth => "\n" + (" " * depth),
-    beforeRightOp = depth => "\n" + (" " * depth),
-    afterRightOp = OnDepth.const(" ")
-  )
-
+  // TODO: add correct pretty print
   def render(explain: QueryExplain, config: Config = defaultConfig): String = {
     val sb = new mutable.StringBuilder
     def go(current: QueryExplain, depth: Int): Unit = current match {
