@@ -2,7 +2,7 @@ package scalaql.syntax
 
 import scalaql.Tag
 import scalaql.*
-import spire.algebra.Order
+import algebra.Order
 
 final class SortingSyntax[In, Out](private val self: Query[In, Out]) extends AnyVal {
 

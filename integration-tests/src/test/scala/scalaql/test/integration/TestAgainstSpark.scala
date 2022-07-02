@@ -29,6 +29,16 @@ object TestAgainstSpark {
     industry_name_ANZSIC: String,
     total_profit:         Double,
     avg_profit:           Double)
+
+  case class EnterpriseSurveyWindow(
+    year:                 Int,
+    industry_code_ANZSIC: String,
+    industry_name_ANZSIC: String,
+    rme_size_grp:         String,
+    variable:             String,
+    value:                String,
+    unit:                 String,
+    avg_value:            Double)
 }
 
 class TestAgainstSpark extends ScalaqlUnitSpec with BeforeAndAfterAll {
@@ -84,28 +94,50 @@ class TestAgainstSpark extends ScalaqlUnitSpec with BeforeAndAfterAll {
     }
 
     "do windowing as spark" in {
-      val sparkWindow = Window.partitionBy($"industry_name_ANZSIC").orderBy($"year")
 
-      readSurveyBySpark()
+      val expectedResult = readSurveyBySpark()
         .where($"year" >= 2019)
         .withColumn(
           "avg_value",
-          avg($"decimal_value").over(sparkWindow)
+          max($"decimal_value").over(
+            Window.partitionBy($"industry_code_ANZSIC").orderBy($"year")
+          )
         )
-        .orderBy($"decimal_value".desc)
-        .show(truncate = false)
+        .orderBy($"industry_code_ANZSIC", $"year")
+        .show(truncate=false)
+//        .as[EnterpriseSurveyWindow]
+//        .collect()
+//        .toList
 
-      select[EnterpriseSurvey]
+      val actualResult = select[EnterpriseSurvey]
         .where(_.year >= 2019)
         .window(
-          _.avgBy(_.decimalValue)
+          _.maxOf(_.decimalValue)
         )
         .over(
-          _.partitionBy(_.industry_name_ANZSIC)
+          _.partitionBy(_.industry_code_ANZSIC)
             .orderBy(_.year)
         )
-        .show(truncate = false)
+        .map { case (survey, avgValue) =>
+          EnterpriseSurveyWindow(
+            year = survey.year,
+            industry_code_ANZSIC = survey.industry_code_ANZSIC,
+            industry_name_ANZSIC = survey.industry_name_ANZSIC,
+            rme_size_grp = survey.rme_size_grp,
+            variable = survey.variable,
+            value = survey.value,
+            unit = survey.unit,
+            avg_value = avgValue
+          )
+        }
+        .sortBy(e => e.industry_code_ANZSIC -> e.year)
+        .show(truncate=false)
+//        .toList
         .run(readSurvey())
+
+//      actualResult should contain theSameElementsAs {
+//        expectedResult
+//      }
     }
   }
 

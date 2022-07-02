@@ -5,6 +5,8 @@ import scalaql.ToFrom
 import scalaql.AggregationView
 import scalaql.Query
 import scalaql.interpreter.QueryInterpreter
+
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] {
@@ -136,10 +138,26 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           step.next(tupled(aggregated))
         }
 
+      // TODO: not sure is it correct
       case query: Query.WindowQuery[In, out0, b, Out] =>
         import query.*
-        // TODO: implement
-        ???
+        val aggregation = agg(AggregationView.create[out0])
+        val buffers     = mutable.Map.empty[Int, mutable.PriorityQueue[out0]]
+        interpret[In, out0](in, source)(
+          Step.always[out0] { value =>
+            val partitionKey = window.getPartitionKey(value)
+            if (!buffers.contains(partitionKey)) {
+              buffers(partitionKey) = mutable.PriorityQueue.empty[out0](window.ordering)
+            }
+            val partition = buffers(partitionKey)
+            partition += value
+            val result = aggregation(partition)
+            step.next(
+              tupled((value, result))
+            )
+          }
+        )
+        buffers.clear()
 
       case query: Query.JoinedQuery[in0, in1, out0, out1, Out] =>
         import query.*

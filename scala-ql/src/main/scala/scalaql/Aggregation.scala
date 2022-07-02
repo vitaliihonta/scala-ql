@@ -1,5 +1,6 @@
 package scalaql
 
+import algebra.Order
 import scalaql.utils.{MathUtils, TupleFlatten}
 import spire.algebra.AdditiveMonoid
 import spire.algebra.Field
@@ -155,6 +156,48 @@ object Aggregation {
 
     override def apply(xs: Iterable[A]): B =
       MathUtils.std[B](xs.map(f))(ev).value
+  }
+
+  final class Min[A](ev: Order[A]) extends Aggregation[A] {
+
+    override type Out = A
+
+    override def apply(xs: Iterable[A]): A =
+      xs.min(ev.toOrdering)
+  }
+
+  final class MinOf[A, B](f: A => B, ev: Order[B]) extends Aggregation[A] {
+
+    override type Out = B
+
+    override def apply(xs: Iterable[A]): B = {
+      val iter = xs.iterator
+      var min  = f(iter.next())
+      while (iter.hasNext)
+        min = ev.min(f(iter.next()), min)
+      min
+    }
+  }
+
+  final class Max[A](ev: Order[A]) extends Aggregation[A] {
+
+    override type Out = A
+
+    override def apply(xs: Iterable[A]): A =
+      xs.max(ev.toOrdering)
+  }
+
+  final class MaxOf[A, B](f: A => B, ev: Order[B]) extends Aggregation[A] {
+
+    override type Out = B
+
+    override def apply(xs: Iterable[A]): B = {
+      val iter = xs.iterator
+      var max  = f(iter.next())
+      while (iter.hasNext)
+        max = ev.max(f(iter.next()), max)
+      max
+    }
   }
 
   final class Reduce[A](f: (A, A) => A) extends Aggregation[A] {

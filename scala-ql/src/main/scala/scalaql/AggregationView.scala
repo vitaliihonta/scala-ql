@@ -1,9 +1,7 @@
 package scalaql
 
 import scalaql.syntax.{ReportPartiallyApplied2, ReportPartiallyApplied2Syntax}
-import spire.algebra.AdditiveMonoid
-import spire.algebra.Field
-import spire.algebra.MultiplicativeMonoid
+import spire.algebra.{AdditiveMonoid, Field, MultiplicativeMonoid, Order}
 import spire.math.Fractional
 
 sealed trait AggregationDsl[In, Out] extends Serializable {
@@ -15,6 +13,12 @@ sealed trait AggregationDsl[In, Out] extends Serializable {
   def flatDistinctBy[B](f: Out => Iterable[B]): Aggregation.Of[In, Set[B]]
 
   def const[B](value: B): Aggregation.Of[In, B]
+
+  def min(implicit ev: Order[Out]): Aggregation.Of[In, Out]
+  def minOf[B](f:      Out => B)(implicit ev: Order[B]): Aggregation.Of[In, B]
+
+  def max(implicit ev: Order[Out]): Aggregation.Of[In, Out]
+  def maxOf[B](f:      Out => B)(implicit ev: Order[B]): Aggregation.Of[In, B]
 
   def sum(implicit ev: AdditiveMonoid[Out]): Aggregation.Of[In, Out]
   def sumBy[B](f:      Out => B)(implicit ev: AdditiveMonoid[B]): Aggregation.Of[In, B]
@@ -94,6 +98,18 @@ object AggregationView {
     override def count(p: A => Boolean): Aggregation.Of[A, Int] =
       new Aggregation.Count[A](p)
 
+    override def min(implicit ev: Order[A]): Aggregation.Of[A, A] =
+      new Aggregation.Min[A](ev)
+
+    override def minOf[B](f: A => B)(implicit ev: Order[B]): Aggregation.Of[A, B] =
+      new Aggregation.MinOf[A, B](f, ev)
+
+    override def max(implicit ev: Order[A]): Aggregation.Of[A, A] =
+      new Aggregation.Max[A](ev)
+
+    override def maxOf[B](f: A => B)(implicit ev: Order[B]): Aggregation.Of[A, B] =
+      new Aggregation.MaxOf[A, B](f, ev)
+
     override def sum(implicit ev: AdditiveMonoid[A]): Aggregation.Of[A, A] =
       new Aggregation.Sum[A](ev)
 
@@ -157,6 +173,18 @@ object AggregationView {
 
     override def sum(implicit ev: AdditiveMonoid[Out]): Aggregation.Of[A, Out] =
       delegate.sum.contramap(project)
+
+    override def min(implicit ev: Order[Out]): Aggregation.Of[A, Out] =
+      delegate.min.contramap(project)
+
+    override def minOf[B](f: Out => B)(implicit ev: Order[B]): Aggregation.Of[A, B] =
+      delegate.minOf(f).contramap(project)
+
+    override def max(implicit ev: Order[Out]): Aggregation.Of[A, Out] =
+      delegate.max.contramap(project)
+
+    override def maxOf[B](f: Out => B)(implicit ev: Order[B]): Aggregation.Of[A, B] =
+      delegate.maxOf(f).contramap(project)
 
     override def sumBy[B](f: Out => B)(implicit ev: AdditiveMonoid[B]): Aggregation.Of[A, B] =
       delegate.sumBy(f).contramap(project)

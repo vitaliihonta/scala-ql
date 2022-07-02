@@ -365,13 +365,13 @@ object Query {
 
     override def explain: QueryExplain = {
       val partitionBy =
-        if (window.partitionBy.isEmpty) ""
+        if (window.partitionTags.isEmpty) ""
         else {
           val cols = tagsToString(window.partitionTags.reverse)
           s"PARTITION BY $cols"
         }
       val orderBy =
-        if (window.orderBy.isEmpty) ""
+        if (window.orderTags.isEmpty) ""
         else {
           val cols = tagsToString(window.orderTags.reverse)
           s" ORDER BY $cols"
