@@ -2,12 +2,12 @@ package scalaql.csv
 
 import scalaql.{Naming, ScalaqlUnitSpec}
 import scalaql.*
-
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.{LocalDate, LocalDateTime}
 import java.util.UUID
 import scala.collection.mutable
+import java.net.URL
 
 class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
   case class Person(name: String, age: Int)
@@ -154,6 +154,62 @@ class ScalaqlCsvSupportSpec extends ScalaqlUnitSpec {
       val expectedResult = (1 to 10).flatMap { i =>
         List(Person(name = "vitalii", age = i), Person(name = "john", age = i))
       }.toList
+
+      actualResult should contain theSameElementsAs {
+        expectedResult
+      }
+    }
+
+    "correctly read csv from the Internet" in {
+      case class WebsiteUser(username: String, identifier: String, firstName: String, lastName: String)
+
+      val actualResult = select[WebsiteUser].toList
+        .run(
+          from(
+            csv
+              .read[WebsiteUser]
+              .options(
+                delimiter = ';',
+                omitEmptyLines = true,
+                naming = Naming.WithSpacesLowerCase
+              )
+              // TODO: use URL from landing page
+              .url(new URL("https://support.staffbase.com/hc/en-us/article_attachments/360009197031/username.csv"))
+          )
+        )
+
+      val expectedResult = List(
+        WebsiteUser(
+          username = "booker12",
+          identifier = "9012",
+          firstName = "Rachel",
+          lastName = "Booker"
+        ),
+        WebsiteUser(
+          username = "grey07",
+          identifier = "2070",
+          firstName = "Laura",
+          lastName = "Grey"
+        ),
+        WebsiteUser(
+          username = "johnson81",
+          identifier = "4081",
+          firstName = "Craig",
+          lastName = "Johnson"
+        ),
+        WebsiteUser(
+          username = "jenkins46",
+          identifier = "9346",
+          firstName = "Mary",
+          lastName = "Jenkins"
+        ),
+        WebsiteUser(
+          username = "smith79",
+          identifier = "5079",
+          firstName = "Jamie",
+          lastName = "Smith"
+        )
+      )
 
       actualResult should contain theSameElementsAs {
         expectedResult

@@ -2,13 +2,14 @@ package scalaql.csv
 
 import scalaql.Naming
 import scalaql.csv.internal.CsvDataSourceReader
-import scalaql.sources.{DataSourceFilesReadDslMixin, DataSourceJavaIOReadDslMixin, DataSourceReadDsl}
+import scalaql.sources.*
 import java.io.Reader
 
 class CsvReadDsl[A](override val config: CsvReadConfig)
     extends DataSourceReadDsl[A, Reader, CsvDecoder, λ[a => CsvReadConfig], CsvDataSourceReader, CsvReadDsl[A]]
     with DataSourceJavaIOReadDslMixin[A, CsvDecoder, λ[a => CsvReadConfig], CsvDataSourceReader, CsvReadDsl[A]]
-    with DataSourceFilesReadDslMixin[A, Reader, CsvDecoder, λ[a => CsvReadConfig], CsvDataSourceReader, CsvReadDsl[A]] {
+    with DataSourceFilesReadDslMixin[A, Reader, CsvDecoder, λ[a => CsvReadConfig], CsvDataSourceReader, CsvReadDsl[A]]
+    with DataSourceHttpReadDslMixin[A, Reader, CsvDecoder, λ[a => CsvReadConfig], CsvDataSourceReader, CsvReadDsl[A]] {
 
   override protected val _reader = CsvDataSourceReader
 
@@ -22,14 +23,14 @@ class CsvReadDsl[A](override val config: CsvReadConfig)
     withConfig(config.copy(caseSensitive = caseSensitive))
 
   def options(
-    delimiter:           Char = config.delimiter,
-    quoteChar:           Char = config.quoteChar,
-    escapeChar:          Char = config.escapeChar,
-    lineTerminator:      String = config.lineTerminator,
-    quoting:             Quoting = config.quoting,
-    treatEmptyLineAsNil: Boolean = config.treatEmptyLineAsNil,
-    naming:              Naming = config.naming,
-    caseSensitive:       Boolean = config.caseSensitive
+    delimiter:      Char = config.delimiter,
+    quoteChar:      Char = config.quoteChar,
+    escapeChar:     Char = config.escapeChar,
+    lineTerminator: String = config.lineTerminator,
+    quoting:        Quoting = config.quoting,
+    omitEmptyLines: Boolean = config.omitEmptyLines,
+    naming:         Naming = config.naming,
+    caseSensitive:  Boolean = config.caseSensitive
   ): CsvReadDsl[A] =
     withConfig(
       config.copy(
@@ -38,7 +39,7 @@ class CsvReadDsl[A](override val config: CsvReadConfig)
         escapeChar = escapeChar,
         lineTerminator = lineTerminator,
         quoting = quoting,
-        treatEmptyLineAsNil = treatEmptyLineAsNil,
+        omitEmptyLines = omitEmptyLines,
         naming = naming,
         caseSensitive = caseSensitive
       )

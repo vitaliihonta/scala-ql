@@ -2,13 +2,14 @@ package scalaql.json
 
 import io.circe.Decoder
 import scalaql.json.internal.JsonDataSourceReader
-import scalaql.sources.{DataSourceFilesReadDslMixin, DataSourceJavaIOReadDslMixin, DataSourceReadDsl}
+import scalaql.sources.*
 import java.io.Reader
 
 class JsonReadDsl[A](override val config: JsonReadConfig)
     extends DataSourceReadDsl[A, Reader, Decoder, λ[a => JsonReadConfig], JsonDataSourceReader, JsonReadDsl[A]]
     with DataSourceJavaIOReadDslMixin[A, Decoder, λ[a => JsonReadConfig], JsonDataSourceReader, JsonReadDsl[A]]
-    with DataSourceFilesReadDslMixin[A, Reader, Decoder, λ[a => JsonReadConfig], JsonDataSourceReader, JsonReadDsl[A]] {
+    with DataSourceFilesReadDslMixin[A, Reader, Decoder, λ[a => JsonReadConfig], JsonDataSourceReader, JsonReadDsl[A]]
+    with DataSourceHttpReadDslMixin[A, Reader, Decoder, λ[a => JsonReadConfig], JsonDataSourceReader, JsonReadDsl[A]] {
 
   override protected val _reader = JsonDataSourceReader
 
