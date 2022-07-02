@@ -2,8 +2,10 @@ package scalaql.test.integration
 
 import org.scalatest.BeforeAndAfterAll
 import org.apache.spark.sql.*
+import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.*
 import org.apache.spark.sql.types.DoubleType
+
 import java.nio.file.Paths
 import scalaql.*
 
@@ -63,13 +65,7 @@ class TestAgainstSpark extends ScalaqlUnitSpec with BeforeAndAfterAll {
           ).map { case (total, avg) => SurveyStats(year, industry, total, avg) }
         }
         .toList
-        .run(
-          from(
-            csv
-              .read[EnterpriseSurvey]
-              .directory(surveyDir, globPattern = "**/*.csv")
-          )
-        )
+        .run(readSurvey())
 
       val expectedResult = readSurveyBySpark()
         .where($"year" >= 2015)
@@ -86,7 +82,39 @@ class TestAgainstSpark extends ScalaqlUnitSpec with BeforeAndAfterAll {
         expectedResult
       }
     }
+
+    "do windowing as spark" in {
+      val sparkWindow = Window.partitionBy($"industry_name_ANZSIC").orderBy($"year")
+
+      readSurveyBySpark()
+        .where($"year" >= 2019)
+        .withColumn(
+          "avg_value",
+          avg($"decimal_value").over(sparkWindow)
+        )
+        .orderBy($"decimal_value".desc)
+        .show(truncate = false)
+
+      select[EnterpriseSurvey]
+        .where(_.year >= 2019)
+        .window(
+          _.avgBy(_.decimalValue)
+        )
+        .over(
+          _.partitionBy(_.industry_name_ANZSIC)
+            .orderBy(_.year)
+        )
+        .show(truncate = false)
+        .run(readSurvey())
+    }
   }
+
+  private def readSurvey() =
+    from(
+      csv
+        .read[EnterpriseSurvey]
+        .directory(surveyDir, globPattern = "**/*.csv")
+    )
 
   private def readSurveyBySpark(): DataFrame =
     spark.read

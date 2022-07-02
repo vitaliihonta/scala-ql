@@ -210,21 +210,26 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query = select[Person]
         .groupBy(_.profession)
         .aggregate((profession, people) =>
-          people.map(_.age).reduce(_ + _) &&
-            people
-              .foldLeft(Set.empty[Char]) { (letters, person) =>
+          (
+            people.const(profession) &&
+              people.map(_.age).reduce(_ + _) &&
+              people.foldLeft(Set.empty[Char]) { (letters, person) =>
                 letters ++ person.name.toLowerCase
               }
+          )
         )
 
       val expectedResult =
         people
           .groupBy(_.profession)
           .map { case (profession, people) =>
-            people.map(_.age).sum -> people
-              .foldLeft(Set.empty[Char]) { (letters, person) =>
+            (
+              profession,
+              people.map(_.age).sum,
+              people.foldLeft(Set.empty[Char]) { (letters, person) =>
                 letters ++ person.name.toLowerCase
               }
+            )
           }
           .toList
 

@@ -44,4 +44,7 @@ trait ScalaqlSyntax
 
   final implicit def JoinSyntax[In <: From[?], Out](self: Query[In, Out]): JoinSyntax[In, Out] =
     new JoinSyntax[In, Out](self)
+
+  final implicit def WindowSyntax[In, Out](self: Query[In, Out]): WindowSyntax[In, Out] =
+    new WindowSyntax[In, Out](self)
 }

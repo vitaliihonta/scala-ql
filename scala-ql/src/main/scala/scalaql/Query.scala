@@ -4,6 +4,7 @@ import izumi.reflect.macrortti.LightTypeTag
 import scalaql.internal.PartialFunctionAndThenCompat
 import scalaql.utils.TupleFlatten
 import spire.algebra.Order
+
 import scala.annotation.unchecked.uncheckedVariance
 
 sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
@@ -353,6 +354,34 @@ object Query {
           QueryExplain.Single(s"AGGREGATE(${Tag[Out2].tag})")
         )
       )
+  }
+
+  final class WindowQuery[In: Tag, Out0, B, Out1: Tag](
+    private[scalaql] val source: Query[In, Out0],
+    private[scalaql] val agg:    AggregationView[Out0] => Aggregation.Of[Out0, B],
+    private[scalaql] val window: Window[Out0],
+    private[scalaql] val tupled: TupleFlatten.Aux[(Out0, B), Out1])
+      extends Query[In, Out1] {
+
+    override def explain: QueryExplain = {
+      val partitionBy =
+        if (window.partitionBy.isEmpty) ""
+        else {
+          val cols = tagsToString(window.partitionTags.reverse)
+          s"PARTITION BY $cols"
+        }
+      val orderBy =
+        if (window.orderBy.isEmpty) ""
+        else {
+          val cols = tagsToString(window.orderTags.reverse)
+          s" ORDER BY $cols"
+        }
+
+      QueryExplain.Continuation(
+        source.explain,
+        QueryExplain.Single(s"WINDOW($partitionBy$orderBy)")
+      )
+    }
   }
 
   sealed trait GroupByQuery[-In, +Out, +G] {

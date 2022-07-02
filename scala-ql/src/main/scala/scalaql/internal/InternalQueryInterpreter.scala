@@ -136,6 +136,11 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           step.next(tupled(aggregated))
         }
 
+      case query: Query.WindowQuery[In, out0, b, Out] =>
+        import query.*
+        // TODO: implement
+        ???
+
       case query: Query.JoinedQuery[in0, in1, out0, out1, Out] =>
         import query.*
 

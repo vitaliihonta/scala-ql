@@ -32,6 +32,9 @@ sealed trait AggregationDsl[In, Out] extends Serializable {
 
   def size: Aggregation.Of[In, Int] = count(_ => true)
 
+  // just an alias which looks more natural for Window functions
+  def rowNumber: Aggregation.Of[In, Int] = size
+
   def reduce(f: (Out, Out) => Out): Aggregation.Of[In, Out]
 
   def foldLeft[B](initial: B)(f: (B, Out) => B): Aggregation.Of[In, B]
