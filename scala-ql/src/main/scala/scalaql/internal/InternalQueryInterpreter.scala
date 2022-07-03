@@ -147,12 +147,12 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
               val ordering = window.ordering.reverse
               buffers(partitionKey) = mutable.PriorityQueue.empty[out0](ordering)
             }
-            buffers(partitionKey) += value
+            buffers(partitionKey).enqueue(value)
           }
         )
 
         buffers.foreach { case (_, partition) =>
-          expression.processWindow(window.ordering, partition)(flatten).foreach(step.next)
+          expression.processWindow(window.ordering, partition.dequeueAll)(flatten).foreach(step.next)
           partition.clear()
         }
 

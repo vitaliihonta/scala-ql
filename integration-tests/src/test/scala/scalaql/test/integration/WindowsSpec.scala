@@ -1,7 +1,9 @@
 package scalaql.test.integration
 
+import org.scalactic.{Equality, TolerantNumerics}
 import scalaql.*
 import scalaql.csv.CsvDecoder
+
 import java.nio.file.Paths
 import java.time.LocalDate
 
@@ -75,8 +77,24 @@ object WindowsSpec {
 class WindowsSpec extends ScalaqlUnitSpec {
   import WindowsSpec.*
 
+  private implicit val statsEquality: Equality[OrderStats] =
+    new Equality[OrderStats] {
+      override def areEqual(a: OrderStats, b: Any): Boolean = b match {
+        case b: OrderStats =>
+          a.customerId == b.customerId && a.orderDate == b.orderDate &&
+          a.unitPrice == b.unitPrice && (a.avgUnitPrice === b.avgUnitPrice +- 0.01)
+        case _ => false
+      }
+    }
+
   "scalaql" should {
     "correctly process simple window function with aggregate" in {
+      // SELECT CustomerId,
+      //	   OrderDate,
+      //       UnitPrice,
+      //       AVG(UnitPrice) OVER (PARTITION BY CustomerId) AS AvgUnitPrice
+      // FROM [Order]
+      // INNER JOIN OrderDetail ON [Order].Id = OrderDetail.OrderId
       val query = select[Order]
         .join(select[OrderDetail])
         .on(_.id == _.orderId)
@@ -94,7 +112,6 @@ class WindowsSpec extends ScalaqlUnitSpec {
             avgUnitPrice = avgUnitPrice
           )
         }
-        .orderBy(_.customerId)
 
       val actualResult = query.toList
         .run(input)
@@ -107,7 +124,18 @@ class WindowsSpec extends ScalaqlUnitSpec {
     }
 
     "correctly process simple window function with row_number" in {
+      // NOTE: SQL produced a bit different result due to ordering within sqlite db.
+      val customerIds = List("ALFKI", "ANATR", "ANTO", "BONAP", "EASTC")
+
+      // SELECT CustomerId,
+      //       OrderDate,
+      //       UnitPrice,
+      //       ROW_NUMBER() OVER (PARTITION BY CustomerId ORDER BY UnitPrice) AS UnitRank
+      // FROM [Order]
+      // INNER JOIN OrderDetail
+      // ON [Order].Id = OrderDetail.OrderId
       val query = select[Order]
+        .where(_.customerId isInCollection customerIds)
         .join(select[OrderDetail])
         .on(_.id == _.orderId)
         .window(
@@ -115,6 +143,7 @@ class WindowsSpec extends ScalaqlUnitSpec {
         )
         .over(
           _.partitionBy { case (o, _) => o.customerId }
+            .orderBy { case (_, d) => d.unitPrice }
         )
         .map { case (order, detail, unitRank) =>
           OrderRanked(
@@ -124,19 +153,18 @@ class WindowsSpec extends ScalaqlUnitSpec {
             unitRank = unitRank
           )
         }
-        .orderBy(_.customerId)
 
       val actualResult = query.toList
         .run(input)
 
       val expectedResult = readExpectedResult[OrderRanked]("row_number_window")
+        .filter(_.customerId isInCollection customerIds)
 
       actualResult should contain theSameElementsAs {
         expectedResult
       }
     }
 
-    // TODO: something wrong with rank
     "correctly process window with rank" in {
       val query = select[Order]
         .join(select[OrderDetail])
@@ -159,17 +187,17 @@ class WindowsSpec extends ScalaqlUnitSpec {
 //        .orderBy(_.customerId)
 
       val actualResult = query
+        .orderBy(order => (order.customerId, order.unitPrice, order.unitRank))
 //        .show(truncate = false, numRows = 100)
         .toList
         .run(input)
-        .sortBy(order => (order.customerId, order.unitPrice, order.unitRank))
 
       val expectedResult = readExpectedResult[OrderRanked]("rank_window")
-        .sortBy(order => (order.customerId, order.unitPrice, order.unitRank))
+//        .sortBy(order => (order.customerId, order.unitPrice, order.unitRank))
 
-//      actualResult should contain theSameElementsAs  {
-//        expectedResult
-//      }
+      actualResult should contain theSameElementsAs {
+        expectedResult
+      }
     }
   }
 }
