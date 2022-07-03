@@ -1,9 +1,6 @@
 package scalaql.internal
 
-import scalaql.From
-import scalaql.ToFrom
-import scalaql.AggregationView
-import scalaql.Query
+import scalaql.{Aggregation, From, Query, Ranking, QueryExpressionBuilder, ToFrom}
 import scalaql.interpreter.QueryInterpreter
 
 import scala.collection.mutable
@@ -121,11 +118,11 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           Step.always[Out](tmpBuffer += _)
         )
 
-        val outputs = tmpBuffer.sortBy[by](orderBy)(order.toOrdering).iterator
+        val outputs = tmpBuffer.sortBy[by](orderBy)(ordering).iterator
         while (step.check() && outputs.hasNext)
           step.next(outputs.next())
 
-      case query: Query.AggregateQuery[In, out0, g, out1, Out] =>
+      case query: Query.AggregateQuery[In, out0, g, Out] =>
         import query.*
         val tmpBuffer = ListBuffer.empty[out0]
         interpret[In, out0](in, source)(
@@ -134,29 +131,31 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         val grouped = tmpBuffer.groupBy(group).iterator
         while (step.check() && grouped.hasNext) {
           val (gr, ys)   = grouped.next()
-          val aggregated = agg(gr, AggregationView.create[out0]).apply(ys.toList)
-          step.next(tupled(aggregated))
+          val aggregated = agg(gr, QueryExpressionBuilder.create[out0]).apply(ys.toList)
+          step.next(aggregated)
         }
 
-      // TODO: not sure is it correct
-      case query: Query.WindowQuery[In, out0, b, Out] =>
+      case query: Query.WindowQuery[In, out0, res, Out] =>
         import query.*
-        val aggregation = agg(AggregationView.create[out0])
-        val buffers     = mutable.Map.empty[Int, mutable.PriorityQueue[out0]]
+        val expression = expressionBuilder(QueryExpressionBuilder.create[out0])
+        val buffers    = mutable.Map.empty[Int, mutable.PriorityQueue[out0]]
         interpret[In, out0](in, source)(
           Step.always[out0] { value =>
             val partitionKey = window.getPartitionKey(value)
             if (!buffers.contains(partitionKey)) {
-              buffers(partitionKey) = mutable.PriorityQueue.empty[out0](window.ordering)
+              // PriorityQueue pops-up in reverse order =)
+              val ordering = window.ordering.reverse
+              buffers(partitionKey) = mutable.PriorityQueue.empty[out0](ordering)
             }
-            val partition = buffers(partitionKey)
-            partition += value
-            val result = aggregation(partition)
-            step.next(
-              tupled((value, result))
-            )
+            buffers(partitionKey) += value
           }
         )
+
+        buffers.foreach { case (_, partition) =>
+          expression.processWindow(window.ordering, partition)(flatten).foreach(step.next)
+          partition.clear()
+        }
+
         buffers.clear()
 
       case query: Query.JoinedQuery[in0, in1, out0, out1, Out] =>

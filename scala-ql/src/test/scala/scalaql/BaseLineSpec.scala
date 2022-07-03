@@ -212,7 +212,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .aggregate((profession, people) =>
           (
             people.const(profession) &&
-              people.map(_.age).reduce(_ + _) &&
+              people.reduceBy(_.age)(_ + _) &&
               people.foldLeft(Set.empty[Char]) { (letters, person) =>
                 letters ++ person.name.toLowerCase
               }

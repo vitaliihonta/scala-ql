@@ -101,11 +101,11 @@ lazy val root = project
       `scala-ql-csv`.projectRefs ++
       `scala-ql-json`.projectRefs ++
       `scala-ql-excel`.projectRefs ++
-      `scala-ql-html`.projectRefs: _*
+      `scala-ql-html`.projectRefs ++
+      `integration-tests`.projectRefs: _*
   )
   .aggregate(
-    docs,
-    `integration-tests`
+    docs
   )
 
 lazy val docs = project
@@ -138,27 +138,26 @@ lazy val coverage = project
     `scala-ql-json`.jvm(scala213),
     `scala-ql-excel`.jvm(scala213),
     `scala-ql-html`.jvm(scala213),
-    `integration-tests`
+    `integration-tests`.jvm(scala213)
   )
 
 lazy val `integration-tests` =
-  project
+  projectMatrix
     .in(file("integration-tests"))
     .dependsOn(
-      `scala-ql`.jvm(scala213)      % "compile->compile;test->test",
-      `scala-ql-csv`.jvm(scala213)  % "compile->compile;test->test",
-      `scala-ql-json`.jvm(scala213) % "compile->compile;test->test"
+      `scala-ql`      % "compile->compile;test->test",
+      `scala-ql-csv`  % "compile->compile;test->test",
+      `scala-ql-json` % "compile->compile;test->test"
     )
     .settings(
       baseSettings,
       noPublishSettings,
-      scalaVersion := scala213,
       libraryDependencies ++= Seq(
         Testing.scalatest,
-        Testing.scalacheck,
-        Testing.apacheSpark
+        Testing.scalacheck
       )
     )
+    .jvmPlatform(scalaVersions = allScalaVersions)
 
 lazy val `scala-ql` =
   projectMatrix

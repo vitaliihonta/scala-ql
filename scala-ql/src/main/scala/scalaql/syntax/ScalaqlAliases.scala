@@ -1,8 +1,6 @@
 package scalaql.syntax
 
-import scalaql.AggregationView
-import scalaql.Aggregation
-import scalaql.forbiddenInheritance
+import scalaql.{Aggregation, Ranking, QueryExpressionBuilder, forbiddenInheritance}
 import scala.annotation.unchecked.uncheckedVariance
 
 @forbiddenInheritance
@@ -14,7 +12,7 @@ trait ScalaqlAliases {
   final type GroupBy[-A, +B] = A => B
 
   final type Aggregate[-G, -A, +B] =
-    (G, AggregationView[A] @uncheckedVariance) => Aggregation.Of[A, B @uncheckedVariance]
+    (G, QueryExpressionBuilder[A] @uncheckedVariance) => Aggregation.Of[A, B @uncheckedVariance]
 
   final type Tag[A] = izumi.reflect.Tag[A]
   final val Tag = izumi.reflect.Tag

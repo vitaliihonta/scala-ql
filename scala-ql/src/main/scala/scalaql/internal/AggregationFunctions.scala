@@ -1,33 +1,12 @@
-package scalaql
+package scalaql.internal
 
-import algebra.Order
 import scalaql.utils.{MathUtils, TupleFlatten}
-import spire.algebra.AdditiveMonoid
-import spire.algebra.Field
-import spire.algebra.MultiplicativeMonoid
+import scalaql.{Aggregation, QueryExpressionBuilder, forbiddenInheritance}
+import spire.algebra.{AdditiveMonoid, Field, MultiplicativeMonoid}
 import spire.math.Fractional
-import scala.annotation.unchecked.uncheckedVariance
 
-sealed trait Aggregation[-A] extends Serializable { self =>
-  type Out
-
-  def apply(xs: Iterable[A]): Out
-
-  def contramap[A0](f: A0 => A): Aggregation.Of[A0, Out] =
-    new Aggregation.Contramapped[A0, A, Out](self, f)
-
-  def map[B](f: Out => B): Aggregation.Of[A, B] =
-    new Aggregation.Mapped[A, Out, B](self, f)
-
-  def &&[A0 <: A](
-    that:            Aggregation[A0]
-  )(implicit tupled: TupleFlatten[(Out, that.Out)]
-  ): Aggregation.Of[A0, tupled.Out] =
-    new Aggregation.Chained[A0, Out, that.Out, tupled.Out](self, that)(tupled)
-}
-
-object Aggregation {
-  final type Of[-A, +Out0] = Aggregation[A] { type Out = Out0 @uncheckedVariance }
+@forbiddenInheritance
+trait AggregationFunctions {
 
   final class Const[A](value: A) extends Aggregation[Any] {
 
@@ -52,7 +31,7 @@ object Aggregation {
   final class Chained[A, Out0, Out1, U](
     f:      Aggregation.Of[A, Out0],
     g:      Aggregation.Of[A, Out1]
-  )(tupled: TupleFlatten.Aux[(Out0, Out1), U])
+  )(tupled: TupleFlatten.Of[(Out0, Out1), U])
       extends Aggregation[A] {
 
     override type Out = U
@@ -158,15 +137,15 @@ object Aggregation {
       MathUtils.std[B](xs.map(f))(ev).value
   }
 
-  final class Min[A](ev: Order[A]) extends Aggregation[A] {
+  final class Min[A](ev: Ordering[A]) extends Aggregation[A] {
 
     override type Out = A
 
     override def apply(xs: Iterable[A]): A =
-      xs.min(ev.toOrdering)
+      xs.min(ev)
   }
 
-  final class MinOf[A, B](f: A => B, ev: Order[B]) extends Aggregation[A] {
+  final class MinOf[A, B](f: A => B, ev: Ordering[B]) extends Aggregation[A] {
 
     override type Out = B
 
@@ -179,15 +158,15 @@ object Aggregation {
     }
   }
 
-  final class Max[A](ev: Order[A]) extends Aggregation[A] {
+  final class Max[A](ev: Ordering[A]) extends Aggregation[A] {
 
     override type Out = A
 
     override def apply(xs: Iterable[A]): A =
-      xs.max(ev.toOrdering)
+      xs.max(ev)
   }
 
-  final class MaxOf[A, B](f: A => B, ev: Order[B]) extends Aggregation[A] {
+  final class MaxOf[A, B](f: A => B, ev: Ordering[B]) extends Aggregation[A] {
 
     override type Out = B
 
@@ -207,6 +186,18 @@ object Aggregation {
       xs.reduce(f)
   }
 
+  final class ReduceBy[A, B](by: A => B)(f: (B, B) => B) extends Aggregation[A] {
+    override type Out = B
+
+    override def apply(xs: Iterable[A]): B = {
+      val iter = xs.iterator
+      var res  = by(iter.next())
+      while (iter.hasNext)
+        res = f(res, by(iter.next()))
+      res
+    }
+  }
+
   final class FoldLeft[A, B](initial: B, f: (B, A) => B) extends Aggregation[A] {
     override type Out = B
 
@@ -214,10 +205,22 @@ object Aggregation {
       xs.foldLeft(initial)(f)
   }
 
+  final class FoldLeftBy[A, B, R](by: A => B)(initial: R, f: (R, B) => R) extends Aggregation[A] {
+    override type Out = R
+
+    override def apply(xs: Iterable[A]): R = {
+      val iter = xs.iterator
+      var res  = initial
+      while (iter.hasNext)
+        res = f(res, by(iter.next()))
+      res
+    }
+  }
+
   final class Report1[A, B, U1](
-    view1:  AggregationView[A]
+    view1:  QueryExpressionBuilder[A]
   )(group1: A => B,
-    agg1:   (B, AggregationView[A]) => Aggregation.Of[A, U1])
+    agg1:   (B, QueryExpressionBuilder[A]) => Aggregation.Of[A, U1])
       extends Aggregation[A] {
 
     override type Out = List[U1]
@@ -232,12 +235,12 @@ object Aggregation {
   }
 
   final class Report2[A, B, C, U1, U2](
-    view1:  AggregationView[A],
-    view2:  AggregationView[U1]
+    view1:  QueryExpressionBuilder[A],
+    view2:  QueryExpressionBuilder[U1]
   )(group1: A => B,
     group2: A => C,
-    agg1:   (B, C, AggregationView[A]) => Aggregation.Of[A, U1],
-    agg2:   (B, AggregationView[U1]) => Aggregation.Of[U1, U2])
+    agg1:   (B, C, QueryExpressionBuilder[A]) => Aggregation.Of[A, U1],
+    agg2:   (B, QueryExpressionBuilder[U1]) => Aggregation.Of[U1, U2])
       extends Aggregation[A] {
 
     override type Out = List[U2]
@@ -252,11 +255,5 @@ object Aggregation {
           agg2(sliceB, view2).apply(merged1.toList)
         }
         .toList
-  }
-
-  final class Custom[A, B](f: Iterable[A] => B) extends Aggregation[A] {
-    override type Out = B
-
-    override def apply(xs: Iterable[A]): B = f(xs)
   }
 }
