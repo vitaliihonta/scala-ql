@@ -45,6 +45,12 @@ trait AggregationFunctions {
     override def apply(xs: Iterable[A]): List[A] = xs.toList
   }
 
+  final class ToListBy[A, B](f: A => B) extends Aggregation[A] {
+    override type Out = List[B]
+
+    override def apply(xs: Iterable[A]): List[B] = xs.map(f).toList
+  }
+
   final class Distinct[A] extends Aggregation[A] {
     override type Out = Set[A]
 

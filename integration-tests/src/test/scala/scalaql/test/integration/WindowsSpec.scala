@@ -1,9 +1,8 @@
 package scalaql.test.integration
 
-import org.scalactic.{Equality, TolerantNumerics}
+import org.scalactic.Equality
 import scalaql.*
 import scalaql.csv.CsvDecoder
-
 import java.nio.file.Paths
 import java.time.LocalDate
 
@@ -32,6 +31,10 @@ object WindowsSpec {
     quantity:  Int,
     discount:  Double)
 
+  case class OrderWithDetails(
+    order:   Order,
+    details: OrderDetail)
+
   case class OrderStats(
     customerId:   String,
     orderDate:    LocalDate,
@@ -43,6 +46,14 @@ object WindowsSpec {
     orderDate:  LocalDate,
     unitPrice:  Double,
     unitRank:   Int)
+
+  case class OrderWithLag(
+    productId:   Long,
+    shipCountry: String,
+    orderDate:   LocalDate,
+    shippedDate: Option[LocalDate],
+    quantity:    Int,
+    lag:         Option[Int])
 
   def input: From[Order] & From[OrderDetail] = from(
     csv
@@ -74,7 +85,7 @@ object WindowsSpec {
       )
 }
 
-class WindowsSpec extends ScalaqlUnitSpec {
+class WindowsSpec extends ScalaqlUnitSpec with VersionSpecificImplicits {
   import WindowsSpec.*
 
   private implicit val statsEquality: Equality[OrderStats] =
@@ -98,17 +109,18 @@ class WindowsSpec extends ScalaqlUnitSpec {
       val query = select[Order]
         .join(select[OrderDetail])
         .on(_.id == _.orderId)
+        .map((OrderWithDetails.apply _).tupled)
         .window(
-          _.avgBy { case (_, d) => d.unitPrice }
+          _.avgBy(_.details.unitPrice)
         )
         .over(
-          _.partitionBy { case (o, _) => o.customerId }
+          _.partitionBy(_.order.customerId)
         )
-        .map { case (order, detail, avgUnitPrice) =>
+        .map { case (data, avgUnitPrice) =>
           OrderStats(
-            customerId = order.customerId,
-            orderDate = order.orderDate,
-            unitPrice = detail.unitPrice,
+            customerId = data.order.customerId,
+            orderDate = data.order.orderDate,
+            unitPrice = data.details.unitPrice,
             avgUnitPrice = avgUnitPrice
           )
         }
@@ -138,18 +150,19 @@ class WindowsSpec extends ScalaqlUnitSpec {
         .where(_.customerId isInCollection customerIds)
         .join(select[OrderDetail])
         .on(_.id == _.orderId)
+        .map((OrderWithDetails.apply _).tupled)
         .window(
           _.rowNumber
         )
         .over(
-          _.partitionBy { case (o, _) => o.customerId }
-            .orderBy { case (_, d) => d.unitPrice }
+          _.partitionBy(_.order.customerId)
+            .orderBy(_.details.unitPrice)
         )
-        .map { case (order, detail, unitRank) =>
+        .map { case (data, unitRank) =>
           OrderRanked(
-            customerId = order.customerId,
-            orderDate = order.orderDate,
-            unitPrice = detail.unitPrice,
+            customerId = data.order.customerId,
+            orderDate = data.order.orderDate,
+            unitPrice = data.details.unitPrice,
             unitRank = unitRank
           )
         }
@@ -166,36 +179,86 @@ class WindowsSpec extends ScalaqlUnitSpec {
     }
 
     "correctly process window with rank" in {
+      // SELECT CustomerId,
+      //       OrderDate,
+      //       UnitPrice,
+      //       RANK() OVER (PARTITION BY CustomerId ORDER BY UnitPrice) AS UnitRank
+      // FROM [Order]
+      // INNER JOIN OrderDetail ON [Order].Id = OrderDetail.OrderId
       val query = select[Order]
         .join(select[OrderDetail])
         .on(_.id == _.orderId)
+        .map((OrderWithDetails.apply _).tupled)
         .window(
           _.rank
         )
         .over(
-          _.partitionBy { case (o, _) => o.customerId }
-            .orderBy { case (_, d) => d.unitPrice }
+          _.partitionBy(_.order.customerId)
+            .orderBy(_.details.unitPrice)
         )
-        .map { case (order, detail, unitRank) =>
+        .map { case (data, unitRank) =>
           OrderRanked(
-            customerId = order.customerId,
-            orderDate = order.orderDate,
-            unitPrice = detail.unitPrice,
+            customerId = data.order.customerId,
+            orderDate = data.order.orderDate,
+            unitPrice = data.details.unitPrice,
             unitRank = unitRank
           )
         }
-//        .orderBy(_.customerId)
 
-      val actualResult = query
-        .orderBy(order => (order.customerId, order.unitPrice, order.unitRank))
-//        .show(truncate = false, numRows = 100)
-        .toList
+      val actualResult = query.toList
         .run(input)
 
       val expectedResult = readExpectedResult[OrderRanked]("rank_window")
-//        .sortBy(order => (order.customerId, order.unitPrice, order.unitRank))
 
       actualResult should contain theSameElementsAs {
+        expectedResult
+      }
+    }
+
+    "correctly process window with lag" in {
+      // NOTE: SQL produced a bit different result due to ordering within sqlite db.
+      val productIds = List(1L, 2L, 3L)
+
+      // SELECT ProductId,
+      //	CustomerId,
+      //    OrderDate,
+      //    Quantity,
+      //    LAG(Quantity) OVER (PARTITION BY ProductId, ShipCountry  ORDER BY OrderDate, ShippedDate) AS Lag
+      // FROM [Order]
+      // INNER JOIN OrderDetail ON [Order].Id = OrderDetail.OrderId
+      // WHERE ProductId IN (1, 2, 3)
+      val query = select[Order]
+        .join(select[OrderDetail])
+        .on(_.id == _.orderId)
+        .map((OrderWithDetails.apply _).tupled)
+        .where(_.details.productId isInCollection productIds)
+        .window(
+          _.lag(_.details.quantity)
+        )
+        .over(
+          _.partitionBy(_.details.productId, _.order.shipCountry)
+            .orderBy(_.order.orderDate, _.order.shippedDate)
+        )
+        .map { case (data, lag) =>
+          OrderWithLag(
+            productId = data.details.productId,
+            shipCountry = data.order.shipCountry,
+            orderDate = data.order.orderDate,
+            shippedDate = data.order.shippedDate,
+            quantity = data.details.quantity,
+            lag = lag
+          )
+        }
+        .orderBy(o => (o.productId, o.shipCountry, o.orderDate, o.shippedDate))
+
+      val actualResult = query.toList
+        .run(input)
+
+      val expectedResult = readExpectedResult[OrderWithLag]("lag_window")
+        .filter(_.productId isInCollection productIds)
+        .sortBy(o => (o.productId, o.shipCountry, o.orderDate, o.shippedDate))
+
+      actualResult shouldEqual {
         expectedResult
       }
     }

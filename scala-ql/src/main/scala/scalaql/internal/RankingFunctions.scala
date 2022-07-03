@@ -42,6 +42,27 @@ trait RankingFunctions {
     }
   }
 
+  final class Lag[A, B](f: A => B) extends Ranking[A] {
+    override type Out = Option[B]
+
+    override def apply(order: Ordering[A], values: Iterable[A]): Iterable[(A, Option[B])] = {
+      val iter = values.iterator
+
+      var prev = iter.next()
+
+      val buffer = mutable.ListBuffer.empty[(A, Option[B])]
+      buffer += (prev -> None)
+
+      while (iter.hasNext) {
+        val current = iter.next()
+        buffer += (current -> Some(f(prev)))
+        prev = current
+      }
+
+      buffer.toList
+    }
+  }
+
   //  final class Contramapped[A, A0, Out0](base: Ranking.Of[A, Out0], f: A0 => A) extends Ranking[A0] {
   //    override type Ranked = Out0
   //

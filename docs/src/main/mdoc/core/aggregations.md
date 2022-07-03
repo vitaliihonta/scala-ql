@@ -36,7 +36,7 @@ val facultyInfos = grouped
     (
       students.avgBy(_.age.toDouble) &&
       students.sumBy(_.grade) &&
-      students.map(_.specialization).toList
+      students.toListBy(_.specialization)
     ).map { 
       case (avgAge, totalGrade, specializations) => 
         FacultyInfo(faculty, avgAge, totalGrade, specializations) 
@@ -51,7 +51,7 @@ In this example:
 
 - To calculate average age - use `students.avgBy(_.age.toDouble)`
 - To get total grade - use `students.sumBy(_.grade)`
-- To collect each specialization of the faculty - use `students.map(_.specialization).toList`
+- To collect each specialization of the faculty - use `students.toListBy(_.specialization)`
 
 You could chain multiple aggregations by `&&` operator. It will automatically flatten the results into a single tuple.  
 Then it's possible to `map` the aggregation result.
@@ -122,8 +122,8 @@ byFacultyReportQuery
 
 - `toList` - collects records into a `List`
 - `distinct` - collects distinct records into a `Set`
-- `distinctBy` - equivalent of `listField.map(_.map(f)).distinct`
-- `flatDistinctBy` - equivalent of `listField.flatMap(_.map(f)).distinct`
+- `distinctBy` - collects distinct records, with specific field to distinguish by
+- `flatDistinctBy` - same as `distinctBy`, but for a collection of fields
 - `const` - return a constant value as an aggregation result
 - `sum` - sum the field
 - `sumBy` - sum the field by some other value

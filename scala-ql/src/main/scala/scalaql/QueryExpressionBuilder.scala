@@ -1,12 +1,12 @@
 package scalaql
 
-import scalaql.Aggregation.Of
 import scalaql.syntax.{ReportPartiallyApplied2, ReportPartiallyApplied2Syntax}
 import spire.algebra.{AdditiveMonoid, Field, MultiplicativeMonoid}
 import spire.math.Fractional
 
 sealed trait QueryExpressionBuilder[A] extends Serializable {
   def toList: Aggregation.Of[A, List[A]]
+  def toListBy[B](f: A => B): Aggregation.Of[A, List[B]]
 
   def distinct: Aggregation.Of[A, Set[A]]
 
@@ -40,6 +40,8 @@ sealed trait QueryExpressionBuilder[A] extends Serializable {
   def rowNumber: Ranking.Of[A, Int]
 
   def rank: Ranking.Of[A, Int]
+
+  def lag[B](f: A => B): Ranking.Of[A, Option[B]]
 
   def reduce(f: (A, A) => A): Aggregation.Of[A, A]
 
@@ -75,6 +77,9 @@ object QueryExpressionBuilder {
     override def toList: Aggregation.Of[A, List[A]] =
       new Aggregation.ToList[A]
 
+    override def toListBy[B](f: A => B): Aggregation.Of[A, List[B]] =
+      new Aggregation.ToListBy[A, B](f)
+
     override def distinct: Aggregation.Of[A, Set[A]] =
       new Aggregation.Distinct[A]
 
@@ -92,6 +97,9 @@ object QueryExpressionBuilder {
 
     override def rank: Ranking.Of[A, Int] =
       new Ranking.Rank[A]
+
+    override def lag[B](f: A => B): Ranking.Of[A, Option[B]] =
+      new Ranking.Lag[A, B](f)
 
     override def min(implicit ev: Ordering[A]): Aggregation.Of[A, A] =
       new Aggregation.Min[A](ev)
@@ -132,13 +140,13 @@ object QueryExpressionBuilder {
     override def reduce(f: (A, A) => A): Aggregation.Of[A, A] =
       new Aggregation.Reduce[A](f)
 
-    override def reduceBy[B](by: A => B)(f: (B, B) => B): Of[A, B] =
+    override def reduceBy[B](by: A => B)(f: (B, B) => B): Aggregation.Of[A, B] =
       new Aggregation.ReduceBy[A, B](by)(f)
 
     override def foldLeft[B](initial: B)(f: (B, A) => B): Aggregation.Of[A, B] =
       new Aggregation.FoldLeft[A, B](initial, f)
 
-    override def foldLeftBy[B, R](by: A => B)(initial: R)(f: (R, B) => R): Of[A, R] =
+    override def foldLeftBy[B, R](by: A => B)(initial: R)(f: (R, B) => R): Aggregation.Of[A, R] =
       new Aggregation.FoldLeftBy[A, B, R](by)(initial, f)
 
     override def report[B, U1](

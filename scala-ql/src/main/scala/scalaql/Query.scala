@@ -361,12 +361,11 @@ object Query {
       extends Query[In, B] {
 
     override def explain: QueryExplain = {
-      val partitionBy =
-        if (window.partitionTags.isEmpty) ""
-        else {
-          val cols = tagsToString(window.partitionTags.reverse)
-          s"PARTITION BY $cols"
-        }
+      val partitionBy = {
+        val cols = tagsToString(window.partitionTags.reverse)
+        s"PARTITION BY $cols"
+      }
+
       val orderBy =
         if (window.orderTags.isEmpty) ""
         else {
@@ -376,7 +375,7 @@ object Query {
 
       QueryExplain.Continuation(
         source.explain,
-        QueryExplain.Single(s"WINDOW($partitionBy$orderBy) => ${Tag[B].tag}")
+        QueryExplain.Single(s"WINDOW($partitionBy$orderBy => ${Tag[B].tag})")
       )
     }
   }
