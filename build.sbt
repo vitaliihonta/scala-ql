@@ -152,6 +152,7 @@ lazy val `integration-tests` =
     .settings(
       baseSettings,
       noPublishSettings,
+      crossCompileSettings,
       libraryDependencies ++= Seq(
         Testing.scalatest,
         Testing.scalacheck

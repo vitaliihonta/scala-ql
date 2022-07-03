@@ -25,6 +25,6 @@ final class WindowDsl[In: Tag, Out, Res, B](
       flatten
     )
 
-  def over(f: Window[Out] => Window[Out])(implicit B: Tag[B]): Query[In, B] =
+  def over(f: Window.Builder[Out] => Window[Out])(implicit B: Tag[B]): Query[In, B] =
     over(f(Window[Out]))
 }
