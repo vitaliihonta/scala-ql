@@ -19,7 +19,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
           .collect { case Person(name, _, Profession.Unemployed, _) =>
             s"Unemployed $name"
           }
-          .sorted
+          .ordered
 
       val expectedResult = people.collect { case Person(name, _, Profession.Unemployed, _) =>
         s"Unemployed $name"
@@ -112,7 +112,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query: Query[From[Person], Person] = select[Person]
         .where(_.profession == Profession.Developer)
         .where(_.age >= 18)
-        .sortBy(_.age)
+        .orderBy(_.age)
         .map(person => person.copy(name = s"Engineer ${person.name}"))
 
       val expectedResult =
@@ -210,21 +210,26 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query = select[Person]
         .groupBy(_.profession)
         .aggregate((profession, people) =>
-          people.map(_.age).reduce(_ + _) &&
-            people
-              .foldLeft(Set.empty[Char]) { (letters, person) =>
+          (
+            people.const(profession) &&
+              people.reduceBy(_.age)(_ + _) &&
+              people.foldLeft(Set.empty[Char]) { (letters, person) =>
                 letters ++ person.name.toLowerCase
               }
+          )
         )
 
       val expectedResult =
         people
           .groupBy(_.profession)
           .map { case (profession, people) =>
-            people.map(_.age).sum -> people
-              .foldLeft(Set.empty[Char]) { (letters, person) =>
+            (
+              profession,
+              people.map(_.age).sum,
+              people.foldLeft(Set.empty[Char]) { (letters, person) =>
                 letters ++ person.name.toLowerCase
               }
+            )
           }
           .toList
 
@@ -496,7 +501,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .where(_.age >= 18)
         .join(select[Company].deduplicateBy(_.name))
         .on(_.profession.industries contains _.industry)
-        .sortBy { case (p, _) => p.name }
+        .orderBy { case (p, _) => p.name }
 
       val expectedResult =
         distinctBy(people)(_.name)

@@ -105,7 +105,7 @@ abstract class ScalaqlLawsSpec(name: String) extends Properties(name) {
       QueryTestFixture(select[String].map(_.toUpperCase), (strings, _) => strings.map(_.toUpperCase))
 
     val chained: QueryTestFixture = QueryTestFixture(
-      select[String].where(_.length > 2).map(_.capitalize).sorted,
+      select[String].where(_.length > 2).map(_.capitalize).ordered,
       (strings, _) => strings.filter(_.length > 2).map(_.capitalize).sorted
     )
 

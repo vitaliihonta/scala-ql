@@ -32,7 +32,8 @@
       "advanced/aliasing",
       "advanced/multiple-formats",
       "advanced/arrow-composition",
-      "advanced/sub-select"
+      "advanced/sub-select",
+      "advanced/window-functions"
     ]
   }
 }

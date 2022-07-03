@@ -10,7 +10,7 @@ class VersionSpecificSpec extends ScalaqlUnitSpec {
       val query: Query[From[Person], Person] = select[Person]
         .where(_.profession == Profession.Developer)
         .where(_.age >= 18)
-        .sortBy(_.age)
+        .orderBy(_.age)
         .map(person => person.copy(name = s"Engineer ${person.name}"))
 
       val expectedResult = people

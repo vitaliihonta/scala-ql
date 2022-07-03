@@ -3,7 +3,6 @@ package scalaql
 import izumi.reflect.macrortti.LightTypeTag
 import scalaql.internal.PartialFunctionAndThenCompat
 import scalaql.utils.TupleFlatten
-import spire.algebra.Order
 import scala.annotation.unchecked.uncheckedVariance
 
 sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
@@ -321,46 +320,71 @@ object Query {
       )
   }
 
-  final class SortByQuery[In: Tag, Out: Tag, By](
-    private[scalaql] val source:         Query[In, Out],
-    private[scalaql] val sortBy:         SortBy[Out, By],
-    private[scalaql] val sortingTag:     Option[LightTypeTag]
-  )(private[scalaql] implicit val order: Order[By])
+  final class OrderByQuery[In: Tag, Out: Tag, By](
+    private[scalaql] val source:            Query[In, Out],
+    private[scalaql] val orderBy:           OrderBy[Out, By],
+    private[scalaql] val orderingTag:       Option[LightTypeTag]
+  )(private[scalaql] implicit val ordering: Ordering[By])
       extends Query[In, Out] {
 
     override def explain: QueryExplain = {
-      val sortBy = sortingTag.fold(ifEmpty = "")(by => s" BY($by)")
+      val byClause = orderingTag.fold(ifEmpty = "")(by => s" BY($by)")
       QueryExplain.Continuation(
         source.explain,
-        QueryExplain.Single(s"SORT$sortBy")
+        QueryExplain.Single(s"ORDER$byClause")
       )
     }
   }
 
-  final class AggregateQuery[In: Tag, Out0, G, Out1, Out2: Tag](
+  final class AggregateQuery[In: Tag, Out0, G, Out1: Tag](
     private[scalaql] val source:        Query[In, Out0],
     private[scalaql] val group:         GroupBy[Out0, G],
     private[scalaql] val agg:           Aggregate[G, Out0, Out1],
-    private[scalaql] val tupled:        TupleFlatten.Aux[Out1, Out2],
     private[scalaql] val groupByString: String)
-      extends Query[In, Out2] {
+      extends Query[In, Out1] {
 
     override def explain: QueryExplain =
       QueryExplain.Continuation(
         source.explain,
         QueryExplain.Continuation(
           QueryExplain.Single(groupByString),
-          QueryExplain.Single(s"AGGREGATE(${Tag[Out2].tag})")
+          QueryExplain.Single(s"AGGREGATE(${Tag[Out1].tag})")
         )
       )
   }
 
+  final class WindowQuery[In: Tag, Out, Res, B: Tag](
+    private[scalaql] val source:            Query[In, Out],
+    private[scalaql] val expressionBuilder: QueryExpressionBuilder[Out] => QueryExpression.Of[Out, Res],
+    private[scalaql] val window:            Window[Out],
+    private[scalaql] val flatten:           TupleFlatten.Of[(Out, Res), B])
+      extends Query[In, B] {
+
+    override def explain: QueryExplain = {
+      val partitionBy = {
+        val cols = tagsToString(window.partitionTags.reverse)
+        s"PARTITION BY $cols"
+      }
+
+      val orderBy =
+        if (window.orderTags.isEmpty) ""
+        else {
+          val cols = tagsToString(window.orderTags.reverse)
+          s" ORDER BY $cols"
+        }
+
+      QueryExplain.Continuation(
+        source.explain,
+        QueryExplain.Single(s"WINDOW($partitionBy$orderBy => ${Tag[B].tag})")
+      )
+    }
+  }
+
   sealed trait GroupByQuery[-In, +Out, +G] {
 
-    def aggregate[B](
-      f:               Aggregate[G, Out, B] @uncheckedVariance
-    )(implicit tupled: TupleFlatten[B]
-    ): Query[In, tupled.Out]
+    def aggregate[B: Tag](
+      f: Aggregate[G, Out, B] @uncheckedVariance
+    ): Query[In, B]
   }
 
   final class GroupByQueryImpl[In: Tag, Out: Tag, G](
@@ -369,19 +393,15 @@ object Query {
     private[scalaql] val groupingTags: List[LightTypeTag])
       extends GroupByQuery[In, Out, G] {
 
-    override def aggregate[B](
-      f:               Aggregate[G, Out, B]
-    )(implicit tupled: TupleFlatten[B]
-    ): Query[In, tupled.Out] = {
-      implicit val outTag: Tag[tupled.Out] = tupled.tag
-      new AggregateQuery[In, Out, G, B, tupled.Out](
+    override def aggregate[B: Tag](
+      f: Aggregate[G, Out, B]
+    ): Query[In, B] =
+      new AggregateQuery[In, Out, G, B](
         source,
         group,
         f,
-        tupled,
         groupByString
       )
-    }
 
     private def groupByString: String = {
       val groups = tagsToString(groupingTags)

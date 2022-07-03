@@ -49,7 +49,7 @@ and walking directory (optionally by GLOB pattern)
 - Sub query filtering
 - Group by / aggregate (sum, count, product, avg)
 - Joins (inner, left, cross)
-- sorting
+- ordering
 - distinct
 - union
 - reports
