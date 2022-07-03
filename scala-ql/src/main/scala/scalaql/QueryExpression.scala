@@ -52,13 +52,10 @@ trait Ranking[A] extends QueryExpression[A] { self =>
 
   def apply(order: Ordering[A], values: Iterable[A]): Iterable[(A, Out)]
 
-//  def contramap[A0](f: A0 => A): Ranking.Of[A0, Ranked] =
-//    new Ranking.Contramapped[A, A0, Ranked](self, f)
-
   def map[B](f: Out => B): Ranking.Of[A, B] =
     new Ranking.Mapped[A, Out, B](self, f)
 
-  override def processWindow(
+  override final def processWindow(
     order:            Ordering[A] @uncheckedVariance,
     values:           Iterable[A]
   )(implicit flatten: TupleFlatten[(A, Out)]
