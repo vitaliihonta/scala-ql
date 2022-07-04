@@ -58,6 +58,8 @@ class HtmlStylingBuilder[A](
 }
 
 object HtmlStylingBuilder {
+  import Scala3MacroUtils.*
+
   extension [A](self: HtmlStylingBuilder[A]) {
     inline def forHeader[B](f: A => B, styling: List[Modifier]): HtmlStylingBuilder[A] =
       ${ forHeaderImpl[A, B]('self, 'f, 'styling) }
@@ -72,7 +74,9 @@ object HtmlStylingBuilder {
     styling: Expr[List[Modifier]]
   )(using Quotes
   ): Expr[HtmlStylingBuilder[A]] = {
-    val fieldName = Expr(new Scala3MacroUtils.accessorName[A, B](f))
+    val chain = accessorCallPath[A, B](f, throwOnlySelectorIsAllowed)
+    ensureOnlyEachMethod(chain)
+    val fieldName = Expr(chain.last.name)
     '{ $self.addHeaderStyle($fieldName, $styling) }
   }
 
@@ -82,7 +86,9 @@ object HtmlStylingBuilder {
     styling: Expr[List[Modifier]]
   )(using Quotes
   ): Expr[HtmlStylingBuilder[A]] = {
-    val fieldName = Expr(new Scala3MacroUtils.accessorName[A, B](f))
+    val chain = accessorCallPath[A, B](f, throwOnlySelectorIsAllowed)
+    ensureOnlyEachMethod(chain)
+    val fieldName = Expr(chain.last.name)
     '{ $self.addFieldStyle($fieldName, $styling) }
   }
 }

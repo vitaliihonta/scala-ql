@@ -112,14 +112,14 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query: Query[From[Person], Person] = select[Person]
         .where(_.profession == Profession.Developer)
         .where(_.age >= 18)
-        .orderBy(_.age.desc)
+        .orderBy(_.age.desc, _.name.asc)
         .map(person => person.copy(name = s"Engineer ${person.name}"))
 
       val expectedResult =
         people
           .filter(_.profession == Profession.Developer)
           .filter(_.age >= 18)
-          .sortBy(_.age)(Ordering[Int].reverse)
+          .sortBy(p => (p.age, p.name))(Ordering.Tuple2(Ordering[Int].reverse, Ordering[String]))
           .map(person => person.copy(name = s"Engineer ${person.name}"))
 
       query.toList.run(from(people)) shouldEqual expectedResult
