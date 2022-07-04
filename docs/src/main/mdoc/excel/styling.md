@@ -1,5 +1,12 @@
 # Styling Excel document
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Customizing Excel documents in Scala QL Excel module" />
+  <meta name="keywords" content="scala-ql, scala-ql-excel, scala process excel files, scala-ql customize excel file, scala generate excel report, scala-ql generate excel report" />
+</head>
+
 You could also specify some styles for your document.  
 Start by importing `scalaql`:
 

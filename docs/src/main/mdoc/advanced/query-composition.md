@@ -1,4 +1,11 @@
-# Arrow composition
+# Query composition
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Query composition in Scala QL. How to split queries for clarity" />
+  <meta name="keywords" content="scala-ql, scala-ql query composition" />
+</head>
 
 For clarity reasons, it's OK to split a single `Query` into multiple ones.
 

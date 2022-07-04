@@ -1,5 +1,12 @@
 # Writing JSON files
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Getting started with Scala QL JSON module. Writing JSON files" />
+  <meta name="keywords" content="scala-ql, scala-ql-json, scala process json files, scala-ql write json into file" />
+</head>
+
 Start by importing `scalaql`:
 
 ```scala mdoc

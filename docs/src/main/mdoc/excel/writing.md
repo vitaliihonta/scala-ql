@@ -1,5 +1,12 @@
 # Writing Excel files
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Getting started with Scala QL Excel module. Writing Excel files" />
+  <meta name="keywords" content="scala-ql, scala-ql-excel, scala process excel files, scala-ql write excel file, scala-ql generate excel file" />
+</head>
+
 Start by importing `scalaql`:
 
 ```scala mdoc

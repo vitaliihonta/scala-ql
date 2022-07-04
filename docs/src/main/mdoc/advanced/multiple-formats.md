@@ -1,6 +1,13 @@
 # Reading data with multiple data formats
 
-With Scala QL, it's really easy to run a `Query` on data of different kind and format.  
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Using various data sources in Scala QL. How to process CSV, JSON and other in the same query" />
+  <meta name="keywords" content="scala-ql, scala-ql csv, scala-ql json" />
+</head>
+
+With Scala QL, it's really easy to run a `Query` on data of different kind and format.
 
 Start by importing:
 
@@ -17,6 +24,7 @@ import io.circe.generic.auto._
 ```
 
 Assume you have the following aggregation `Query`:
+
 ```scala mdoc
 case class FacultyStats(faculty: String, avgGrade: Double)
 
@@ -60,6 +68,7 @@ query
 ```
 
 It will produce the following CSV file:
+
 ```scala mdoc
 printFile(outPath)
 ```

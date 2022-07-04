@@ -1,5 +1,12 @@
 # Window functions
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Window functions in Scala QL. How to define a query with windows like in standard SQL" />
+  <meta name="keywords" content="scala-ql, scala window function, scala-ql window function" />
+</head>
+
 Scala QL supports window functions the same way as SQL.
 
 Start by importing:

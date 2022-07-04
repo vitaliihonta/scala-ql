@@ -1,5 +1,12 @@
 # Overview
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Scala QL overview - a simple statically typed query DSL for Scala" />
+  <meta name="keywords" content="scala, scala-ql, scala csv, scala json, scala excel, scala html, reports, scala small data processing" />
+</head>
+
 ## Installation
 
 ```scala

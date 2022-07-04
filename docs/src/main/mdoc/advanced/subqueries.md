@@ -1,4 +1,11 @@
-# Sub selects
+# Subqueries
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Subqueries in Scala QL. How to make query relay on other queries results" />
+  <meta name="keywords" content="scala-ql, scala-ql exists, scala-ql subquery" />
+</head>
 
 A typical case you may require is running a `Query` which depends on another `Query` result.  
 
