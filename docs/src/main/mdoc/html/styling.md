@@ -1,5 +1,12 @@
 # Styling HTML documents
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Customizing HTML report in Scala QL. Apply some styles to your report" />
+  <meta name="keywords" content="scala-ql, scala-ql-html, scala generate html report, scala-ql generate html report" />
+</head>
+
 Scala QL allows to customize the resulting HTML document with CSS styles.
 
 Start by importing `scalaql`:

@@ -1,5 +1,12 @@
 # Reading Excel files
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Getting started with Scala QL Excel module. Reading Excel files" />
+  <meta name="keywords" content="scala-ql, scala-ql-excel, scala process excel files, scala-ql read excel, scala read excel" />
+</head>
+
 ## Reading document
 
 Start by importing `scalaql`:

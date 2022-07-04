@@ -1,5 +1,12 @@
 # Reading CSV files
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Getting started with Scala QL CSV module. Reading CSV files" />
+  <meta name="keywords" content="scala-ql, scala-ql-csv, scala process csv files, scala-ql read csv" />
+</head>
+
 ## Reading single file
 
 Start by importing `scalaql`:

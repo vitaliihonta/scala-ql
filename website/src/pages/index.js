@@ -3,6 +3,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
+import Head from '@docusaurus/Head';
 import CodeBlock from '@theme/CodeBlock';
 import clsx from 'clsx';
 import styles from './styles.module.css';
@@ -71,8 +72,14 @@ export default function Home() {
   return (
     <Layout
       permalink={'/'}
-      description={'Simple statically typed query DSL for scala'}
+      description={'Simple statically typed query DSL for Scala'}
     >
+      <Head>
+        <meta charset="UTF-8" />
+        <meta name="author" content="Vitalii Honta" />
+        <meta name="description" content="Simple statically typed query DSL for Scala. Easily process CSV, JSON, Excel data and more!" />
+        <meta name="keywords" content="scala, scala-ql, scala csv, scala json, scala excel, scala html reports, reports, scala small data processing" />
+      </Head>
       <div className={clsx('hero hero--dark', styles.heroBanner)}>
         <div className="container">
           {/* <img

@@ -1,5 +1,12 @@
 # Basics
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Getting started with Scala QL basics. Processing Scala collections" />
+  <meta name="keywords" content="scala, scala-ql, scala small data processing, scala-ql getting started" />
+</head>
+
 ## Query
 
 To use `scalaql` features, you should start by importing:

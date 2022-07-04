@@ -1,5 +1,12 @@
 # Joins
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Joins in Scala QL. Inner join, left join, cross join" />
+  <meta name="keywords" content="scala-ql, scala-ql joins" />
+</head>
+
 Start by importing:
 
 ```scala mdoc

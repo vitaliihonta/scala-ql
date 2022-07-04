@@ -1,5 +1,12 @@
 # Aggregations
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Aggregations in Scala QL. Group By, Aggregate, Reports" />
+  <meta name="keywords" content="scala-ql, scala-ql group by, scala-ql aggregate, scala-ql report" />
+</head>
+
 Start by importing:
 
 ```scala mdoc
