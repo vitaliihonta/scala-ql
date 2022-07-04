@@ -156,7 +156,7 @@ class WindowsSpec extends ScalaqlUnitSpec with VersionSpecificImplicits {
         )
         .over(
           _.partitionBy(_.order.customerId)
-            .orderBy(_.details.unitPrice)
+            .orderBy(_.details.unitPrice.desc)
         )
         .map { case (data, unitRank) =>
           OrderRanked(

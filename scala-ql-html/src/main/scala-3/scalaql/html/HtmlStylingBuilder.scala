@@ -72,7 +72,7 @@ object HtmlStylingBuilder {
     styling: Expr[List[Modifier]]
   )(using Quotes
   ): Expr[HtmlStylingBuilder[A]] = {
-    val fieldName = Expr(Scala3MacroUtils.accessorName[A, B](f))
+    val fieldName = Expr(new Scala3MacroUtils.accessorName[A, B](f))
     '{ $self.addHeaderStyle($fieldName, $styling) }
   }
 
@@ -82,7 +82,7 @@ object HtmlStylingBuilder {
     styling: Expr[List[Modifier]]
   )(using Quotes
   ): Expr[HtmlStylingBuilder[A]] = {
-    val fieldName = Expr(Scala3MacroUtils.accessorName[A, B](f))
+    val fieldName = Expr(new Scala3MacroUtils.accessorName[A, B](f))
     '{ $self.addFieldStyle($fieldName, $styling) }
   }
 }

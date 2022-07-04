@@ -362,14 +362,14 @@ object Query {
 
     override def explain: QueryExplain = {
       val partitionBy = {
-        val cols = tagsToString(window.partitionTags.reverse)
+        val cols = tagsToString(window.__scalaql_window_partitionTags.reverse)
         s"PARTITION BY $cols"
       }
 
       val orderBy =
-        if (window.orderTags.isEmpty) ""
+        if (window.__scalaql_window_orderTags.isEmpty) ""
         else {
-          val cols = tagsToString(window.orderTags.reverse)
+          val cols = tagsToString(window.__scalaql_window_orderTags.reverse)
           s" ORDER BY $cols"
         }
 
