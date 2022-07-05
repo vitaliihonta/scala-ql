@@ -5,6 +5,13 @@ import scalaql.internal.PartialFunctionAndThenCompat
 import scalaql.utils.TupleFlatten
 import scala.annotation.unchecked.uncheckedVariance
 
+/** 
+  * Query is a description of computations you want to perform on your data.
+  * It doesn't evaluate until you explicitly run it:
+  *
+  * @tparam In  - query input
+  * @tparam Out - query output
+  */
 sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
 
   def explain: QueryExplain

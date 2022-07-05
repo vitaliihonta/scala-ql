@@ -73,26 +73,25 @@ val coverageSettings = Seq(
 val baseSettings    = baseProjectSettings
 val baseLibSettings = baseSettings ++ publishSettings ++ coverageSettings
 
-val crossCompileSettings: Seq[Def.Setting[_]] = {
-  def crossVersionSetting(config: Configuration) =
-    (config / unmanagedSourceDirectories) += {
-      val sourceDir = (config / sourceDirectory).value
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((3, _))            => sourceDir / "scala-3"
-        case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
-        case _                       => sourceDir / "scala-2.13-"
-      }
+def crossVersionSetting(config: Configuration) =
+  (config / unmanagedSourceDirectories) += {
+    val sourceDir = (config / sourceDirectory).value
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _))            => sourceDir / "scala-3"
+      case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
+      case _                       => sourceDir / "scala-2.13-"
     }
+  }
 
+val crossCompileSettings: Seq[Def.Setting[_]] =
   Seq(
     crossVersionSetting(Compile),
     crossVersionSetting(Test)
   )
-}
 
 lazy val root = project
   .in(file("."))
-  .settings(baseSettings, noPublishSettings)
+  .settings(baseSettings, noPublishSettings, unidocSettings)
   .settings(
     name := "scala-ql-root"
   )
@@ -107,6 +106,7 @@ lazy val root = project
   .aggregate(
     docs
   )
+  .enablePlugins(ScalaUnidocPlugin)
 
 lazy val docs = project
   .in(file("docs"))
@@ -300,10 +300,27 @@ lazy val mdocSettings = Seq(
     "ORGANIZATION" -> organization.value,
     "EMAIL"        -> developers.value.head.email
   ),
-  crossScalaVersions := Seq(scalaVersion.value),
-  docusaurusCreateSite := docusaurusCreateSite
-    .dependsOn(ThisBuild / updateSiteVariables)
-    .value
+  crossScalaVersions := Seq(scalaVersion.value)
+)
+
+lazy val unidocSettings = Seq(
+  cleanFiles += (ScalaUnidoc / unidoc / target).value,
+  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(
+    `scala-ql`.jvm(scala213),
+    `scala-ql-csv`.jvm(scala213),
+    `scala-ql-json`.jvm(scala213),
+    `scala-ql-excel`.jvm(scala213),
+    `scala-ql-html`.jvm(scala213)
+  ),
+  ScalaUnidoc / unidoc / target := (LocalRootProject / baseDirectory).value / "website" / "static" / "api",
+  ScalaUnidoc / unidoc / scalacOptions ++= Seq(
+    "-sourcepath",
+    (LocalRootProject / baseDirectory).value.getAbsolutePath,
+    "-doc-title",
+    "Scala QL",
+    "-doc-version",
+    s"v${(ThisBuild / version).value}"
+  )
 )
 
 val updateSiteVariables = taskKey[Unit]("Update site variables")
