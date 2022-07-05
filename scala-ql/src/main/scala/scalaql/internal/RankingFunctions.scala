@@ -63,13 +63,6 @@ trait RankingFunctions {
     }
   }
 
-  //  final class Contramapped[A, A0, Out0](base: Ranking.Of[A, Out0], f: A0 => A) extends Ranking[A0] {
-  //    override type Ranked = Out0
-  //
-  //    override def apply(values: Iterable[A0]): Iterable[(A0, Out0)] =
-  //      base
-  //  }
-
   final class Mapped[A, Out0, B](base: Ranking.Of[A, Out0], f: Out0 => B) extends Ranking[A] {
     override type Out = B
 

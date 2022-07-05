@@ -78,7 +78,7 @@ export default function Home() {
         <meta charset="UTF-8" />
         <meta name="author" content="Vitalii Honta" />
         <meta name="description" content="Simple statically typed query DSL for Scala. Easily process CSV, JSON, Excel data and more!" />
-        <meta name="keywords" content="scala, scala-ql, scala csv, scala json, scala excel, scala html reports, reports, scala small data processing" />
+        <meta name="keywords" content="scala, scala ql, scala-ql, scala csv, scala json, scala excel, scala html reports, reports, scala small data processing" />
       </Head>
       <div className={clsx('hero hero--dark', styles.heroBanner)}>
         <div className="container">

@@ -40,6 +40,8 @@ class ExcelStylingBuilder[A](
 }
 
 object ExcelStylingBuilder {
+  import Scala3MacroUtils.*
+
   extension [A](self: ExcelStylingBuilder[A]) {
     inline def forHeader[B](f: A => B, styling: Styling): ExcelStylingBuilder[A] =
       ${ forHeaderImpl[A, B]('self, 'f, 'styling) }
@@ -54,7 +56,9 @@ object ExcelStylingBuilder {
     styling: Expr[Styling]
   )(using Quotes
   ): Expr[ExcelStylingBuilder[A]] = {
-    val fieldName = Expr(Scala3MacroUtils.accessorName[A, B](f))
+    val chain = accessorCallPath[A, B](f, throwOnlySelectorIsAllowed)
+    ensureOnlyEachMethod(chain)
+    val fieldName = Expr(chain.last.name)
     '{ $self.addHeaderStyle($fieldName, $styling) }
   }
 
@@ -64,7 +68,9 @@ object ExcelStylingBuilder {
     styling: Expr[Styling]
   )(using Quotes
   ): Expr[ExcelStylingBuilder[A]] = {
-    val fieldName = Expr(Scala3MacroUtils.accessorName[A, B](f))
+    val chain = accessorCallPath[A, B](f, throwOnlySelectorIsAllowed)
+    ensureOnlyEachMethod(chain)
+    val fieldName = Expr(chain.last.name)
     '{ $self.addFieldStyle($fieldName, $styling) }
   }
 }

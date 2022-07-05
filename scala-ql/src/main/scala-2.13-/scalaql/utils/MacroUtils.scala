@@ -1,5 +1,6 @@
 package scalaql.utils
 
+import scalaql.Tag
 import scala.annotation.tailrec
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
@@ -9,13 +10,37 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
 
   private val EachSyntaxIterable = weakTypeOf[EachSyntaxIterable[Any]].dealias.typeConstructor
   private val EachSyntaxOption   = weakTypeOf[EachSyntaxOption[Any]].dealias.typeConstructor
+  private val Desc               = TermName("desc")
 
   protected def extractSelectorField(t: Tree): Option[TermName] = {
-    val chain = buildCallChain(t, CallChain(None, Nil, false))
+    val chain = getCallChain(t)
     getLastField(chain)
   }
 
-  private case class CallChain(obj: Option[ValDef], chain: List[TermName], validFieldCall: Boolean)
+  protected def getCallChain(t: Tree): CallChain =
+    buildCallChain(t, CallChain(None, Nil, isFieldAccessor = false))
+
+  protected def getOrdering[B](callChain: CallChain, ordering: Expr[Ordering[B]]): Expr[Ordering[B]] =
+    callChain.chain.lastOption match {
+      case Some(Desc) =>
+        c.Expr[Ordering[B]](q"$ordering.reverse")
+      case _ => ordering
+    }
+
+  protected def summonTag[A: WeakTypeTag]: Tree =
+    c.inferImplicitValue(weakTypeOf[Tag[A]], silent = false)
+
+  protected def getPrefixOf[Prefix: WeakTypeTag]: Expr[Prefix] = {
+    val Prefix = weakTypeOf[Prefix]
+    if (!(c.prefix.tree.tpe =:= Prefix)) {
+      error(s"Invalid library usage! Expected to be macro expanded within $Prefix, instead it's ${c.prefix.tree.tpe}")
+    }
+    c.Expr[Prefix](
+      c.prefix.tree
+    )
+  }
+
+  protected case class CallChain(obj: Option[ValDef], chain: List[TermName], isFieldAccessor: Boolean)
 
   @tailrec
   private def buildCallChain(tree: Tree, acc: CallChain): CallChain =
@@ -25,7 +50,7 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
         case q"(${vd: ValDef}) => $inner" =>
           buildCallChain(inner, acc.copy(obj = Some(vd)))
         case q"${idt: Ident}.${fieldName: TermName}" =>
-          acc.copy(chain = fieldName :: acc.chain, validFieldCall = acc.obj.exists(_.name == idt.name))
+          acc.copy(chain = fieldName :: acc.chain, isFieldAccessor = acc.obj.exists(_.name == idt.name))
         case Select(qualifier, name) =>
           buildCallChain(qualifier, acc.copy(chain = name.toTermName :: acc.chain))
         case Apply(callable, List(inner))
@@ -37,7 +62,7 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
   private def getLastField(chain: CallChain): Option[TermName] =
     for {
       _ <- chain.obj
-      if chain.validFieldCall
+      if chain.isFieldAccessor
       last <- chain.chain.lastOption
     } yield last
 

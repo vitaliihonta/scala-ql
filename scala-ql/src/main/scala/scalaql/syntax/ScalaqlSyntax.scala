@@ -39,9 +39,6 @@ trait ScalaqlSyntax
   final implicit def DescribeSyntax[In, Out: Describe](self: Query[In, Out]): DescribeSyntax[In, Out] =
     new DescribeSyntax[In, Out](self)
 
-  final implicit def SortingSyntax[In, Out](self: Query[In, Out]): SortingSyntax[In, Out] =
-    new SortingSyntax[In, Out](self)
-
   final implicit def JoinSyntax[In <: From[?], Out](self: Query[In, Out]): JoinSyntax[In, Out] =
     new JoinSyntax[In, Out](self)
 

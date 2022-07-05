@@ -3,6 +3,7 @@
     "Getting started": [
       "core/overview",
       "core/basics",
+      "core/ordering",
       "core/aggregations",
       "core/joins"
     ],

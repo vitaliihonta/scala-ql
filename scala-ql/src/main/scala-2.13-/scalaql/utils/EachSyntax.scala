@@ -1,6 +1,7 @@
 package scalaql.utils
 
 import scala.annotation.compileTimeOnly
+import scala.language.implicitConversions
 
 trait EachSyntax {
   implicit def EachSyntaxIterable[A](self: Iterable[A]): EachSyntaxIterable[A] =
