@@ -60,8 +60,8 @@ Let's assume you'd like to run the following SQL equivalent:
 ```sql
 SELECT CustomerId,
 	   OrderDate,
-       UnitPrice,
-       AVG(UnitPrice) OVER (PARTITION BY CustomerId) AS AvgUnitPrice
+     UnitPrice,
+     AVG(UnitPrice) OVER (PARTITION BY CustomerId ORDER BY OrderDate DESC) AS AvgUnitPrice
 FROM "Order"
 INNER JOIN OrderDetail ON [Order].Id = OrderDetail.OrderId
 ```
@@ -78,6 +78,7 @@ val query = select[Order]
   )
   .over(
     _.partitionBy(_.order.customerId)
+      .orderBy(_.order.orderDate.desc)
   )
   .map { case (data, avgUnitPrice) =>
     OrderStats(
