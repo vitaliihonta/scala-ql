@@ -1,5 +1,12 @@
 # Reading JSON files
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Getting started with Scala QL JSON module. Reading JSON files" />
+  <meta name="keywords" content="scala-ql, scala-ql-json, scala process json files, scala-ql read json" />
+</head>
+
 ## Reading single file
 
 Start by importing `scalaql`:

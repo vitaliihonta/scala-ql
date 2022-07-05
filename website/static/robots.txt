@@ -4,4 +4,4 @@ Disallow: /nogooglebot/
 User-agent: *
 Allow: /
 
-Sitemap: http://scala-ql.vhonta.dev/sitemap.xml
+Sitemap: https://scala-ql.vhonta.dev/sitemap.xml

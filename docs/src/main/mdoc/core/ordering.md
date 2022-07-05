@@ -1,5 +1,12 @@
 # Ordering
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Query ordering in Scala QL. How to easily order data by multiple fields" />
+  <meta name="keywords" content="scala-ql, scala-ql ordering, scala-ql order by" />
+</head>
+
 Start by importing:
 
 ```scala mdoc

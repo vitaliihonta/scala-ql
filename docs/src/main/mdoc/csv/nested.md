@@ -1,5 +1,12 @@
 # Writing nested case classes into CSV
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Getting started with Scala QL CSV module. Writing Nested case classes into CSV files" />
+  <meta name="keywords" content="scala-ql, scala-ql-csv, scala process csv files, scala-ql-csv write nested case classes into file" />
+</head>
+
 ScalaQL allows you to write nested case classes into CSV files.
 It will automatically flatten headers and rows when writing to a file.
 

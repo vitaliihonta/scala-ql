@@ -1,5 +1,12 @@
 # Writing HTML files
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Getting started with Scala QL HTML module. Generating HTML reports" />
+  <meta name="keywords" content="scala-ql, scala-ql-html, scala generate html report, scala-ql generate html report" />
+</head>
+
 In these examples you will learn how to generate HTML reports based on your data.
 
 Start by importing `scalaql`:

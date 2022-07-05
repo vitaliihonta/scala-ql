@@ -1,5 +1,12 @@
 # Writing CSV files
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Getting started with Scala QL CSV module. Writing CSV files" />
+  <meta name="keywords" content="scala-ql, scala-ql-csv, scala process csv files, scala-ql write csv into file" />
+</head>
+
 Start by importing `scalaql`:
 
 ```scala mdoc

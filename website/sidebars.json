@@ -32,8 +32,8 @@
     "Advanced": [
       "advanced/aliasing",
       "advanced/multiple-formats",
-      "advanced/arrow-composition",
-      "advanced/sub-select",
+      "advanced/query-composition",
+      "advanced/subqueries",
       "advanced/window-functions"
     ]
   }

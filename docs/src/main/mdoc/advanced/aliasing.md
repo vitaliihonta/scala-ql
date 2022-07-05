@@ -1,5 +1,12 @@
 # Aliasing
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="author" content="Vitalii Honta" />
+  <meta name="description" content="Alias a query in Scala QL. How to distinguish data sources of the same type using aliases" />
+  <meta name="keywords" content="scala-ql, scala-ql alias" />
+</head>
+
 Sometimes you may need to combine queries with the same data type, but possibly with different records.
 Start by importing:
 
