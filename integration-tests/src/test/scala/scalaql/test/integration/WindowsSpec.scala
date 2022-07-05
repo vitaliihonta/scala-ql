@@ -219,11 +219,13 @@ class WindowsSpec extends ScalaqlUnitSpec with VersionSpecificImplicits {
       // NOTE: SQL produced a bit different result due to ordering within sqlite db.
       val productIds = List(1L, 2L, 3L)
 
-      // SELECT ProductId,
-      //	CustomerId,
-      //    OrderDate,
-      //    Quantity,
-      //    LAG(Quantity) OVER (PARTITION BY ProductId, ShipCountry  ORDER BY OrderDate, ShippedDate) AS Lag
+      // SELECT
+      //   ProductId,
+      //   ShipCountry,
+      //   OrderDate,
+      //   ShippedDate,
+      //   Quantity,
+      //   LAG(Quantity) OVER (PARTITION BY ProductId, ShipCountry  ORDER BY OrderDate DESC, ShippedDate DESC) AS Lag
       // FROM [Order]
       // INNER JOIN OrderDetail ON [Order].Id = OrderDetail.OrderId
       // WHERE ProductId IN (1, 2, 3)
@@ -237,7 +239,7 @@ class WindowsSpec extends ScalaqlUnitSpec with VersionSpecificImplicits {
         )
         .over(
           _.partitionBy(_.details.productId, _.order.shipCountry)
-            .orderBy(_.order.orderDate, _.order.shippedDate)
+            .orderBy(_.order.orderDate.desc, _.order.shippedDate.desc)
         )
         .map { case (data, lag) =>
           OrderWithLag(

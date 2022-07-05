@@ -9,7 +9,6 @@ final class OrderBySyntax[In, Out](val self: Query[In, Out]) extends AnyVal {
   def ordered(implicit order: Ordering[Out], In: Tag[In], Out: Tag[Out]): Query[In, Out] =
     new Query.OrderByQuery[In, Out, Out](self, identity, None)
 
-  // TODO: add more arity
   def orderBy[B](f: Out => B)(implicit orderingB: Ordering[B]): Query[In, Out] =
     macro OrderBySyntaxMacro.orderBy1[In, Out, B]
 

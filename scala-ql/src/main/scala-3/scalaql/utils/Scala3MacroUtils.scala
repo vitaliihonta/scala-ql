@@ -16,9 +16,7 @@ object Scala3MacroUtils {
 
     Expr.betaReduce(f).asTerm.underlying match {
       case Block(List(DefDef(_, _, _, Some(term))), _) =>
-        val result = selectorPath(term, onUncmached)
-        println(s"Call chain of $term is $result")
-        result
+        selectorPath(term, onUncmached)
       case term =>
         onUncmached(term, Nil)
     }
@@ -58,5 +56,17 @@ object Scala3MacroUtils {
           s"Only `.each` and case class accessor call is allowed inside builder"
         )
       }
+    }
+
+  def getOrdering[A: Type](
+    callChain: List[Call],
+    ordering:  Expr[Ordering[A]]
+  )(using Quotes
+  ): Expr[Ordering[A]] =
+    callChain.lastOption match {
+      case Some(Call("desc", _)) =>
+        '{ $ordering.reverse }
+      case other =>
+        ordering
     }
 }
