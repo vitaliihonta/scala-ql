@@ -8,7 +8,7 @@ val allScalaVersions = List(scala212, scala213, scala3)
 
 ThisBuild / scalaVersion  := scala213
 ThisBuild / organization  := "dev.vhonta"
-ThisBuild / version       := "0.2.0-RC3"
+ThisBuild / version       := "0.2.0-RC4"
 ThisBuild / versionScheme := Some("early-semver")
 
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
@@ -39,25 +39,45 @@ val publishSettings = Seq(
   )
 )
 
-val baseProjectSettings = Seq(
-  scalacOptions ++= Seq(
-    "-language:implicitConversions",
-    "-language:higherKinds",
-    "-Xsource:3"
-  ) ++ {
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((3, _)) => Seq("-Ykind-projector")
-      case _            => Nil
+lazy val baseProjectSettings = Seq(
+  scalacOptions ++= {
+    val baseOptions = Seq(
+      "-language:implicitConversions",
+      "-language:higherKinds"
+    )
+    val crossVersionOptions = CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _))           => Seq("-Ykind-projector")
+      case Some((2, y)) if y < 13 => Seq("-Ypartial-unification", "-Xsource:3")
+      case Some((2, _))           => Seq("-Xsource:3")
     }
+    baseOptions ++ crossVersionOptions
   },
   libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((3, _)) => Nil
-      case _            => Seq(Typelevel.kindProjector)
+      case Some((2, _)) =>
+        List(Typelevel.kindProjector)
+      case _ => Nil
     }
   },
   ideSkipProject := scalaVersion.value == scala212
 )
+
+val crossCompileSettings: Seq[Def.Setting[_]] = {
+  def crossVersionSetting(config: Configuration) =
+    (config / unmanagedSourceDirectories) ++= {
+      val sourceDir = (config / sourceDirectory).value
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((3, _))            => List(sourceDir / "scala-3")
+        case Some((2, n)) if n >= 13 => List(sourceDir / "scala-2", sourceDir / "scala-2.13+")
+        case _                       => List(sourceDir / "scala-2", sourceDir / "scala-2.13-")
+      }
+    }
+
+  Seq(
+    crossVersionSetting(Compile),
+    crossVersionSetting(Test)
+  )
+}
 
 val coverageSettings = Seq(
 //  Keys.fork in org.jacoco.core.
@@ -72,22 +92,6 @@ val coverageSettings = Seq(
 
 val baseSettings    = baseProjectSettings
 val baseLibSettings = baseSettings ++ publishSettings ++ coverageSettings
-
-def crossVersionSetting(config: Configuration) =
-  (config / unmanagedSourceDirectories) += {
-    val sourceDir = (config / sourceDirectory).value
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((3, _))            => sourceDir / "scala-3"
-      case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
-      case _                       => sourceDir / "scala-2.13-"
-    }
-  }
-
-val crossCompileSettings: Seq[Def.Setting[_]] =
-  Seq(
-    crossVersionSetting(Compile),
-    crossVersionSetting(Test)
-  )
 
 lazy val root = project
   .in(file("."))

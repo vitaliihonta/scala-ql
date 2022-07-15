@@ -1,9 +1,9 @@
 package scalaql.describe
 
+import scalaql.*
 import scalaql.sources.columnar.{CodecPath, TableApiWriteContext}
 import spire.math.Fractional
 import spire.implicits.*
-
 import java.time.{LocalDate, LocalDateTime}
 
 case class DescribeContext(
@@ -35,7 +35,7 @@ object Describe extends DescribeAutoDerivation with LowPriorityDescribeInstances
   def apply[A](implicit ev: Describe[A]): ev.type = ev
 }
 
-trait LowPriorityDescribeInstances extends AdditionalDescribeImplicits {
+trait LowPriorityDescribeInstances {
 
   implicit val describeString: Describe[String]   = new DescribeAny[String]
   implicit val describeBoolean: Describe[Boolean] = new DescribeAny[Boolean]
@@ -46,6 +46,9 @@ trait LowPriorityDescribeInstances extends AdditionalDescribeImplicits {
   implicit val describeInt: Describe[Int]               = describeDouble.contramap(_.toDouble)
   implicit val describeLong: Describe[Long]             = describeDouble.contramap(_.toDouble)
   implicit val describeBigInt: Describe[BigInt]         = describeBigDecimal.contramap(_.toBigDecimal)
+
+  implicit val describeLocalDate: Describe[LocalDate]         = new DescribeOrdered[LocalDate]
+  implicit val describeLocalDateTime: Describe[LocalDateTime] = new DescribeOrdered[LocalDateTime]
 
   implicit def describeOption[A: Describe]: Describe[Option[A]] =
     new Describe[Option[A]] {
