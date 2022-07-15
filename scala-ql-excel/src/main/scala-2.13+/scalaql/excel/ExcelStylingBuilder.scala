@@ -1,9 +1,9 @@
 package scalaql.excel
 
 import org.apache.poi.ss.usermodel.CellStyle
+import scalaql.internal.BaseTypeCheckedBuilder
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
-import scalaql.utils.BaseTypeCheckedBuilder
 import scala.util.Try
 
 class ExcelStylingBuilder[A](

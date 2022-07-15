@@ -2,7 +2,7 @@ package scalaql.internal
 
 import scalaql.*
 import scalaql.syntax.OrderBySyntax
-import scalaql.utils.MacroUtils
+
 import scala.reflect.macros.blackbox
 
 class OrderBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)("orderBy") {

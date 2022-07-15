@@ -1,4 +1,4 @@
-package scalaql.utils
+package scalaql.internal
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox

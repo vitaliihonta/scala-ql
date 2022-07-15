@@ -1,8 +1,6 @@
 package scalaql.internal
 
 import scalaql.*
-import scalaql.Window
-import scalaql.utils.MacroUtils
 import scala.reflect.macros.blackbox
 
 class WindowOrderByMacro(override val c: blackbox.Context) extends MacroUtils(c)("window") {

@@ -1,10 +1,10 @@
 package scalaql.excel
 
 import org.apache.poi.ss.usermodel.CellStyle
+import scalaql.internal.BaseTypeCheckedBuilder
 import scala.language.experimental.macros
 import scala.reflect.macros.TypecheckException
 import scala.reflect.macros.blackbox
-import scalaql.utils.BaseTypeCheckedBuilder
 
 class ExcelStylingBuilder[A](
   headerStyles: Either[String => Option[Styling], Map[String, Styling]] = Right(Map.empty[String, Styling]),

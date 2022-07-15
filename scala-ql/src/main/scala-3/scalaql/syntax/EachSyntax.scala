@@ -1,4 +1,4 @@
-package scalaql.utils
+package scalaql.syntax
 
 trait EachSyntax {
   extension [A](self: Iterable[A]) {

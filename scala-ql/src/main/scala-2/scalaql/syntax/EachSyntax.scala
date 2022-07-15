@@ -1,4 +1,4 @@
-package scalaql.utils
+package scalaql.syntax
 
 import scala.annotation.compileTimeOnly
 import scala.language.implicitConversions

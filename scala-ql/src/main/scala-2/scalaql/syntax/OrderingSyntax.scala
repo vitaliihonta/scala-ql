@@ -1,6 +1,7 @@
 package scalaql.syntax
 
 import scalaql.Query
+
 import scala.language.implicitConversions
 
 trait OrderingSyntax {

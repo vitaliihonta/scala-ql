@@ -2,7 +2,6 @@ package scalaql.syntax
 
 import scalaql.*
 import scalaql.describe.Describe
-import scalaql.utils.EachSyntax
 import scalaql.visualization.ShowAsTable
 import scala.language.implicitConversions
 
@@ -13,7 +12,7 @@ trait ScalaqlSyntax
     with OrderingSyntax
     with AliasingSyntax
     with EachSyntax
-    with Serializable {
+    with VersionSpecificImplicits {
 
   final implicit def RunSyntax[In, Out](self: QueryResult[In, Out]): RunSyntax[In, Out] =
     new RunSyntax[In, Out](self)

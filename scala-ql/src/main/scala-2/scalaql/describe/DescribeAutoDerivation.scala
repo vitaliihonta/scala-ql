@@ -1,7 +1,7 @@
 package scalaql.describe
 
-import language.experimental.macros
-import magnolia1.*
+import magnolia1.{CaseClass, Magnolia}
+import scala.language.experimental.macros
 
 trait DescribeAutoDerivation {
   type Typeclass[T] = Describe[T]

@@ -1,6 +1,7 @@
-package scalaql.utils
+package scalaql.internal
 
 import scalaql.Tag
+import scalaql.syntax.{EachSyntaxIterable, EachSyntaxOption}
 import scala.annotation.tailrec
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox

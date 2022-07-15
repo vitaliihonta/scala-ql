@@ -2,6 +2,7 @@ package scalaql.syntax
 
 import scalaql.*
 import scalaql.internal.OrderBySyntaxMacro
+
 import scala.language.experimental.macros
 
 final class OrderBySyntax[In, Out](val self: Query[In, Out]) extends AnyVal {

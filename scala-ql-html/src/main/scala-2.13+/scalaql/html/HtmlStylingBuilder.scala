@@ -1,7 +1,7 @@
 package scalaql.html
 
+import scalaql.internal.BaseTypeCheckedBuilder
 import scalatags.Text.all.*
-import scalaql.utils.BaseTypeCheckedBuilder
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 import scala.util.Try

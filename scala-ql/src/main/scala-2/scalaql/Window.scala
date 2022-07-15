@@ -1,10 +1,10 @@
 package scalaql
 
-import scala.language.experimental.macros
 import izumi.reflect.macrortti.LightTypeTag
-
-import scala.util.hashing.MurmurHash3
 import scalaql.internal.{ChainedOrdering, WindowOrderByMacro}
+
+import scala.language.experimental.macros
+import scala.util.hashing.MurmurHash3
 
 object Window {
   private val initial: WindowBuilder[Any] = new WindowBuilder[Any](Nil, Nil)
