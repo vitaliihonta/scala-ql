@@ -111,7 +111,7 @@ sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
 
   /**
    * Transforms the query output by applying an arbitrary function
-   * which produces a new Query to the previous step.
+   * which produces a new Query based on the previous step.
    *
    * Example: 
    * {{{
@@ -236,12 +236,18 @@ sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
   /**
    * Produces only unique values.
    *
+   * @see [[deduplicateBy]]
    * @return the same query with only unique values
    * */
   def deduplicate: Query[In, Out] = deduplicateBy(identity[Out])
 
   /**
    * Produces only unique values based on the given deduplication key.
+   *
+   * Example:
+   * {{{
+   *   select[Person].deduplicateBy(_.name)
+   * }}}
    *
    * @tparam K deduplication key type
    * @param f extracts deduplication key
@@ -670,6 +676,14 @@ object Query {
     right:    Query[In2, Out2],
     joinType: InnerJoinType) {
 
+    /**
+     * Joins `this` query with the `that` query based on the given join condition.
+     * If `that` query input type `B` differs from `this` input type `A`, 
+     * then the resulting query type will be `Query[From[A] with From[B], (A, B)]`
+     * 
+     * @param f join condition
+     * @return joined query
+     * */
     def on(f: (Out, Out2) => Boolean): Query[In & In2, (Out, Out2)] =
       new InnerJoinedQuery[In, In2, Out, Out2](left, right, joinType, f)
   }
@@ -703,6 +717,14 @@ object Query {
     left:  Query[In, Out],
     right: Query[In2, Out2]) {
 
+    /**
+     * Left joins `this` query with the `that` query based on the given join condition.
+     * If `that` query input type `B` differs from `this` input type `A`,
+     * then the resulting query type will be `Query[From[A] with From[B], (A, Option[B])]`
+     *
+     * @param f join condition
+     * @return joined query
+     * */
     def on(f: (Out, Out2) => Boolean): Query[In & In2, (Out, Option[Out2])] =
       new LeftJoinedQuery[In, In2, Out, Out2](left, right, f)
   }

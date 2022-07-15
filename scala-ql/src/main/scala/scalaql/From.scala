@@ -3,11 +3,21 @@ package scalaql
 import izumi.reflect.macrortti.LightTypeTag
 
 /**
- * Special container which is used to hold query input values.
- * `scalaql` is able to get appropriate input values based on their type.
+ * Special container which is holds query input values.
+ * It's used to properly represent a result of `join`s, `flatMap`s, etc.
+ *
+ * Example:
+ * {{{
+ *   val joined: Query[From[Employee] with From[Company], (Employee, Company)] =
+ *     select[Employee]
+ *       .join(select[Company])
+ *       .on(_.companyId == _.id)
+ * }}}
+ *
+ * `scalaql` uses `From` to get appropriate input values based on their type.
  *
  * Based on original idea of ZIO authors (zio.Has)
- * @see https://github.com/zio/zio/blob/dd114ff4b9ab8c10d3e5bb6f9ce4d04e18754d8e/core/shared/src/main/scala/zio/Has.scala#L34
+ * @see [[https://github.com/zio/zio/blob/dd114ff4b9ab8c10d3e5bb6f9ce4d04e18754d8e/core/shared/src/main/scala/zio/Has.scala#L34 zio.Has]]
  * */
 final class From[A] private[scalaql] (private[scalaql] val inputs: Map[LightTypeTag, Iterable[Any]])
     extends Serializable {

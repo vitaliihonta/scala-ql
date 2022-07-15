@@ -4,6 +4,9 @@ import scalaql.internal.{AggregationFunctions, RankingFunctions}
 import scalaql.utils.TupleFlatten
 import scala.annotation.unchecked.uncheckedVariance
 
+/**
+ * Represents a base type for either aggregation function or ranking.
+ * */
 sealed trait QueryExpression[-A] extends Serializable {
   type Out
 

@@ -51,7 +51,7 @@ query
     from(
       excel
         .read[OrderInfo]
-        .option(Naming.UpperCase)
+        .option(Naming.Capitalize)
         .option(CellResolutionStrategy.NameBased)
         .file(ordersPath)
     )

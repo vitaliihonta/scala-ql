@@ -58,14 +58,14 @@ object WindowsSpec {
   def input: From[Order] & From[OrderDetail] = from(
     csv
       .read[Order]
-      .option(Naming.UpperCase)
+      .option(Naming.Capitalize)
       .file(
         Paths.get("integration-tests/src/test/resources/input/_Order__202207031241.csv")
       )
   ) & from(
     csv
       .read[OrderDetail]
-      .option(Naming.UpperCase)
+      .option(Naming.Capitalize)
       .file(
         Paths.get("integration-tests/src/test/resources/input/OrderDetail_202207031246.csv")
       )
@@ -77,7 +77,7 @@ object WindowsSpec {
         from(
           csv
             .read[A]
-            .option(Naming.UpperCase)
+            .option(Naming.Capitalize)
             .file(
               Paths.get(s"integration-tests/src/test/resources/output/$name.csv")
             )
