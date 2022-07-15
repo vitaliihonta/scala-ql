@@ -85,8 +85,9 @@ object WindowsSpec {
       )
 }
 
-class WindowsSpec extends ScalaqlUnitSpec with VersionSpecificImplicits {
-  import WindowsSpec.*
+import WindowsSpec.*
+
+class WindowsSpec extends ScalaqlUnitSpec {
 
   private implicit val statsEquality: Equality[OrderStats] =
     new Equality[OrderStats] {
