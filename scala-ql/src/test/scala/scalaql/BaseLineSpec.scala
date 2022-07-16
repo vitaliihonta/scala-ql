@@ -33,14 +33,6 @@ class BaseLineSpec extends ScalaqlUnitSpec {
     totalSalary: BigDecimal,
     avgSalary:   BigDecimal)
 
-  case class ProfessionRollupStatsByAge(
-    profession:  Option[Profession],
-    isItGuy:     Option[Boolean],
-    lifeQuarter: Option[Int],
-    totalSalary: BigDecimal,
-    avgSalary:   BigDecimal,
-    industries:  Set[Industry])
-
   private implicit val professionStatsByAgeEquality: Equality[ProfessionStatsByAge] =
     new Equality[ProfessionStatsByAge] {
       override def areEqual(a: ProfessionStatsByAge, b: Any): Boolean = b match {
@@ -50,6 +42,28 @@ class BaseLineSpec extends ScalaqlUnitSpec {
           a.industries == b.industries &&
           (a.totalSalary === b.totalSalary +- 0.01) &&
           (a.avgSalary === b.avgSalary +- 0.01)
+        case _ => false
+      }
+    }
+
+  case class ProfessionRollupStatsByAge(
+    profession:  Option[Profession],
+    isItGuy:     Option[Boolean],
+    lifeQuarter: Option[Int],
+    totalSalary: BigDecimal,
+    avgSalary:   BigDecimal,
+    industries:  Set[Industry])
+
+  private implicit val professionRollupStatsByAgeEquality: Equality[ProfessionRollupStatsByAge] =
+    new Equality[ProfessionRollupStatsByAge] {
+      override def areEqual(a: ProfessionRollupStatsByAge, b: Any): Boolean = b match {
+        case b: ProfessionRollupStatsByAge =>
+          a.profession == b.profession &&
+          a.isItGuy == b.isItGuy &&
+          a.lifeQuarter == b.lifeQuarter &&
+          (a.totalSalary === b.totalSalary +- 0.01) &&
+          (a.avgSalary === b.avgSalary +- 0.01) &&
+          a.industries == b.industries
         case _ => false
       }
     }
@@ -581,7 +595,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
-    "correctly process simple groupByRollout + aggregate" in /*repeated */ {
+    "correctly process simple groupByRollout + aggregate" in repeated {
       val people = arbitraryN[Person]
 
       val query: Query[From[Person], PeopleRollupStats] = select[Person]
@@ -589,19 +603,26 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         .aggregate(person => person.avgBy(_.age.toDouble))
         .mapTo(PeopleRollupStats)
 
-//      val expectedResult =
-//        people.groupBy(_.profession).map { case (profession, people) =>
-//          PeopleStats(profession, people.map(_.age).sum.toDouble / people.size)
-//        }
+      val expectedResult = {
+        val baseAggregates =
+          people
+            .groupBy(_.profession)
+            .map { case (profession, people) =>
+              PeopleRollupStats(Some(profession), people.map(_.age.toDouble).sum / people.size)
+            }
+            .toList
 
-      query
-        .show(truncate = false)
-        .run(from(people))
-//      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
+        baseAggregates.sortBy(_.profession) ::: List(
+          PeopleRollupStats(None, people.map(_.age.toDouble).sum / people.size)
+        )
+      }
+
+      query.toList.run(from(people)) shouldEqual expectedResult
     }
 
-    "correctly process groupByRollout with multiple columns" in /*repeated */ {
-      val people = arbitraryN[Person]
+    // TODO: fix this shit
+    "correctly process groupByRollout with multiple columns" in repeated {
+      val people = arbitraryN[Person].take(10)
 
       val query: Query[From[Person], ProfessionRollupStatsByAge] = select[Person]
         .groupByRollup(
@@ -616,15 +637,63 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         }
         .mapTo(ProfessionRollupStatsByAge)
 
-      //      val expectedResult =
-      //        people.groupBy(_.profession).map { case (profession, people) =>
-      //          PeopleStats(profession, people.map(_.age).sum.toDouble / people.size)
-      //        }
+      val expectedResult = {
+        val nestedAggregates =
+          people
+            .groupBy(p => p.profession)
+            .toList
+            .sortBy(_._1)
+            .flatMap { case (profession, people) =>
+              ProfessionRollupStatsByAge(
+                profession = Some(profession),
+                isItGuy = None,
+                lifeQuarter = None,
+                industries = people.map(_.industry).toSet,
+                totalSalary = people.map(_.salary).sum,
+                avgSalary = people.map(_.salary).sum / people.size
+              ) :: people
+                .groupBy(p => p.profession isIn (Profession.Developer, Profession.Manager))
+                .toList
+                .sortBy(_._1)
+                .flatMap { case (isItGuy, people) =>
+                  ProfessionRollupStatsByAge(
+                    profession = Some(profession),
+                    isItGuy = Some(isItGuy),
+                    lifeQuarter = None,
+                    industries = people.map(_.industry).toSet,
+                    totalSalary = people.map(_.salary).sum,
+                    avgSalary = people.map(_.salary).sum / people.size
+                  ) ::
+                    people
+                      .groupBy(p => p.age % 4)
+                      .toList
+                      .sortBy(_._1)
+                      .map { case (lifeQuarter, people) =>
+                        ProfessionRollupStatsByAge(
+                          profession = Some(profession),
+                          isItGuy = Some(isItGuy),
+                          lifeQuarter = Some(lifeQuarter),
+                          industries = people.map(_.industry).toSet,
+                          totalSalary = people.map(_.salary).sum,
+                          avgSalary = people.map(_.salary).sum / people.size
+                        )
+                      }
+                }
+            }
 
-      query
-        .show(truncate = false)
-        .run(from(people))
-      //      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
+        val total = ProfessionRollupStatsByAge(
+          profession = None,
+          isItGuy = None,
+          lifeQuarter = None,
+          industries = people.map(_.industry).toSet,
+          totalSalary = people.map(_.salary).sum,
+          avgSalary = people.map(_.salary).sum / people.size
+        )
+
+        nestedAggregates ::: List(total)
+      }
+
+      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
   }
 
@@ -632,4 +701,6 @@ class BaseLineSpec extends ScalaqlUnitSpec {
     values.groupBy(f).map { case (_, v) => v.head }.toList
 }
 
-// List(ProfessionStats(Manager,26.857142857142858,Set(ECommerce, Fintech, Medtech),85060.16107226373723984752636152943), ProfessionStats(Developer,21.875,Set(Fintech, ECommerce, Medtech),73095.05680209922183696682463063606))// List(ProfessionStats(Manager,26.857142857142858,Set(ECommerce, Fintech, Medtech),85060.16107226373723984752636152936), ProfessionStats(Developer,21.875,Set(Fintech, ECommerce, Medtech),73095.05680209922183696682463063606))
+// ProfessionRollupStatsByAge(Some(FraudSecurityManager),Some(false),Some(0),50000.0,50000.0,Set(Fintech)), ProfessionRollupStatsByAge(None,Some(false),Some(0),50000.0,50000.0,Set(Fintech)), ProfessionRollupStatsByAge(Some(Developer),Some(true),Some(0),66432.41577739628710093305119856560,66432.41577739628710093305119856560,Set(ECommerce)), ProfessionRollupStatsByAge(Some(Manager),Some(true),Some(0),50000.0,50000.0,Set(ECommerce)), ProfessionRollupStatsByAge(None,Some(true),Some(0),238094.5255980776963743137319420805,59523.63139951942409357843298552012,Set(ECommerce, Medtech)), ProfessionRollupStatsByAge(None,None,Some(0),288094.5255980776963743137319420805,57618.9051196155392748627463884161,Set(ECommerce, Fintech, Medtech)), ProfessionRollupStatsByAge(Some(Developer),Some(true),Some(1),115642.8350671586942005504196021450,57821.4175335793471002752098010725,Set(Medtech)), ProfessionRollupStatsByAge(Some(Manager),Some(true),Some(0),121662.1098206814092733806807435148,60831.0549103407046366903403717574,Set(Medtech, ECommerce)), ProfessionRollupStatsByAge(Some(Manager),Some(true),Some(1),91055.16617250576181365870208787597,91055.16617250576181365870208787597,Set(Fintech)), ProfessionRollupStatsByAge(None,Some(true),Some(1),206698.0012396644560142091216900210,68899.33374655481867140304056334033,Set(Medtech, Fintech)), ProfessionRollupStatsByAge(None,None,Some(1),206698.0012396644560142091216900210,68899.33374655481867140304056334033,Set(Medtech, Fintech)), ProfessionRollupStatsByAge(Some(Developer),Some(true),Some(2),91974.93642700908160061230272209035,91974.93642700908160061230272209035,Set(ECommerce)), ProfessionRollupStatsByAge(None,Some(true),Some(2),91974.93642700908160061230272209035,91974.93642700908160061230272209035,Set(ECommerce)), ProfessionRollupStatsByAge(None,None,Some(2),91974.93642700908160061230272209035,91974.93642700908160061230272209035,Set(ECommerce)), ProfessionRollupStatsByAge(Some(Manager),Some(true),Some(3),50000.0,50000.0,Set(ECommerce)), ProfessionRollupStatsByAge(None,Some(true),Some(3),50000.0,50000.0,Set(ECommerce)), ProfessionRollupStatsByAge(None,None,Some(3),50000.0,50000.0,Set(ECommerce)), ProfessionRollupStatsByAge(None,None,None,636767.4632647512339891351563541919,63676.74632647512339891351563541919,Set(ECommerce, Fintech, Medtech)))
+//
+// ProfessionRollupStatsByAge(None,None,Some(0),288094.5255980776963743137319420805,57618.9051196155392748627463884161,Set(ECommerce, Fintech, Medtech)), ProfessionRollupStatsByAge(None,Some(false),Some(0),50000,50000,Set(Fintech)), ProfessionRollupStatsByAge(Some(FraudSecurityManager),Some(false),Some(0),50000,50000,Set(Fintech)), ProfessionRollupStatsByAge(None,Some(true),Some(0),238094.5255980776963743137319420805,59523.63139951942409357843298552012,Set(ECommerce, Medtech)), ProfessionRollupStatsByAge(Some(Developer),Some(true),Some(0),66432.4157773962871009330511985655971317,66432.41577739628710093305119856560,Set(ECommerce)), ProfessionRollupStatsByAge(Some(Manager),Some(true),Some(0),171662.1098206814092733806807435149,57220.7032735604697577935602478383,Set(ECommerce, Medtech)), ProfessionRollupStatsByAge(None,None,Some(1),206698.0012396644560142091216900210,68899.33374655481867140304056334033,Set(Medtech, Fintech)), ProfessionRollupStatsByAge(None,Some(true),Some(1),206698.0012396644560142091216900210,68899.33374655481867140304056334033,Set(Medtech, Fintech)), ProfessionRollupStatsByAge(Some(Developer),Some(true),Some(1),115642.8350671586942005504196021450,57821.4175335793471002752098010725,Set(Medtech)), ProfessionRollupStatsByAge(Some(Manager),Some(true),Some(1),91055.1661725057618136587020878759677442,91055.16617250576181365870208787597,Set(Fintech)), ProfessionRollupStatsByAge(None,None,Some(2),91974.9364270090816006123027220903544862,91974.93642700908160061230272209035,Set(ECommerce)), ProfessionRollupStatsByAge(None,Some(true),Some(2),91974.9364270090816006123027220903544862,91974.93642700908160061230272209035,Set(ECommerce)), ProfessionRollupStatsByAge(Some(Developer),Some(true),Some(2),91974.9364270090816006123027220903544862,91974.93642700908160061230272209035,Set(ECommerce)), ProfessionRollupStatsByAge(None,None,Some(3),50000,50000,Set(ECommerce)), ProfessionRollupStatsByAge(None,Some(true),Some(3),50000,50000,Set(ECommerce)), ProfessionRollupStatsByAge(Some(Manager),Some(true),Some(3),50000,50000,Set(ECommerce)), ProfessionRollupStatsByAge(None,None,None,636767.4632647512339891351563541919,63676.74632647512339891351563541919,Set(ECommerce, Fintech, Medtech)))

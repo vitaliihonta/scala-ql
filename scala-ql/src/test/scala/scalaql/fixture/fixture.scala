@@ -77,6 +77,7 @@ object Profession {
   implicit val arbitrary: Arbitrary[Profession] = Arbitrary(Gen.oneOf(values))
 
   implicit val showAsTable: ShowAsTable.Field[Profession] = ShowAsTable.fieldToString[Profession]
+  implicit val ordering: Ordering[Profession]             = Ordering.by((_: Profession).toString)
 }
 
 case class Person(

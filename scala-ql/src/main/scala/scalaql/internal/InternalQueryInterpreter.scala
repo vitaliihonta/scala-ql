@@ -157,7 +157,9 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         import query.*
         type Acc = Any
 
-        val accCache  = mutable.Map.empty[List[Any], Acc]
+        val keysOrdering = new RollupGroupingKeyOrdering(rollupGroups.map(_.ordering))
+        val accCache     = mutable.SortedMap.empty[List[Any], Acc](keysOrdering)
+
         val aggregate = agg(QueryExpressionBuilder.create[out0]).asInstanceOf[Aggregation.Aux[out0, Any, aggRes]]
 
         interpret[In, out0](in, source)(
@@ -168,11 +170,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
             var offset = 0
             val end    = groupKeys.size
 
-            // Keep previous group subset key.
-            // It allows to reuse lower-level accumulators
-            // in topper level aggregations
-            var prevGroup: List[Any] = null
-
+            // TODO: think how to reuse previous depth accumulation here.
             while (offset <= end) {
               // Get subset of grouping keys.
               // For lists, `drop` is better then `take`
@@ -180,11 +178,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
 
               // The map contains accumulators for each possible (sub)group
               if (!accCache.contains(subGroup)) {
-                // In case of prevGroup == null, create initial accumulator
-                val initial =
-                  if (prevGroup == null) aggregate.init()
-                  else accCache(prevGroup)
-                accCache += (subGroup -> initial)
+                accCache += (subGroup -> aggregate.init())
               }
 
               // Update the accumulator and put back into cache
@@ -194,7 +188,6 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
 
               // prepare next iteration
               offset += 1
-              prevGroup = subGroup
             }
           }
         )

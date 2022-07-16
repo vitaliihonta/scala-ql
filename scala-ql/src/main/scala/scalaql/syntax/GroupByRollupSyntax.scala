@@ -10,7 +10,7 @@ final class GroupByRollupSyntax[In, Out](private val self: Query[In, Out]) exten
    * @tparam A grouping key type
    * @param f extracts grouping key
    * */
-  def groupByRollup[A: Tag](
+  def groupByRollup[A: Ordering: Tag](
     f:           Out => A
   )(implicit In: Tag[In],
     Out:         Tag[Out]
@@ -25,7 +25,7 @@ final class GroupByRollupSyntax[In, Out](private val self: Query[In, Out]) exten
    * @param f1 extracts the first grouping key
    * @param f2 extracts the second grouping key
    * */
-  def groupByRollup[A: Tag, B: Tag](
+  def groupByRollup[A: Ordering: Tag, B: Ordering: Tag](
     f1:          Out => A,
     f2:          Out => B
   )(implicit In: Tag[In],
@@ -43,7 +43,7 @@ final class GroupByRollupSyntax[In, Out](private val self: Query[In, Out]) exten
    * @param f2 extracts the second grouping key
    * @param f3 extracts the third grouping key
    * */
-  def groupByRollup[A: Tag, B: Tag, C: Tag](
+  def groupByRollup[A: Ordering: Tag, B: Ordering: Tag, C: Ordering: Tag](
     f1:          Out => A,
     f2:          Out => B,
     f3:          Out => C

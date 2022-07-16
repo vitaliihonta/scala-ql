@@ -549,7 +549,7 @@ object Query {
       )
   }
 
-  private[scalaql] final class RollupGroup(val groupFill: Any => Any, val defaultFill: Any)
+  private[scalaql] final class RollupGroup(val groupFill: Any => Any, val defaultFill: Any, val ordering: Ordering[Any])
 
   final class AggregateRollupQuery[In: Tag, Out0, Out1: Tag, Res: Tag](
     private[scalaql] val source: Query[In, Out0],

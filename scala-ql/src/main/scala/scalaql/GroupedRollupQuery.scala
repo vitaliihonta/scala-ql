@@ -17,7 +17,8 @@ sealed trait GroupedRollupQuery[In, Out] {
   override final def toString: String =
     QueryExplain.Continuation(source.explain, QueryExplain.Single(groupByString)).toString
 
-  protected def asAnyFunc[A, B](f: A => B): Any => Any = f.asInstanceOf[Any => Any]
+  protected def asAnyOrdering[A: Ordering]: Ordering[Any] = Ordering[A].asInstanceOf[Ordering[Any]]
+  protected def asAnyFunc[A, B](f: A => B): Any => Any    = f.asInstanceOf[Any => Any]
 
   protected def extractFromList[U](pf: PartialFunction[List[Any], U]): List[Any] => U = { values =>
     def error(info: String) = FatalExceptions.libraryError(s"Unable to extract tuple from list: $info")
@@ -31,7 +32,7 @@ sealed trait GroupedRollupQuery[In, Out] {
   }
 }
 
-final class GroupedRollupQuery1[In: Tag, Out: Tag, G: Tag, Fill: Tag] private[scalaql] (
+final class GroupedRollupQuery1[In: Tag, Out: Tag, G: Tag: Ordering, Fill: Tag] private[scalaql] (
   override protected val source: Query[In, Out],
   group:                         Out => G,
   groupToFill:                   G => Fill,
@@ -72,14 +73,21 @@ final class GroupedRollupQuery1[In: Tag, Out: Tag, G: Tag, Fill: Tag] private[sc
         ),
       f,
       List(
-        new Query.RollupGroup(asAnyFunc(groupToFill), defaultFill)
+        new Query.RollupGroup(asAnyFunc(groupToFill), defaultFill, asAnyOrdering[G])
       ),
       groupByString,
       extractFromList { case List(fill: Fill, b: B) => flatten((fill, b)) }
     )(Tag[In], Tag[B], flatten.tag)
 }
 
-final class GroupedRollupQuery2[In: Tag, Out: Tag, G1: Tag, G2: Tag, Fill1: Tag, Fill2: Tag] private[scalaql] (
+final class GroupedRollupQuery2[
+  In: Tag,
+  Out: Tag,
+  G1: Tag: Ordering,
+  G2: Tag: Ordering,
+  Fill1: Tag,
+  Fill2: Tag
+] private[scalaql] (
   override protected val source: Query[In, Out],
   group1:                        Out => G1,
   group2:                        Out => G2,
@@ -132,8 +140,8 @@ final class GroupedRollupQuery2[In: Tag, Out: Tag, G1: Tag, G2: Tag, Fill1: Tag,
         ),
       f,
       List(
-        new Query.RollupGroup(asAnyFunc(group1ToFill), defaultFill1),
-        new Query.RollupGroup(asAnyFunc(group2ToFill), defaultFill2)
+        new Query.RollupGroup(asAnyFunc(group1ToFill), defaultFill1, asAnyOrdering[G1]),
+        new Query.RollupGroup(asAnyFunc(group2ToFill), defaultFill2, asAnyOrdering[G2])
       ),
       groupByString,
       extractFromList { case List(fill1: Fill1, fill2: Fill2, b: B) => flatten(((fill1, fill2), b)) }
@@ -143,9 +151,9 @@ final class GroupedRollupQuery2[In: Tag, Out: Tag, G1: Tag, G2: Tag, Fill1: Tag,
 final class GroupedRollupQuery3[
   In: Tag,
   Out: Tag,
-  G1: Tag,
-  G2: Tag,
-  G3: Tag,
+  G1: Tag: Ordering,
+  G2: Tag: Ordering,
+  G3: Tag: Ordering,
   Fill1: Tag,
   Fill2: Tag,
   Fill3: Tag
@@ -211,9 +219,9 @@ final class GroupedRollupQuery3[
         ),
       f,
       List(
-        new Query.RollupGroup(asAnyFunc(group1ToFill), defaultFill1),
-        new Query.RollupGroup(asAnyFunc(group2ToFill), defaultFill2),
-        new Query.RollupGroup(asAnyFunc(group3ToFill), defaultFill3)
+        new Query.RollupGroup(asAnyFunc(group1ToFill), defaultFill1, asAnyOrdering[G1]),
+        new Query.RollupGroup(asAnyFunc(group2ToFill), defaultFill2, asAnyOrdering[G2]),
+        new Query.RollupGroup(asAnyFunc(group3ToFill), defaultFill3, asAnyOrdering[G3])
       ),
       groupByString,
       extractFromList { case List(fill1: Fill1, fill2: Fill2, fill3: Fill3, b: B) =>
