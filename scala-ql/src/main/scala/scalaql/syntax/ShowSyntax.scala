@@ -5,7 +5,7 @@ import scalaql.QueryResult
 import scalaql.visualization.ShowAsTable
 import scalaql.visualization.ShowQueryResult
 
-final class ShowSyntax[In, Out: ShowAsTable](self: Query[In, Out]) extends Serializable {
+final class ShowSyntax[In, Out](private val self: Query[In, Out]) extends AnyVal {
 
   /**
    * Pretty-prints this query outputs into a console table.
@@ -31,7 +31,7 @@ final class ShowSyntax[In, Out: ShowAsTable](self: Query[In, Out]) extends Seria
    * @param truncate limits the width of the table
    * @return a `QueryResult` which prints `this` query output into console.
    * */
-  def show(numRows: Int = 20, truncate: Boolean = true): QueryResult[In, Unit] =
+  def show(numRows: Int = 20, truncate: Boolean = true)(implicit showAsTable: ShowAsTable[Out]): QueryResult[In, Unit] =
     new BasicQuerySyntax(self)
       .foreach(ShowQueryResult.sideEffect[Out](numRows, truncate = if (truncate) 20 else 0))
 }

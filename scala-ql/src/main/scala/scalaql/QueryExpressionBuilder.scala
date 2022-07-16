@@ -1,12 +1,11 @@
 package scalaql
 
-import scalaql.syntax.{ReportPartiallyApplied2, ReportPartiallyApplied2Syntax}
 import spire.algebra.{AdditiveMonoid, Field, MultiplicativeMonoid}
 import spire.math.Fractional
 
 sealed trait QueryExpressionBuilder[A] extends Serializable {
   def toList: Aggregation.Of[A, List[A]]
-  def toListBy[B](f: A => B): Aggregation.Of[A, List[B]]
+  def toListOf[B](f: A => B): Aggregation.Of[A, List[B]]
 
   def distinct: Aggregation.Of[A, Set[A]]
 
@@ -50,17 +49,6 @@ sealed trait QueryExpressionBuilder[A] extends Serializable {
   def foldLeft[B](initial: B)(f: (B, A) => B): Aggregation.Of[A, B]
 
   def foldLeftBy[B, R](by: A => B)(initial: R)(f: (R, B) => R): Aggregation.Of[A, R]
-
-  def report[B, U1](
-    group1: A => B
-  )(agg1:   (B, QueryExpressionBuilder[A]) => Aggregation.Of[A, U1]
-  ): Aggregation.Of[A, List[U1]]
-
-  def report[B, C, U1](
-    group1: A => B,
-    group2: A => C
-  )(merge:  (B, C, QueryExpressionBuilder[A]) => Aggregation.Of[A, U1]
-  ): ReportPartiallyApplied2[A, B, C, U1]
 }
 
 object QueryExpressionBuilder {
@@ -69,7 +57,7 @@ object QueryExpressionBuilder {
 
   private object singletonImpl extends Impl[Nothing]
 
-  private[scalaql] abstract class Impl[A] extends QueryExpressionBuilder[A] with ReportPartiallyApplied2Syntax[A] {
+  private[scalaql] abstract class Impl[A] extends QueryExpressionBuilder[A] {
 
     override def const[B](value: B): Aggregation.Of[A, B] =
       new Aggregation.Const[B](value)
@@ -77,8 +65,8 @@ object QueryExpressionBuilder {
     override def toList: Aggregation.Of[A, List[A]] =
       new Aggregation.ToList[A]
 
-    override def toListBy[B](f: A => B): Aggregation.Of[A, List[B]] =
-      new Aggregation.ToListBy[A, B](f)
+    override def toListOf[B](f: A => B): Aggregation.Of[A, List[B]] =
+      new Aggregation.ToListOf[A, B](f)
 
     override def distinct: Aggregation.Of[A, Set[A]] =
       new Aggregation.Distinct[A]
@@ -102,16 +90,16 @@ object QueryExpressionBuilder {
       new Ranking.Lag[A, B](f)
 
     override def min(implicit ev: Ordering[A]): Aggregation.Of[A, A] =
-      new Aggregation.Min[A](ev)
+      new Aggregation.Reduce[A](ev.min, opName = "min")
 
     override def minOf[B](f: A => B)(implicit ev: Ordering[B]): Aggregation.Of[A, B] =
-      new Aggregation.MinOf[A, B](f, ev)
+      new Aggregation.ReduceBy[A, B](f, ev.min, opName = "minOf")
 
     override def max(implicit ev: Ordering[A]): Aggregation.Of[A, A] =
-      new Aggregation.Max[A](ev)
+      new Aggregation.Reduce[A](ev.max, opName = "max")
 
     override def maxOf[B](f: A => B)(implicit ev: Ordering[B]): Aggregation.Of[A, B] =
-      new Aggregation.MaxOf[A, B](f, ev)
+      new Aggregation.ReduceBy[A, B](f, ev.max, opName = "maxOf")
 
     override def sum(implicit ev: AdditiveMonoid[A]): Aggregation.Of[A, A] =
       new Aggregation.Sum[A](ev)
@@ -138,21 +126,15 @@ object QueryExpressionBuilder {
       new Aggregation.StdBy[A, B](f, ev)
 
     override def reduce(f: (A, A) => A): Aggregation.Of[A, A] =
-      new Aggregation.Reduce[A](f)
+      new Aggregation.Reduce[A](f, opName = "reduce")
 
     override def reduceBy[B](by: A => B)(f: (B, B) => B): Aggregation.Of[A, B] =
-      new Aggregation.ReduceBy[A, B](by)(f)
+      new Aggregation.ReduceBy[A, B](by, f, "reduceBy")
 
     override def foldLeft[B](initial: B)(f: (B, A) => B): Aggregation.Of[A, B] =
       new Aggregation.FoldLeft[A, B](initial, f)
 
     override def foldLeftBy[B, R](by: A => B)(initial: R)(f: (R, B) => R): Aggregation.Of[A, R] =
-      new Aggregation.FoldLeftBy[A, B, R](by)(initial, f)
-
-    override def report[B, U1](
-      group1: A => B
-    )(agg1:   (B, QueryExpressionBuilder[A]) => Aggregation.Of[A, U1]
-    ): Aggregation.Of[A, List[U1]] =
-      new Aggregation.Report1[A, B, U1](QueryExpressionBuilder.create[A])(group1, agg1)
+      new Aggregation.FoldLeftBy[A, B, R](by, initial, f)
   }
 }

@@ -1,6 +1,7 @@
 package scalaql.internal
 
-import scalaql.{Aggregation, From, Query, Ranking, QueryExpressionBuilder, ToFrom}
+import izumi.reflect.macrortti.LightTypeTag
+import scalaql.{Aggregation, From, Query, QueryExpressionBuilder, Ranking, ToFrom}
 import scalaql.interpreter.QueryInterpreter
 
 import scala.collection.mutable
@@ -122,18 +123,110 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         while (step.check() && outputs.hasNext)
           step.next(outputs.next())
 
-      case query: Query.AggregateQuery[In, out0, g, Out] =>
+      case query: Query.AggregateQuery[In, out0, g, aggRes, Out] =>
         import query.*
-        val tmpBuffer = ListBuffer.empty[out0]
+        type Acc = Any
+
+        val groupedAccs = mutable.Map.empty[g, Acc]
+        val aggregate   = agg(QueryExpressionBuilder.create[out0]).asInstanceOf[Aggregation.Aux[out0, Any, aggRes]]
+
         interpret[In, out0](in, source)(
-          Step.always[out0](tmpBuffer += _)
+          Step.always[out0] { mid =>
+            val g = group(mid)
+            // Populate cache with initial accumulator if not present
+            if (!groupedAccs.contains(g)) {
+              groupedAccs += (g -> (aggregate.init()))
+            }
+
+            // Update the accumulator and put back into cache
+            val acc     = groupedAccs(g)
+            val updated = aggregate.update(acc, mid)
+            groupedAccs.update(g, updated)
+          }
         )
-        val grouped = tmpBuffer.groupBy(group).iterator
-        while (step.check() && grouped.hasNext) {
-          val (gr, ys)   = grouped.next()
-          val aggregated = agg(gr, QueryExpressionBuilder.create[out0]).apply(ys.toList)
-          step.next(aggregated)
+
+        groupedAccs.foreach { case (g, acc) =>
+          val res = aggregate.result(acc)
+          // Emmit result along with the grouping key(s)
+          step.next(flatten((g, res)))
         }
+
+        groupedAccs.clear()
+
+      case query: Query.AggregateRollupQuery[In, out0, aggRes, Out] =>
+        import query.*
+        type Acc = Any
+
+        val keysOrdering = new RollupGroupingKeyOrdering(rollupGroups.map(_.ordering))
+        val accCache     = mutable.SortedMap.empty[List[Any], Acc](keysOrdering)
+
+        val aggregate = agg(QueryExpressionBuilder.create[out0]).asInstanceOf[Aggregation.Aux[out0, Any, aggRes]]
+
+        interpret[In, out0](in, source)(
+          Step.always[out0] { mid =>
+            val groupKeys = groups(mid)
+
+            // Starting from all the keys
+            var offset = 0
+            val end    = groupKeys.size
+
+            // TODO: think how to reuse previous depth accumulation here.
+            while (offset <= end) {
+              // Get subset of grouping keys.
+              // For lists, `drop` is better then `take`
+              val subGroup = groupKeys.drop(offset)
+
+              // The map contains accumulators for each possible (sub)group
+              if (!accCache.contains(subGroup)) {
+                accCache += (subGroup -> aggregate.init())
+              }
+
+              // Update the accumulator and put back into cache
+              val acc     = accCache(subGroup)
+              val updated = aggregate.update(acc, mid)
+              accCache.update(subGroup, updated)
+
+              // prepare next iteration
+              offset += 1
+            }
+          }
+        )
+
+        // Persist the group size
+        val groupKeysNum = rollupGroups.size
+
+        accCache.foreach { case (currentKeys, acc) =>
+          val res = aggregate.result(acc)
+
+          val currentKeysNum = currentKeys.size
+          // Fillments for topper-level aggregations
+          val fillments = List.tabulate(
+            // Basically the number of fillments to provide
+            groupKeysNum - currentKeysNum
+          )(offset =>
+            rollupGroups(
+              // In case of top-level aggregation, currentKeysNum is 0, so need to fill each grouping key.
+              // In case of mid-level aggregation M, fill N-M keys.
+              // In case of bottom-level aggregation, doesn't fill
+              currentKeysNum + offset
+            ).defaultFill
+          )
+
+          val presentKeys = currentKeys.zipWithIndex.map { case (key, i) =>
+            // Convert grouping key to it's fillment, e.g. wrap into Some(_) or just return the same value
+            rollupGroups(i).groupFill(key)
+          }
+
+          // Merge keys before building a tuple.
+          val groupKeys = fillments ::: presentKeys
+          // Build the tuple
+          val output = buildRes(groupKeys ::: List(res))
+
+          // Emmit
+          step.next(output)
+        }
+
+        accCache.clear()
 
       case query: Query.WindowQuery[In, out0, res, Out] =>
         import query.*
