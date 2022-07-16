@@ -201,7 +201,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
           PeopleStats(profession, people.map(_.age).sum.toDouble / people.size)
         }
 
-      query.toList.run(from(people)) shouldEqual expectedResult
+      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
     "correctly process groupBy + aggregate with foldLeft and reduce" in repeated {
@@ -260,7 +260,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
           )
         }
 
-      query.toList.run(from(people)) shouldEqual expectedResult
+      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
     "correctly process groupBy with multiple columns" in repeated {
@@ -287,7 +287,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
           )
         }
 
-      query.toList.run(from(people)) shouldEqual expectedResult
+      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
     "correctly process simple filterM + map + filter" in repeated {

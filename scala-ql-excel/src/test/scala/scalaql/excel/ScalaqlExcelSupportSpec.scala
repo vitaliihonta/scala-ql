@@ -529,74 +529,74 @@ class ScalaqlExcelSupportSpec extends ScalaqlUnitSpec {
       deleteFile(path)
     }
 
-    "correctly write nested xls document with list and headers" in {
-      val path =
-        Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-list-nested", "with-headers.xls")
-
-      select[PersonWithProfession]
-        .groupBy(_.isProgrammer)
-        .aggregate { (isProgrammer, people) =>
-          people
-            .report(_.birthDay.getYear) { (birthYear, people) =>
-              (
-                people.avgBy(_.workingExperienceYears.toDouble) &&
-                  people.toList
-              ).map { case (avgWorkingExperienceYears, people) =>
-                PeopleStatsPerIsProgrammer(
-                  birthYear,
-                  avgWorkingExperienceYears,
-                  people.map { person =>
-                    PersonRecord(
-                      id = person.id,
-                      name = person.name,
-                      workingExperienceYears = person.workingExperienceYears,
-                      birthDay = person.birthDay,
-                      createdAt = person.createdAt
-                    )
-                  }
-                )
-              }
-            }
-            .map(PeopleStats(isProgrammer, _))
-        }
-        .foreach(
-          excel
-            .write[PeopleStats]
-            .option(headers = true)
-            .option(Naming.WithSpacesLowerCase)
-            .file(path)
-        )
-        .run(
-          from(
-            List(
-              PersonWithProfession(
-                id = UUID.fromString("4ffe9631-2169-4c50-90ff-8818bc28ab3f"),
-                name = "Vitalii",
-                workingExperienceYears = 100500,
-                birthDay = LocalDate.of(1997, 11, 13),
-                createdAt = LocalDateTime.of(2022, 6, 19, 15, 0),
-                isProgrammer = true
-              ),
-              PersonWithProfession(
-                id = UUID.fromString("304e27cc-f2e2-489a-8fac-4279abcbbefa"),
-                name = "John",
-                workingExperienceYears = 2000,
-                birthDay = LocalDate.of(1922, 6, 19),
-                createdAt = LocalDateTime.of(2022, 6, 19, 15, 0),
-                isProgrammer = true
-              )
-            )
-          )
-        )
-
-      assertWorkbooksEqualToOneOf(
-        path,
-        Paths.get("scala-ql-excel/src/test/expected/write-list-nested-with-headers.xls"),
-        Paths.get("scala-ql-excel/src/test/expected/write-list-nested-with-headers2_12.xls")
-      )
-
-      deleteFile(path)
-    }
+//    "correctly write nested xls document with list and headers" in {
+//      val path =
+//        Files.createTempFile(Paths.get("scala-ql-excel/src/test/out/"), "write-list-nested", "with-headers.xls")
+//
+//      select[PersonWithProfession]
+//        .groupBy(_.isProgrammer)
+//        .aggregate { (isProgrammer, people) =>
+//          people
+//            .report(_.birthDay.getYear) { (birthYear, people) =>
+//              (
+//                people.avgBy(_.workingExperienceYears.toDouble) &&
+//                  people.toList
+//              ).map { case (avgWorkingExperienceYears, people) =>
+//                PeopleStatsPerIsProgrammer(
+//                  birthYear,
+//                  avgWorkingExperienceYears,
+//                  people.map { person =>
+//                    PersonRecord(
+//                      id = person.id,
+//                      name = person.name,
+//                      workingExperienceYears = person.workingExperienceYears,
+//                      birthDay = person.birthDay,
+//                      createdAt = person.createdAt
+//                    )
+//                  }
+//                )
+//              }
+//            }
+//            .map(PeopleStats(isProgrammer, _))
+//        }
+//        .foreach(
+//          excel
+//            .write[PeopleStats]
+//            .option(headers = true)
+//            .option(Naming.WithSpacesLowerCase)
+//            .file(path)
+//        )
+//        .run(
+//          from(
+//            List(
+//              PersonWithProfession(
+//                id = UUID.fromString("4ffe9631-2169-4c50-90ff-8818bc28ab3f"),
+//                name = "Vitalii",
+//                workingExperienceYears = 100500,
+//                birthDay = LocalDate.of(1997, 11, 13),
+//                createdAt = LocalDateTime.of(2022, 6, 19, 15, 0),
+//                isProgrammer = true
+//              ),
+//              PersonWithProfession(
+//                id = UUID.fromString("304e27cc-f2e2-489a-8fac-4279abcbbefa"),
+//                name = "John",
+//                workingExperienceYears = 2000,
+//                birthDay = LocalDate.of(1922, 6, 19),
+//                createdAt = LocalDateTime.of(2022, 6, 19, 15, 0),
+//                isProgrammer = true
+//              )
+//            )
+//          )
+//        )
+//
+//      assertWorkbooksEqualToOneOf(
+//        path,
+//        Paths.get("scala-ql-excel/src/test/expected/write-list-nested-with-headers.xls"),
+//        Paths.get("scala-ql-excel/src/test/expected/write-list-nested-with-headers2_12.xls")
+//      )
+//
+//      deleteFile(path)
+//    }
   }
 
   private def assertWorkbooksEqual(left: Path, right: Path) = {

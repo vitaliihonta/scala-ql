@@ -43,13 +43,10 @@ object QueryExpression {
  * */
 trait Aggregation[-A] extends QueryExpression[A] { self =>
 
-  /**
-   * Applies `this` aggregation function to a set of values.
-   *
-   * @param values values to aggregate
-   * @return the aggregation result
-   * */
-  def apply(values: Iterable[A]): Out
+  type Acc
+  def init(): Acc
+  def update(acc: Acc, value: A): Acc
+  def result(acc: Acc): Out
 
   /**
    * Transforms `this` aggregation function input type.
@@ -59,7 +56,7 @@ trait Aggregation[-A] extends QueryExpression[A] { self =>
    * @return `this` aggregation function with new input type
    * */
   def contramap[A0](f: A0 => A): Aggregation.Of[A0, Out] =
-    new Aggregation.Contramapped[A0, A, Out](self, f)
+    new Aggregation.Contramapped[A0, A, Acc, Out](self, f)
 
   /**
    * Transforms `this` aggregation function output type.
@@ -69,7 +66,7 @@ trait Aggregation[-A] extends QueryExpression[A] { self =>
    * @return `this` aggregation function with transformed output
    * */
   def map[B](f: Out => B): Aggregation.Of[A, B] =
-    new Aggregation.Mapped[A, Out, B](self, f)
+    new Aggregation.Mapped[A, Out, Acc, B](self, f)
 
   /**
    * Chains multiple aggregation functions into a single one.
@@ -93,20 +90,30 @@ trait Aggregation[-A] extends QueryExpression[A] { self =>
     that:            Aggregation[A0]
   )(implicit tupled: TupleFlatten[(Out, that.Out)]
   ): Aggregation.Of[A0, tupled.Out] =
-    new Aggregation.Chained[A0, Out, that.Out, tupled.Out](self, that)(tupled)
+    new Aggregation.Chained[A0, Out, that.Out, Acc, that.Acc, tupled.Out](self, that)(tupled)
 
   override final def processWindow(
     order:            Ordering[A] @uncheckedVariance,
     values:           Iterable[A]
   )(implicit flatten: TupleFlatten[(A, Out)] @uncheckedVariance
   ): Iterable[flatten.Out] = {
-    val result = self(values)
-    values.map(v => flatten(v -> result))
+    var acc  = init()
+    val iter = values.iterator
+    while (iter.hasNext)
+      acc = update(acc, iter.next())
+    val res = result(acc)
+    values.map(v => flatten(v -> res))
   }
 }
 
 object Aggregation extends AggregationFunctions {
   final type Of[-A, +Out0] = Aggregation[A] { type Out = Out0 @uncheckedVariance }
+
+  // For internal usage
+  private[scalaql] type Aux[A, Acc0, Out0] = Aggregation[A] {
+    type Acc = Acc0
+    type Out = Out0
+  }
 }
 
 /**
