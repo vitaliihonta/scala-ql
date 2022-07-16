@@ -549,22 +549,27 @@ object Query {
       )
   }
 
-//  final class AggregateRollupQuery[In: Tag, Out0, G, Out1: Tag](
-//    private[scalaql] val source:        Query[In, Out0],
-//    private[scalaql] val group:         Out0 => G,
-//    private[scalaql] val agg:           (G, QueryExpressionBuilder[Out0]) => Aggregation.Of[Out0, Out1],
-//    private[scalaql] val groupByString: String)
-//      extends Query[In, Out1] {
-//
-//    override def explain: QueryExplain =
-//      QueryExplain.Continuation(
-//        source.explain,
-//        QueryExplain.Continuation(
-//          QueryExplain.Single(groupByString),
-//          QueryExplain.Single(s"AGGREGATE(${Tag[Out1].tag})")
-//        )
-//      )
-//  }
+  private[scalaql] final class RollupGroup(val groupFill: Any => Any, val defaultFill: Any)
+
+  final class AggregateRollupQuery[In: Tag, Out0, Out1: Tag, Res: Tag](
+    private[scalaql] val source: Query[In, Out0],
+    private[scalaql] val groups: Out0 => List[Any],
+    private[scalaql] val agg:    QueryExpressionBuilder[Out0] => Aggregation.Of[Out0, Out1],
+    // NOTE: should be in the same order as groups produces!
+    private[scalaql] val rollupGroups:  List[RollupGroup],
+    private[scalaql] val groupByString: String,
+    private[scalaql] val buildRes:      List[Any] => Res)
+      extends Query[In, Res] {
+
+    override def explain: QueryExplain =
+      QueryExplain.Continuation(
+        source.explain,
+        QueryExplain.Continuation(
+          QueryExplain.Single(groupByString),
+          QueryExplain.Single(s"AGGREGATE(${Tag[Out1].tag})")
+        )
+      )
+  }
 
   final class WindowQuery[In: Tag, Out, Res, B: Tag](
     private[scalaql] val source:            Query[In, Out],
