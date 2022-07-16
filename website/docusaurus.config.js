@@ -45,6 +45,11 @@ const siteConfig = {
       items: [
         { to: 'docs/core/overview', label: 'Documentation', position: 'right' },
         {
+           type: 'html',
+           value: '<a class="navbar__item navbar__link" rel="nofollow" href="/api/scalaql">API Docs</a>', 
+           position: 'right' 
+        },
+        {
           href: 'https://github.com/vitaliihonta/scala-ql',
           label: 'GitHub',
           position: 'right',

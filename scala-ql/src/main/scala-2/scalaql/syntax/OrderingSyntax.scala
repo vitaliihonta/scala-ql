@@ -12,8 +12,11 @@ trait OrderingSyntax {
     new OrderBySyntax[In, Out](self)
 }
 
-final class OrderingAscDescSyntax[A](val self: A) extends AnyVal {
-  def asc: A = self
+final class OrderingAscDescSyntax[A](val `this`: A) extends AnyVal {
 
-  def desc: A = self
+  /** Use ascending order */
+  @`inline` def asc: A = `this`
+
+  /** Use descending order */
+  @`inline` def desc: A = `this`
 }

@@ -5,10 +5,10 @@
 
 # ScalaQL
 
-ScalaQL is simple statically typed (and lawful) query DSL for scala.
+ScalaQL is simple statically typed query DSL for scala.
 
 The library provides a composable Query - a description of your computations,  
 which you can then apply to multiple sources and write into multiple sinks.
 
-Documetations and examples could be found on project's web site  
+The documentation and examples could be found on project's web site  
 https://scala-ql.vhonta.dev

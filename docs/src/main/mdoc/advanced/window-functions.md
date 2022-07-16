@@ -31,14 +31,14 @@ val orderDetailsPath = Paths.get("docs/src/main/resources/OrderDetail_2022070312
 def ordersInput = from(
   csv
     .read[Order]
-    .option(Naming.UpperCase)
+    .option(Naming.Capitalize)
     .file(ordersPath)
 ) 
 
 def orderDetailsInput = from(
   csv
     .read[OrderDetail]
-    .option(Naming.UpperCase)
+    .option(Naming.Capitalize)
     .file(orderDetailsPath)
 )
 ```

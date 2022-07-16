@@ -17,3 +17,4 @@ website/.docusaurus
 yarn.lock
 package-lock.json
 website/variables.js
+website/static/api

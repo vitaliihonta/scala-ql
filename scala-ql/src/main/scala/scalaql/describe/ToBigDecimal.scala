@@ -1,5 +1,8 @@
 package scalaql.describe
 
+import scala.annotation.implicitNotFound
+
+@implicitNotFound("Don't know how to convert ${A} to BigDecimal.")
 trait ToBigDecimal[A] extends Serializable {
   def apply(value: A): BigDecimal
 }

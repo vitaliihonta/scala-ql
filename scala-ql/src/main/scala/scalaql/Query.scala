@@ -5,26 +5,101 @@ import scalaql.internal.PartialFunctionAndThenCompat
 import scalaql.utils.TupleFlatten
 import scala.annotation.unchecked.uncheckedVariance
 
+/** 
+  * Query is a description of computations you want to perform on your data.
+  * It doesn't evaluate until you explicitly run it.
+  *
+  * @tparam In query input, e.g. type of the data source
+  * @tparam Out query computation result type
+  */
 sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
 
+  /**
+   * Provides information about the query "plan".
+   * 
+   * @return the query plain
+   * */
   def explain: QueryExplain
 
   override final def toString: String = explain.toString
 
+  /**
+   * Transforms the query output by applying an arbitrary function
+   * to previous query step.
+   *
+   * Example: 
+   * {{{
+   *   select[Person].map(_.age)
+   * }}}
+   *
+   * @tparam B new query output type
+   * @param f transformation function
+   * @return transformed query
+   * */
   def map[B: Tag](f: Out => B): Query[In, B] =
     new Query.MapQuery[In, Out, B](this, f, Tag[B].tag)
 
+  /**
+   * Transforms the query output by applying an arbitrary partial function
+   * to previous query step.
+   *
+   * Used to apply transformation and filtering in one step.
+   *
+   * Example: 
+   * {{{
+   *   select[Person].collect {
+   *     case person if person.age >= 18 =>
+   *       person.name
+   *   }
+   * }}}
+   *
+   * @tparam B new query output type
+   * @param pf transformation function
+   * @return transformed query
+   * */
   def collect[B: Tag](pf: PartialFunction[Out, B]): Query[In, B] =
     new Query.CollectQuery[In, Out, B](this, pf, Tag[B].tag)
 
+  /**
+   * Filters records by specified predicate function.
+   *
+   * Example: 
+   * {{{
+   *   select[Person].where(_.age >= 18)
+   * }}}
+   *
+   * @param p predicate
+   * @return query producing only elements for which the given predicate holds
+   * */
   def where(p: Predicate[Out]): Query[In, Out] =
     new Query.WhereQuery[In, Out](this, p)
 
+  /** @see [[where]] */
   def withFilter(p: Predicate[Out]): Query[In, Out] = where(p)
 
+  /**
+   * An equivalent `where(!p)`.
+   *
+   * @see [[where]]
+   * */
   def whereNot(p: Predicate[Out]): Query[In, Out] =
     new Query.WhereQuery[In, Out](this, !p(_), nameHint = Some("WHERE_NOT"))
 
+  /**
+   * Transforms the query output by applying an arbitrary function
+   * to previous query step.
+   *
+   * Unlike `map`, expects a transformation which produces multiple results.
+   *
+   * Example: 
+   * {{{
+   *   select[Employee].mapConcat(_.skills)
+   * }}}
+   *
+   * @tparam B new query output type
+   * @param f transformation function
+   * @return transformed query
+   * */
   def mapConcat[B: Tag](f: Out => Iterable[B]): Query[In, B] =
     new Query.FlatMapQuery[In, Out, B](
       this,
@@ -34,12 +109,67 @@ sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
       nameHint = Some("MAP_CONCAT")
     )
 
+  /**
+   * Transforms the query output by applying an arbitrary function
+   * which produces a new Query based on the previous step.
+   *
+   * Example: 
+   * {{{
+   *   select[Employee]
+   *     .flatMap { employee =>
+   *       select[Skill].where(_.name isInCollection employee.skills)
+   *     }
+   * }}}
+   *
+   * @tparam In2 inferred common input type for this query and the transformed result query
+   * @tparam B new query output type
+   * @param f transformation function
+   * @return transformed query
+   * */
   def flatMap[In2 <: In: Tag, B: Tag](f: Out => Query[In2, B]): Query[In2, B] =
     new Query.FlatMapQuery[In2, Out, B](this, f, Tag[In2].tag, Tag[B].tag)
 
+  /**
+   * Filters records by a predicate which depends on the result of other query.
+   *
+   * Example: 
+   * {{{
+   *   select[Person]
+   *     .whereSubQuery(person =>
+   *       select[Employee].exists(_.personId == person.id)
+   *     )
+   * }}}
+   *
+   * @tparam In2 inferred common input type for this query and the transformed result query
+   * @param p predicate
+   * @return query producing only elements for which the given predicate holds
+   * */
   def whereSubQuery[In2 <: In: Tag](p: Out => QueryResult[In2, Boolean]): Query[In2, Out] =
     new Query.WhereSubQuery[In2, Out](this, p)
 
+  /**
+   * Accumulates all of the query values into a state,
+   * producing records based on that state.
+   * 
+   * @note should be used only for complicated computations if no equivalent exist.
+   *       Accumulating query emits value only after processing the whole input!
+   * 
+   * Example: 
+   * {{{
+   *   val uniqueSkills = select[Person]
+   *     .accumulate(initialState = Set.empty[Skill])(
+   *       (skillSet, person) =>
+   *         skillSet ++ person.skills
+   *     )(_.toList)
+   * }}}
+   *
+   * @tparam S accumulation state type
+   * @tparam B accumulation result type
+   * @param initialState the initial state for accumulation
+   * @param modifyState updates state by applying query output value
+   * @param getResults extract records from the state
+   * @return transformed query
+   * */
   def accumulate[S: Tag, B: Tag](
     initialState: S
   )(modifyState:  (S, Out) => S
@@ -53,6 +183,18 @@ sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
       Tag[S].tag
     )
 
+  /**
+   * Transforms the query output by applying an arbitrary stateful function
+   * to previous query step.
+   *
+   * Unlike `map`, each output value depends on previously computed state.
+   *
+   * @tparam S accumulation state type
+   * @tparam B accumulation result type
+   * @param initialState the initial state for accumulation
+   * @param process computes output value based on the input value and state
+   * @return transformed query
+   * */
   def statefulMap[S: Tag, B: Tag](
     initialState: S
   )(process:      (S, Out) => (S, B)
@@ -68,6 +210,18 @@ sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
       nameHint = Some(s"STATEFUL_MAP($initialState)")
     )
 
+  /**
+   * Transforms the query output by applying an arbitrary stateful function
+   * to previous query step.
+   *
+   * Unlike `statefulMap`, expects a stateful transformation which produces multiple results.
+   *
+   * @tparam S accumulation state type
+   * @tparam B accumulation result type
+   * @param initialState the initial state for accumulation
+   * @param process computes output value based on the input value and state
+   * @return transformed query
+   * */
   def statefulMapConcat[S: Tag, B: Tag](
     initialState: S
   )(process:      (S, Out) => (S, Iterable[B])
@@ -79,8 +233,26 @@ sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
     nameHint = None
   )
 
+  /**
+   * Produces only unique values.
+   *
+   * @see [[deduplicateBy]]
+   * @return the same query with only unique values
+   * */
   def deduplicate: Query[In, Out] = deduplicateBy(identity[Out])
 
+  /**
+   * Produces only unique values based on the given deduplication key.
+   *
+   * Example:
+   * {{{
+   *   select[Person].deduplicateBy(_.name)
+   * }}}
+   *
+   * @tparam K deduplication key type
+   * @param f extracts deduplication key
+   * @return the same query with only unique values
+   * */
   def deduplicateBy[K: Tag](f: Out => K): Query[In, Out] =
     new Query.StatefulMapConcat[In, Out, Set[K], Out](
       this,
@@ -94,24 +266,88 @@ sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
       nameHint = Some(s"DEDUPLICATE BY(${Tag[K].tag})")
     )
 
+  /**
+   * Symbolic alias for `union`
+   * 
+   * @see [[union]]
+   * */
   final def ++[In2 <: In: Tag, Out0 >: Out: Tag](that: Query[In2, Out0]): Query[In2, Out0] =
     union(that)
 
+  /**
+   * Produces a query which emits results from both `this` and the specified new query.
+   * 
+   * @note the current implementation of union first produces all the results of `this` query,
+   *       and then results of the specified query.
+   *       But this behavior may change in future
+   *
+   * @tparam In2 inferred common input type for this query and the transformed result query
+   * @tparam Out0 inferred common output type for this query and the transformed result query
+   * @param that query to union with
+   * @return union of `this` and `that` query
+   * */
   def union[In2 <: In: Tag, Out0 >: Out: Tag](that: Query[In2, Out0]): Query[In2, Out0] =
     new Query.UnionQuery[In2, Out0](this, that)
 
+  /**
+   * Symbolic alias for `andThen`
+   *
+   * @see [[andThen]]
+   * */
   final def >>>[Out0 >: Out: Tag, Out2: Tag](that: Query[From[Out0], Out2]): Query[In, Out2] =
     andThen(that)
 
+  /**
+   * Produces a query which uses `this` query input by producing output of the specified query.
+   * Allows functional composition of multiple queries.
+   * 
+   * Example:
+   * {{{
+   *   val peopleSkills = select[Person].mapConcat(_.skills).distinct
+   *   
+   *   val programmingSkills = select[Skill].where(_.isProgrammingSkill)
+   *   
+   *   val result = peopleSkills >>> programmingSkills
+   * }}}
+   *
+   * @tparam Out0 inferred common output type for this query and the transformed result query
+   * @tparam Out2 new query output type
+   * @param that query for which to feed `this` query output
+   * @return a composition of `this` and `that` query
+   * */
   def andThen[Out0 >: Out: Tag, Out2: Tag](that: Query[From[Out0], Out2]): Query[In, Out2] =
     new Query.AndThenQuery[In, Out0, Out2](this, that, Tag[Out0].tag)
 
+  /**
+   * Entrypoint for performing aggregations on this query.
+   * 
+   * @tparam A grouping key type
+   * @param f extracts grouping key
+   * */
   def groupBy[A: Tag](f: GroupBy[Out, A]): Query.GroupByQuery[In, Out, A] =
     new Query.GroupByQueryImpl[In, Out, A](this, f, List(Tag[A].tag))
 
+  /**
+   * Entrypoint for performing aggregations on this query.
+   *
+   * @tparam A the first grouping key type
+   * @tparam B the second grouping key type
+   * @param f extracts the first grouping key
+   * @param g extracts the second grouping key
+   * */
   def groupBy[A: Tag, B: Tag](f: GroupBy[Out, A], g: GroupBy[Out, B]): Query.GroupByQuery[In, Out, (A, B)] =
     new Query.GroupByQueryImpl[In, Out, (A, B)](this, x => (f(x), g(x)), List(Tag[A].tag, Tag[B].tag))
 
+  /**
+   * Entrypoint for performing aggregations on this query.
+   *
+   * @tparam A the first grouping key type
+   * @tparam B the second grouping key type
+   * @tparam C the third grouping key type
+   * @param f extracts the first grouping key
+   * @param g extracts the second grouping key
+   * @param h extracts the third grouping key
+   * */
   def groupBy[A: Tag, B: Tag, C: Tag](
     f: GroupBy[Out, A],
     g: GroupBy[Out, B],
@@ -382,6 +618,29 @@ object Query {
 
   sealed trait GroupByQuery[-In, +Out, +G] {
 
+    /**
+     * Applies the specified aggregation function to a grouped set of values.
+     * 
+     * Example:
+     * {{{
+     *   case class CountryStatistics(
+     *     name: String, 
+     *     population: Int, 
+     *     averageAge: Double
+     *   )
+     *   
+     *   select[Person]
+     *     .groupBy(_.country)
+     *     .aggregate((country, person) =>
+     *       (
+     *         person.size &&
+     *         person.avgBy(_.age.toDouble)
+     *       ).map { case (population, averageAge) => 
+     *         CountryStatistics(country, population, averageAge)
+     *       }
+     *     )
+     * }}}
+     * */
     def aggregate[B: Tag](
       f: Aggregate[G, Out, B] @uncheckedVariance
     ): Query[In, B]
@@ -417,6 +676,14 @@ object Query {
     right:    Query[In2, Out2],
     joinType: InnerJoinType) {
 
+    /**
+     * Joins `this` query with the `that` query based on the given join condition.
+     * If `that` query input type `B` differs from `this` input type `A`, 
+     * then the resulting query type will be `Query[From[A] with From[B], (A, B)]`
+     * 
+     * @param f join condition
+     * @return joined query
+     * */
     def on(f: (Out, Out2) => Boolean): Query[In & In2, (Out, Out2)] =
       new InnerJoinedQuery[In, In2, Out, Out2](left, right, joinType, f)
   }
@@ -450,6 +717,14 @@ object Query {
     left:  Query[In, Out],
     right: Query[In2, Out2]) {
 
+    /**
+     * Left joins `this` query with the `that` query based on the given join condition.
+     * If `that` query input type `B` differs from `this` input type `A`,
+     * then the resulting query type will be `Query[From[A] with From[B], (A, Option[B])]`
+     *
+     * @param f join condition
+     * @return joined query
+     * */
     def on(f: (Out, Out2) => Boolean): Query[In & In2, (Out, Option[Out2])] =
       new LeftJoinedQuery[In, In2, Out, Out2](left, right, f)
   }
