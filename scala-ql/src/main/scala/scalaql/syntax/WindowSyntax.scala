@@ -42,8 +42,6 @@ final class WindowDsl[In: Tag, Out, Res, B](
   /**
    * Applies the given aggregation/ranking over the specified window.
    *
-   * @note this method should only be used in case you're reusing common window spec.
-   *
    * @param f the window with partitionBy/orderBy
    * @return a query producing results of executing this window function.
    * */
