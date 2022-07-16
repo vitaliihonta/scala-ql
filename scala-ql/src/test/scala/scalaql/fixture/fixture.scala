@@ -37,7 +37,7 @@ object Office {
     for {
       name    <- Gen.alphaStr
       company <- Gen.oneOf(companies)
-      floors  <- Gen.oneOf(1 to 50)
+      floors  <- Gen.chooseNum(1, 50)
     } yield Office(name, company.name, floors)
   )
 }
@@ -74,16 +74,22 @@ object Profession {
   implicit val arbitrary: Arbitrary[Profession] = Arbitrary(Gen.oneOf(values))
 }
 
-case class Person(name: String, age: Int, profession: Profession, industry: Industry)
+case class Person(
+  name:       String,
+  age:        Int,
+  profession: Profession,
+  industry:   Industry,
+  salary:     BigDecimal)
 
 object Person {
 
   implicit val arbitrary: Arbitrary[Person] = Arbitrary(
     for {
       name       <- Gen.alphaStr
-      age        <- Gen.oneOf(1 to 80)
+      age        <- Gen.chooseNum(1, 80)
       industry   <- Arbitrary.arbitrary[Industry]
       profession <- Gen.oneOf(Profession.values.filter(_.industries contains industry))
-    } yield Person(name, age, profession, industry)
+      salary     <- Gen.chooseNum(BigDecimal(50000), BigDecimal(100000))
+    } yield Person(name, age, profession, industry, salary)
   )
 }

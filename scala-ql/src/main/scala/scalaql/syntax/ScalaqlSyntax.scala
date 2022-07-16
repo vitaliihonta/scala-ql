@@ -12,6 +12,7 @@ trait ScalaqlSyntax
     with OrderingSyntax
     with AliasingSyntax
     with EachSyntax
+    with MapToSyntax
     with VersionSpecificImplicits {
 
   final implicit def RunSyntax[In, Out](self: QueryResult[In, Out]): RunSyntax[In, Out] =

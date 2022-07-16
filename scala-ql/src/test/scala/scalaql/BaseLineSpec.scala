@@ -9,6 +9,24 @@ import scala.util.Random
 class BaseLineSpec extends ScalaqlUnitSpec {
   case class PeopleStats(profession: Profession, avgAge: Double)
 
+  case class ProfessionStats(
+    profession: Profession,
+    avgAge:     Double,
+    names:      Set[String],
+    avgSalary:  BigDecimal)
+
+  case class ProfessionStatsByAge(
+    profession:  Profession,
+    age:         Int,
+    names:       Set[String],
+    totalSalary: BigDecimal,
+    avgSalary:   BigDecimal)
+
+  case class ComplexPeopleStats(
+    profession: Profession,
+    avgAge:     Double,
+    names:      Set[String])
+
   "scalaql" should {
     "correctly process query without input" in repeated {
       val people = arbitraryN[Person]
@@ -16,12 +34,12 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query: Query[Any, String] =
         select
           .from(people)
-          .collect { case Person(name, _, Profession.Unemployed, _) =>
+          .collect { case Person(name, _, Profession.Unemployed, _, _) =>
             s"Unemployed $name"
           }
           .ordered
 
-      val expectedResult = people.collect { case Person(name, _, Profession.Unemployed, _) =>
+      val expectedResult = people.collect { case Person(name, _, Profession.Unemployed, _, _) =>
         s"Unemployed $name"
       }.sorted
 
@@ -194,7 +212,8 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       val query: Query[From[Person], PeopleStats] = select[Person]
         .groupBy(_.profession)
-        .aggregate((profession, person) => person.avgBy(_.age.toDouble).map(PeopleStats(profession, _)))
+        .aggregate(person => person.avgBy(_.age.toDouble))
+        .mapTo(PeopleStats)
 
       val expectedResult =
         people.groupBy(_.profession).map { case (profession, people) =>
@@ -209,14 +228,11 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       val query = select[Person]
         .groupBy(_.profession)
-        .aggregate((profession, people) =>
-          (
-            people.const(profession) &&
-              people.reduceBy(_.age)(_ + _) &&
-              people.foldLeft(Set.empty[Char]) { (letters, person) =>
-                letters ++ person.name.toLowerCase
-              }
-          )
+        .aggregate(people =>
+          people.reduceBy(_.age)(_ + _) &&
+            people.foldLeft(Set.empty[Char]) { (letters, person) =>
+              letters ++ person.name.toLowerCase
+            }
         )
 
       val expectedResult =
@@ -241,22 +257,22 @@ class BaseLineSpec extends ScalaqlUnitSpec {
     "correctly process multiple aggregations" in repeated {
       val people = arbitraryN[Person]
 
-      val query: Query[From[Person], (Profession, Double, Set[Profession], Set[Industry])] = select[Person]
+      val query: Query[From[Person], ProfessionStats] = select[Person]
         .groupBy(_.profession)
-        .aggregate { (profession, person) =>
-          person.const(profession) &&
+        .aggregate { person =>
           person.avgBy(_.age.toDouble) &&
-          person.distinctBy(_.profession) &&
-          person.flatDistinctBy(_.profession.industries)
+          person.distinctBy(_.name) &&
+          person.avgBy(_.salary)
         }
+        .mapTo(ProfessionStats)
 
       val expectedResult =
         people.groupBy(_.profession).map { case (profession, people) =>
-          (
-            profession,
-            people.map(_.age.toDouble).sum / people.size,
-            people.map(_.profession).toSet,
-            people.flatMap(_.profession.industries).toSet
+          ProfessionStats(
+            profession = profession,
+            avgAge = people.map(_.age.toDouble).sum / people.size,
+            names = people.map(_.name).toSet,
+            avgSalary = people.map(_.salary).sum / people.size
           )
         }
 
@@ -266,24 +282,23 @@ class BaseLineSpec extends ScalaqlUnitSpec {
     "correctly process groupBy with multiple columns" in repeated {
       val people = arbitraryN[Person]
 
-      val query: Query[From[Person], (Profession, Int, Set[Profession], Double, Int)] = select[Person]
+      val query: Query[From[Person], ProfessionStatsByAge] = select[Person]
         .groupBy(_.profession, _.age)
-        .aggregate { (profession, age, person) =>
-          person.const(profession) &&
-          person.const(age) &&
-          person.distinctBy(_.profession) &&
-          person.avgBy(_.age.toDouble) &&
-          person.sumBy(_.age)
+        .aggregate { person =>
+          person.distinctBy(_.name) &&
+          person.sumBy(_.salary) &&
+          person.avgBy(_.salary)
         }
+        .mapTo(ProfessionStatsByAge)
 
       val expectedResult =
         people.groupBy(p => (p.profession, p.age)).map { case ((profession, age), people) =>
-          (
-            profession,
-            age,
-            people.map(_.profession).toSet,
-            people.map(_.age.toDouble).sum / people.size,
-            people.map(_.age).sum
+          ProfessionStatsByAge(
+            profession = profession,
+            age = age,
+            names = people.map(_.name).toSet,
+            totalSalary = people.map(_.salary).sum,
+            avgSalary = people.map(_.salary).sum / people.size
           )
         }
 

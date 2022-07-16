@@ -36,7 +36,7 @@ object QueryExpression {
  * {{{
  *   select[Person]
  *     .groupBy(_.country)
- *     .aggregate((country, person) => person.avgBy(_.age.toDouble))
+ *     .aggregate(person => person.avgBy(_.age.toDouble))
  * }}}
  * 
  * @tparam A input type of the aggregation function
@@ -78,7 +78,7 @@ trait Aggregation[-A] extends QueryExpression[A] { self =>
    * {{{
    *   select[Person]
    *     .groupBy(_.country)
-   *     .aggregate((country, person) =>
+   *     .aggregate(person =>
    *       person.avgBy(_.age.toDouble) && person.sumBy(_.salary)
    *     )
    * }}}

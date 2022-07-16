@@ -531,12 +531,13 @@ object Query {
     }
   }
 
-  final class AggregateQuery[In: Tag, Out0, G, Out1: Tag](
+  final class AggregateQuery[In: Tag, Out0, G, Out1: Tag, Res](
     private[scalaql] val source:        Query[In, Out0],
     private[scalaql] val group:         Out0 => G,
-    private[scalaql] val agg:           (G, QueryExpressionBuilder[Out0]) => Aggregation.Of[Out0, Out1],
-    private[scalaql] val groupByString: String)
-      extends Query[In, Out1] {
+    private[scalaql] val agg:           QueryExpressionBuilder[Out0] => Aggregation.Of[Out0, Out1],
+    private[scalaql] val groupByString: String,
+    private[scalaql] val flatten:       TupleFlatten.Of[(G, Out1), Res])
+      extends Query[In, Res]()(Tag[In], flatten.tag) {
 
     override def explain: QueryExplain =
       QueryExplain.Continuation(

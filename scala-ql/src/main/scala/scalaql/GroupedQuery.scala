@@ -1,6 +1,7 @@
 package scalaql
 
 import izumi.reflect.macrortti.LightTypeTag
+import scalaql.utils.TupleFlatten
 
 sealed trait GroupedQuery[In, Out] {
   protected def source: Query[In, Out]
@@ -37,14 +38,11 @@ final class GroupedQuery1[In: Tag, Out: Tag, G: Tag] private[scalaql] (
    *
    *   select[Person]
    *     .groupBy(_.country)
-   *     .aggregate((country, person) =>
-   *       (
-   *         person.size &&
-   *         person.avgBy(_.age.toDouble)
-   *       ).map { case (population, averageAge) => 
-   *         Statistics(country, population, averageAge)
-   *       }
+   *     .aggregate(person =>
+   *       person.size &&
+   *       person.avgBy(_.age.toDouble)
    *     )
+   *     .mapTo(Statistics)
    * }}}
    *
    * @tparam B aggregation result type
@@ -52,13 +50,15 @@ final class GroupedQuery1[In: Tag, Out: Tag, G: Tag] private[scalaql] (
    * @return this query aggregated
    * */
   def aggregate[B: Tag](
-    f: (G, QueryExpressionBuilder[Out]) => Aggregation.Of[Out, B]
-  ): Query[In, B] =
-    new Query.AggregateQuery[In, Out, G, B](
+    f:                QueryExpressionBuilder[Out] => Aggregation.Of[Out, B]
+  )(implicit flatten: TupleFlatten[(G, B)]
+  ): Query[In, flatten.Out] =
+    new Query.AggregateQuery[In, Out, G, B, flatten.Out](
       source,
       group,
       f,
-      groupByString
+      groupByString,
+      flatten
     )
 }
 
@@ -84,14 +84,11 @@ final class GroupedQuery2[In: Tag, Out: Tag, G1: Tag, G2: Tag] private[scalaql] 
    *
    *   select[Person]
    *     .groupBy(_.country, _.city)
-   *     .aggregate((country, city, person) =>
-   *       (
-   *         person.size &&
-   *         person.avgBy(_.age.toDouble)
-   *       ).map { case (population, averageAge) => 
-   *         Statistics(country, city, population, averageAge)
-   *       }
+   *     .aggregate(person =>
+   *       person.size &&
+   *       person.avgBy(_.age.toDouble)
    *     )
+   *     .mapTo(Statistics)
    * }}}
    *
    * @tparam B aggregation result type
@@ -99,13 +96,15 @@ final class GroupedQuery2[In: Tag, Out: Tag, G1: Tag, G2: Tag] private[scalaql] 
    * @return this query aggregated
    * */
   def aggregate[B: Tag](
-    f: (G1, G2, QueryExpressionBuilder[Out]) => Aggregation.Of[Out, B]
-  ): Query[In, B] =
-    new Query.AggregateQuery[In, Out, (G1, G2), B](
+    f:                QueryExpressionBuilder[Out] => Aggregation.Of[Out, B]
+  )(implicit flatten: TupleFlatten[((G1, G2), B)]
+  ): Query[In, flatten.Out] =
+    new Query.AggregateQuery[In, Out, (G1, G2), B, flatten.Out](
       source,
       out => (group1(out), group2(out)),
-      { case ((g1, g2), agg) => f(g1, g2, agg) },
-      groupByString
+      f,
+      groupByString,
+      flatten
     )
 }
 
@@ -133,14 +132,11 @@ final class GroupedQuery3[In: Tag, Out: Tag, G1: Tag, G2: Tag, G3: Tag] private[
    *
    *   select[Person]
    *     .groupBy(_.country, _.city, _.profession)
-   *     .aggregate((country, city, profession, person) =>
-   *       (
-   *         person.size &&
-   *         person.avgBy(_.age.toDouble)
-   *       ).map { case (population, averageAge) => 
-   *         Statistics(country, city, profession, population, averageAge)
-   *       }
+   *     .aggregate(person =>
+   *       person.size &&
+   *       person.avgBy(_.age.toDouble)
    *     )
+   *     .mapTo(Statistics)
    * }}}
    *
    * @tparam B aggregation result type
@@ -148,12 +144,14 @@ final class GroupedQuery3[In: Tag, Out: Tag, G1: Tag, G2: Tag, G3: Tag] private[
    * @return this query aggregated
    * */
   def aggregate[B: Tag](
-    f: (G1, G2, G3, QueryExpressionBuilder[Out]) => Aggregation.Of[Out, B]
-  ): Query[In, B] =
-    new Query.AggregateQuery[In, Out, (G1, G2, G3), B](
+    f:                QueryExpressionBuilder[Out] => Aggregation.Of[Out, B]
+  )(implicit flatten: TupleFlatten[((G1, G2, G3), B)]
+  ): Query[In, flatten.Out] =
+    new Query.AggregateQuery[In, Out, (G1, G2, G3), B, flatten.Out](
       source,
       out => (group1(out), group2(out), group3(out)),
-      { case ((g1, g2, g3), agg) => f(g1, g2, g3, agg) },
-      groupByString
+      f,
+      groupByString,
+      flatten
     )
 }

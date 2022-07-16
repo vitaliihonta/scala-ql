@@ -122,31 +122,31 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         while (step.check() && outputs.hasNext)
           step.next(outputs.next())
 
-      case query: Query.AggregateQuery[In, out0, g, Out] =>
+      case query: Query.AggregateQuery[In, out0, g, aggRes, Out] =>
         import query.*
-        type Acc = (Aggregation.Aux[out0, Any, Out], Any)
+        type Acc = Any
+
         val groupedAccs = mutable.Map.empty[g, Acc]
+        val aggregate   = agg(QueryExpressionBuilder.create[out0]).asInstanceOf[Aggregation.Aux[out0, Any, aggRes]]
 
         interpret[In, out0](in, source)(
           Step.always[out0] { mid =>
             val g = group(mid)
             if (!groupedAccs.contains(g)) {
-              val aggregate = agg(g, QueryExpressionBuilder.create[out0]).asInstanceOf[Aggregation.Aux[out0, Any, Out]]
-              groupedAccs += (g -> (aggregate, aggregate.init()))
+              groupedAccs += (g -> (aggregate.init()))
             }
-            val (aggregate, acc) = groupedAccs(g)
-            val updated          = aggregate.update(acc, mid)
-            groupedAccs.update(g, (aggregate, updated))
+            val acc     = groupedAccs(g)
+            val updated = aggregate.update(acc, mid)
+            groupedAccs.update(g, updated)
           }
         )
 
-        groupedAccs.foreach { case (g, (aggregate, acc)) =>
+        groupedAccs.foreach { case (g, acc) =>
           val res = aggregate.result(acc)
-          step.next(res)
+          step.next(flatten((g, res)))
         }
 
         groupedAccs.clear()
-a
 //        val tmpBuffer = ListBuffer.empty[out0]
 //        interpret[In, out0](in, source)(
 //          Step.always[out0](tmpBuffer += _)
