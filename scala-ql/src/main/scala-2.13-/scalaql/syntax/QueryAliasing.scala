@@ -4,6 +4,7 @@ import scalaql.Tag
 import scalaql.{From, Query}
 
 final class QueryAliasing[In](private val self: Query[From[In], In]) extends AnyVal {
+
   /**
    * Allows to alias `this` query input type, so that it could be combined with other queries with the same underlying type.
    *
@@ -38,6 +39,7 @@ final class QueryAliasing[In](private val self: Query[From[In], In]) extends Any
 }
 
 final class FromAliasing[A](private val self: From[A]) extends AnyVal {
+
   /**
    * Allows to alias `this` query input values, so that it could be provided to an aliased query.
    *
