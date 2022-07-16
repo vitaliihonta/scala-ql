@@ -8,10 +8,10 @@ trait OrderingSyntax {
   extension [A](self: A) {
 
     /** Use ascending order */
-    inline def asc: A = self
+    def asc: A = self
 
     /** Use descending order */
-    inline def desc: A = self
+    def desc: A = self
   }
 
   extension [In, Out](self: Query[In, Out]) {
