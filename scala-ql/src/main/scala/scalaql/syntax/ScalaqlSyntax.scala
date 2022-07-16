@@ -43,4 +43,7 @@ trait ScalaqlSyntax
 
   final implicit def WindowSyntax[In, Out](self: Query[In, Out]): WindowSyntax[In, Out] =
     new WindowSyntax[In, Out](self)
+
+  final implicit def GroupBySyntax[In, Out](self: Query[In, Out]): GroupBySyntax[In, Out] =
+    new GroupBySyntax[In, Out](self)
 }

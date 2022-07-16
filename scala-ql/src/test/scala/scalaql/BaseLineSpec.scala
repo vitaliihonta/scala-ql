@@ -268,7 +268,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       val query: Query[From[Person], (Profession, Int, Set[Profession], Double, Int)] = select[Person]
         .groupBy(_.profession, _.age)
-        .aggregate { case ((profession, age), person) =>
+        .aggregate { (profession, age, person) =>
           person.const(profession) &&
           person.const(age) &&
           person.distinctBy(_.profession) &&
