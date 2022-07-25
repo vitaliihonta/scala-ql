@@ -1,25 +1,16 @@
 package scalaql.internal
 
-import scala.util.hashing.MurmurHash3
+import scalaql.*
+import scala.language.implicitConversions
 
-private[scalaql] class RollupMapKey(private[scalaql] val keys: List[Any]) {
-  override lazy val hashCode: Int = MurmurHash3.orderedHash(keys)
-  override def equals(obj: Any): Boolean = obj match {
-    case rmk: RollupMapKey => this.hashCode == rmk.hashCode
-    case _                 => false
-  }
-
-  lazy val size: Int = keys.size
-
-  def apply(idx: Int): Any            = keys(idx)
-  def drop(offset: Int): RollupMapKey = new RollupMapKey(keys.drop(offset))
-  def mapWithIndex[B](f: (Any, Int) => B): List[B] =
-    keys.zipWithIndex.map(f.tupled)
+private[scalaql] object NaturalOrdering extends Ordering[Any] {
+  override def compare(x: Any, y: Any): Int = 1
+  def apply[A]: Ordering[A]                 = NaturalOrdering.asInstanceOf[Ordering[A]]
 }
 
 // DO NOT USE AS SORTED MAP ORDERING, IT MAY PRODUCE STRANGE RESULTS
-private[scalaql] class RollupGroupingKeyOrdering(orders: List[Ordering[Any]]) extends Ordering[RollupMapKey] {
-  override def compare(xs: RollupMapKey, ys: RollupMapKey): Int =
+private[scalaql] class RollupGroupingKeyOrdering(orders: List[Ordering[Any]]) extends Ordering[Query.GroupKeys] {
+  override def compare(xs: Query.GroupKeys, ys: Query.GroupKeys): Int =
     if (xs.hashCode == ys.hashCode) 0
     else {
       val sizeX = xs.size

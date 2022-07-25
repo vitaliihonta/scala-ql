@@ -3,8 +3,6 @@ package scalaql.syntax
 import scalaql.*
 import scalaql.describe.Describe
 import scalaql.visualization.ShowAsTable
-
-import scala.annotation.implicitNotFound
 import scala.language.implicitConversions
 
 @forbiddenInheritance
@@ -15,6 +13,7 @@ trait ScalaqlSyntax
     with AliasingSyntax
     with EachSyntax
     with MapToSyntax
+    with RollupSyntax
     with VersionSpecificImplicits {
 
   final implicit def RunSyntax[In, Out](self: QueryResult[In, Out]): RunSyntax[In, Out] =
@@ -49,7 +48,7 @@ trait ScalaqlSyntax
 
   final implicit def GroupBySyntax[In, Out](self: Query[In, Out]): GroupBySyntax[In, Out] =
     new GroupBySyntax[In, Out](self)
-
-  final implicit def GroupByRollupSyntax[In, Out](self: Query[In, Out]): GroupByRollupSyntax[In, Out] =
-    new GroupByRollupSyntax[In, Out](self)
+//
+//  final implicit def GroupByRollupSyntax[In, Out](self: Query[In, Out]): GroupByRollupSyntax[In, Out] =
+//    new GroupByRollupSyntax[In, Out](self)
 }

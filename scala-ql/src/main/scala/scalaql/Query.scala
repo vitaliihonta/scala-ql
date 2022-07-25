@@ -1,8 +1,9 @@
 package scalaql
 
 import izumi.reflect.macrortti.LightTypeTag
-import scalaql.internal.PartialFunctionAndThenCompat
+import scalaql.internal.{NaturalOrdering, PartialFunctionAndThenCompat}
 import scalaql.utils.TupleFlatten
+import scala.util.hashing.MurmurHash3
 
 /** 
   * Query is a description of computations you want to perform on your data.
@@ -530,32 +531,70 @@ object Query {
     }
   }
 
-  final class AggregateQuery[In: Tag, Out0, G, Out1: Tag, Res](
-    private[scalaql] val source:        Query[In, Out0],
-    private[scalaql] val group:         Out0 => G,
-    private[scalaql] val agg:           QueryExpressionBuilder[Out0] => Aggregation.Of[Out0, Out1],
-    private[scalaql] val groupByString: String,
-    private[scalaql] val flatten:       TupleFlatten.Of[(G, Out1), Res])
-      extends Query[In, Res]()(Tag[In], flatten.tag) {
+  sealed trait GroupKind[G, F] {
+    def widen: GroupKind[Any, Any] = this.asInstanceOf[GroupKind[Any, Any]]
+    def widenIn: GroupKind[Any, F] = this.asInstanceOf[GroupKind[Any, F]]
+    def ordering: Ordering[G]
+    def isSimple: Boolean
+    def apply(group: G): F
+  }
+  object GroupKind {
+    final case class Rollup[G, F](groupFill: G => F, defaultFill: F, ordering: Ordering[G]) extends GroupKind[G, F] {
 
-    override def explain: QueryExplain =
-      QueryExplain.Continuation(
-        source.explain,
-        QueryExplain.Continuation(
-          QueryExplain.Single(groupByString),
-          QueryExplain.Single(s"AGGREGATE(${Tag[Out1].tag})")
-        )
-      )
+      override val isSimple           = false
+      override def apply(group: G): F = groupFill(group)
+    }
+
+    final case class Simple[G](orderingOpt: Option[Ordering[G]]) extends GroupKind[G, G] {
+      override val isSimple              = true
+      override val ordering: Ordering[G] = orderingOpt.getOrElse(NaturalOrdering[G])
+      override def apply(group: G): G    = group
+    }
   }
 
-  private[scalaql] final class RollupGroup(val groupFill: Any => Any, val defaultFill: Any, val ordering: Ordering[Any])
+  final case class GroupKey[A, F](value: A, kind: GroupKind[A, F]) {
+    def widen: GroupKey[Any, Any] = this.asInstanceOf[GroupKey[Any, Any]]
+  }
+  final case class GroupKeys(keys: Map[Int, GroupKey[Any, Any]], fillmentOverrides: Map[Int, Any]) {
+    override def toString: String =
+      s"RollupMapKey(keys=$keys, fillmentOverrides=${fillmentOverrides.map { case (idx, k) => s"($idx)->$k" }.mkString("{", ", ", "}")})"
 
-  final class AggregateRollupQuery[In: Tag, Out0, Out1: Tag, Res: Tag](
-    private[scalaql] val source: Query[In, Out0],
-    private[scalaql] val groups: Out0 => List[Any],
-    private[scalaql] val agg:    QueryExpressionBuilder[Out0] => Aggregation.Of[Out0, Out1],
-    // NOTE: should be in the same order as groups produces!
-    private[scalaql] val rollupGroups:  List[RollupGroup],
+    override lazy val hashCode: Int = MurmurHash3.orderedHash(keys.map { case (_, k) => k.value })
+    override def equals(obj: Any): Boolean = obj match {
+      case rmk: GroupKeys => this.hashCode == rmk.hashCode
+      case _              => false
+    }
+
+    lazy val size: Int = keys.size
+
+    private lazy val indexed = keys.toList.sortBy { case (idx, _) => idx }.map { case (_, k) => k }
+    def apply(idx: Int): Any = indexed(idx).value
+
+    def subgroups: List[GroupKeys] = {
+      val isSimple     = keys.forall { case (_, k) => k.kind.isSimple }
+      val allNonSimple = keys.forall { case (_, k) => !k.kind.isSimple }
+      if (isSimple) List(this)
+      else if (allNonSimple) keys.tails.map(GroupKeys(_, Map.empty)).toList
+      else {
+        (this ::
+          keys.tails
+            .filterNot(_.isEmpty)
+            .map { ks =>
+              val (excluded, included) = ks.partition { case (_, k) => k.kind.isSimple }
+              val fillmentOverrides    = excluded.map { case (idx, k) => idx -> k.value }.toMap
+              GroupKeys(included, fillmentOverrides)
+            }
+            .toList
+            .distinct).reverse
+      }
+    }
+  }
+
+  final class AggregateQuery[In: Tag, Out0, Out1: Tag, Res: Tag](
+    private[scalaql] val source:        Query[In, Out0],
+    private[scalaql] val group:         Out0 => GroupKeys,
+    private[scalaql] val groupKinds:    List[GroupKind[Any, Any]],
+    private[scalaql] val agg:           QueryExpressionBuilder[Out0] => Aggregation.Of[Out0, Out1],
     private[scalaql] val groupByString: String,
     private[scalaql] val buildRes:      List[Any] => Res)
       extends Query[In, Res] {

@@ -3,6 +3,8 @@ package scalaql.test.integration
 import org.scalactic.Equality
 import scalaql.*
 import scalaql.csv.CsvDecoder
+import scalaql.internal.RollupKey
+
 import java.nio.file.Paths
 import java.time.LocalDate
 
@@ -10,6 +12,13 @@ object GroupByRollupSpec {
   case class OrderStatsRollup(
     customerId:  Option[String],
     shipCountry: Option[String],
+    maxFreight:  Double,
+    avgFreight:  Double)
+
+  case class OrderStatsRollupPartial(
+    customerId:  Option[String],
+    shipCountry: Option[String],
+    shipCity:    Option[String],
     maxFreight:  Double,
     avgFreight:  Double)
 }
@@ -62,6 +71,44 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
       assert(actualResult.size == expectedResult.size)
 
       actualResult should contain theSameElementsAs expectedResult
+    }
+
+    "correctly process partial groupByRollup" in {
+      // SELECT "CustomerId", "ShipCountry", MAX("Freight") as "MaxFreight", AVG("Freight") as "AvgFreight", array_agg("Id") as "Id"  FROM public."Order"
+      //  where "ShipCountry"  in ('Poland', 'USA')
+      //  group by "ShipCountry", rollup("CustomerId")
+      //  order by "CustomerId" nulls first, "ShipCountry"
+
+//      val x: Order => RollupKey[String] = (_: Order).shipCountry.exclude
+
+      val query = select[Order]
+        .where(_.shipCountry isIn ("Poland", "USA"))
+        .groupByRollup(
+          _.customerId,
+          _.shipCountry.exclude,
+          _.shipCity
+        )
+        .aggregate(order => order.maxOf(_.freight) && order.avgBy(_.freight))
+        .mapTo(OrderStatsRollupPartial)
+        .orderBy(_.customerId, _.shipCountry, _.shipCity)
+
+      val actualResult = query // .toList
+        .show(truncate = false, numRows = 200)
+        .run(
+          from(
+            csv
+              .read[Order]
+              .option(Naming.Capitalize)
+              .file(
+                Paths.get("integration-tests/src/test/resources/input/_Order__202207251611.csv")
+              )
+          )
+        )
+//      val expectedResult = Fixture.readExpectedResult[OrderStatsRollup]("simple_rollup")
+
+//      assert(actualResult.size == expectedResult.size)
+
+//      actualResult should contain theSameElementsAs expectedResult
     }
   }
 }

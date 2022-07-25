@@ -114,6 +114,8 @@ object Aggregation extends AggregationFunctions {
     type Acc = Acc0
     type Out = Out0
   }
+
+  class Rollup
 }
 
 /**
