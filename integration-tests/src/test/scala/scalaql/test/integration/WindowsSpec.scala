@@ -7,33 +7,6 @@ import java.nio.file.Paths
 import java.time.LocalDate
 
 object WindowsSpec {
-  case class Order(
-    id:             Long,
-    customerId:     String,
-    employeeId:     Long,
-    orderDate:      LocalDate,
-    requiredDate:   LocalDate,
-    shippedDate:    Option[LocalDate],
-    shipVia:        Long,
-    freight:        Double,
-    shipName:       String,
-    shipAddress:    String,
-    shipCity:       String,
-    shipRegion:     String,
-    shipPostalCode: String,
-    shipCountry:    String)
-
-  case class OrderDetail(
-    id:        String,
-    orderId:   Long,
-    productId: Long,
-    unitPrice: Double,
-    quantity:  Int,
-    discount:  Double)
-
-  case class OrderWithDetails(
-    order:   Order,
-    details: OrderDetail)
 
   case class OrderStats(
     customerId:   String,
@@ -60,7 +33,7 @@ object WindowsSpec {
       .read[Order]
       .option(Naming.Capitalize)
       .file(
-        Paths.get("integration-tests/src/test/resources/input/_Order__202207031241.csv")
+        Paths.get("integration-tests/src/test/resources/input/_Order__202207251611.csv")
       )
   ) & from(
     csv
@@ -70,19 +43,6 @@ object WindowsSpec {
         Paths.get("integration-tests/src/test/resources/input/OrderDetail_202207031246.csv")
       )
   )
-
-  def readExpectedResult[A: CsvDecoder: Tag](name: String): List[A] =
-    select[A].toList
-      .run(
-        from(
-          csv
-            .read[A]
-            .option(Naming.Capitalize)
-            .file(
-              Paths.get(s"integration-tests/src/test/resources/output/$name.csv")
-            )
-        )
-      )
 }
 
 import WindowsSpec.*
@@ -129,7 +89,7 @@ class WindowsSpec extends ScalaqlUnitSpec {
       val actualResult = query.toList
         .run(input)
 
-      val expectedResult = readExpectedResult[OrderStats]("simple_window")
+      val expectedResult = Fixture.readExpectedResult[OrderStats]("simple_window")
 
       actualResult should contain theSameElementsAs {
         expectedResult
@@ -171,7 +131,8 @@ class WindowsSpec extends ScalaqlUnitSpec {
       val actualResult = query.toList
         .run(input)
 
-      val expectedResult = readExpectedResult[OrderRanked]("row_number_window")
+      val expectedResult = Fixture
+        .readExpectedResult[OrderRanked]("row_number_window")
         .filter(_.customerId isInCollection customerIds)
 
       actualResult should contain theSameElementsAs {
@@ -209,7 +170,7 @@ class WindowsSpec extends ScalaqlUnitSpec {
       val actualResult = query.toList
         .run(input)
 
-      val expectedResult = readExpectedResult[OrderRanked]("rank_window")
+      val expectedResult = Fixture.readExpectedResult[OrderRanked]("rank_window")
 
       actualResult should contain theSameElementsAs {
         expectedResult
@@ -257,7 +218,8 @@ class WindowsSpec extends ScalaqlUnitSpec {
       val actualResult = query.toList
         .run(input)
 
-      val expectedResult = readExpectedResult[OrderWithLag]("lag_window")
+      val expectedResult = Fixture
+        .readExpectedResult[OrderWithLag]("lag_window")
         .filter(_.productId isInCollection productIds)
         .sortBy(o => (o.productId, o.shipCountry, o.orderDate, o.shippedDate))
 

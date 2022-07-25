@@ -157,14 +157,14 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         import query.*
         type Acc = Any
 
-        val keysOrdering = new RollupGroupingKeyOrdering(rollupGroups.map(_.ordering))
-        val accCache     = mutable.SortedMap.empty[List[Any], Acc](keysOrdering)
+        // Hash code is more stable then lists
+        val accCache = mutable.Map.empty[RollupMapKey, Acc]
 
         val aggregate = agg(QueryExpressionBuilder.create[out0]).asInstanceOf[Aggregation.Aux[out0, Any, aggRes]]
 
         interpret[In, out0](in, source)(
           Step.always[out0] { mid =>
-            val groupKeys = groups(mid)
+            val groupKeys = new RollupMapKey(groups(mid))
 
             // Starting from all the keys
             var offset = 0
@@ -195,36 +195,41 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         // Persist the group size
         val groupKeysNum = rollupGroups.size
 
-        accCache.foreach { case (currentKeys, acc) =>
-          val res = aggregate.result(acc)
+        val keysOrdering = new RollupGroupingKeyOrdering(rollupGroups.map(_.ordering))
 
-          val currentKeysNum = currentKeys.size
-          // Fillments for topper-level aggregations
-          val fillments = List.tabulate(
-            // Basically the number of fillments to provide
-            groupKeysNum - currentKeysNum
-          )(offset =>
-            rollupGroups(
-              // In case of top-level aggregation, currentKeysNum is 0, so need to fill each grouping key.
-              // In case of mid-level aggregation M, fill N-M keys.
-              // In case of bottom-level aggregation, doesn't fill
-              currentKeysNum + offset
-            ).defaultFill
-          )
+        // order before emitting
+        accCache.toList
+          .sortBy { case (k, _) => k }(keysOrdering)
+          .foreach { case (currentKeys, acc) =>
+            val res = aggregate.result(acc)
 
-          val presentKeys = currentKeys.zipWithIndex.map { case (key, i) =>
-            // Convert grouping key to it's fillment, e.g. wrap into Some(_) or just return the same value
-            rollupGroups(i).groupFill(key)
+            val currentKeysNum = currentKeys.size
+            // Fillments for topper-level aggregations
+            val fillments = List.tabulate(
+              // Basically the number of fillments to provide
+              groupKeysNum - currentKeysNum
+            )(offset =>
+              rollupGroups(
+                // In case of top-level aggregation, currentKeysNum is 0, so need to fill each grouping key.
+                // In case of mid-level aggregation M, fill N-M keys.
+                // In case of bottom-level aggregation, doesn't fill
+                currentKeysNum + offset
+              ).defaultFill
+            )
+
+            val presentKeys = currentKeys.mapWithIndex { (key, i) =>
+              // Convert grouping key to it's fillment, e.g. wrap into Some(_) or just return the same value
+              rollupGroups(i).groupFill(key)
+            }
+
+            // Merge keys before building a tuple.
+            val groupKeys = fillments ::: presentKeys
+            // Build the tuple
+            val output = buildRes(groupKeys ::: List(res))
+
+            // Emmit
+            step.next(output)
           }
-
-          // Merge keys before building a tuple.
-          val groupKeys = fillments ::: presentKeys
-          // Build the tuple
-          val output = buildRes(groupKeys ::: List(res))
-
-          // Emmit
-          step.next(output)
-        }
 
         accCache.clear()
 

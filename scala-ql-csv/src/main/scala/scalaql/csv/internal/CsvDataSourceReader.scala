@@ -16,7 +16,8 @@ class CsvDataSourceReader
   override protected def readImpl[A: CsvDecoder](reader: Reader)(implicit config: CsvReadConfig): Iterable[A] = {
     implicit val initialContext: CsvReadContext = CsvReadContext.initial(
       naming = config.naming,
-      caseSensitive = config.caseSensitive
+      caseSensitive = config.caseSensitive,
+      emptyStringInOptions = config.emptyStringInOptions
     )
     CSVReader
       .open(reader)(config.toTototoshi)
