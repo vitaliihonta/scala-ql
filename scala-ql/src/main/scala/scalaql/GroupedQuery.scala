@@ -32,10 +32,13 @@ sealed trait GroupedQuery[In, Out] {
   }
 }
 
-final class GroupedQuery1[In: Tag, Out: Tag, F: Tag] private[scalaql] (
+final class GroupedQuery1[In, Out, F] private[scalaql] (
   override protected val source: Query[In, Out],
   group:                         Out => Any,
-  kind:                          Query.GroupKind[Any, F])
+  kind:                          Query.GroupKind[Any, F]
+)(implicit In:                   Tag[In],
+  Out:                           Tag[Out],
+  F:                             Tag[F])
     extends GroupedQuery[In, Out] {
 
   override protected val groupingTags: List[LightTypeTag] =
@@ -85,12 +88,16 @@ final class GroupedQuery1[In: Tag, Out: Tag, F: Tag] private[scalaql] (
     )
 }
 
-final class GroupedQuery2[In: Tag, Out: Tag, F1: Tag, F2: Tag] private[scalaql] (
+final class GroupedQuery2[In, Out, F1, F2] private[scalaql] (
   override protected val source: Query[In, Out],
   group1:                        Out => Any,
   group2:                        Out => Any,
   kind1:                         Query.GroupKind[Any, F1],
-  kind2:                         Query.GroupKind[Any, F2])
+  kind2:                         Query.GroupKind[Any, F2]
+)(implicit In:                   Tag[In],
+  Out:                           Tag[Out],
+  F1:                            Tag[F1],
+  F2:                            Tag[F2])
     extends GroupedQuery[In, Out] {
 
   override protected val groupingTags: List[LightTypeTag] =
@@ -142,14 +149,19 @@ final class GroupedQuery2[In: Tag, Out: Tag, F1: Tag, F2: Tag] private[scalaql] 
     )
 }
 
-final class GroupedQuery3[In: Tag, Out: Tag, F1: Tag, F2: Tag, F3: Tag] private[scalaql] (
+final class GroupedQuery3[In, Out, F1, F2, F3] private[scalaql] (
   override protected val source: Query[In, Out],
   group1:                        Out => Any,
   group2:                        Out => Any,
   group3:                        Out => Any,
   val kind1:                     Query.GroupKind[Any, F1],
   val kind2:                     Query.GroupKind[Any, F2],
-  val kind3:                     Query.GroupKind[Any, F3])
+  val kind3:                     Query.GroupKind[Any, F3]
+)(implicit In:                   Tag[In],
+  Out:                           Tag[Out],
+  F1:                            Tag[F1],
+  F2:                            Tag[F2],
+  F3:                            Tag[F3])
     extends GroupedQuery[In, Out] {
 
   override protected val groupingTags: List[LightTypeTag] =

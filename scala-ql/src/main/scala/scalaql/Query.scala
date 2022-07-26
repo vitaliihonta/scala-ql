@@ -555,11 +555,17 @@ object Query {
   final case class GroupKey[A, F](value: A, kind: GroupKind[A, F]) {
     def widen: GroupKey[Any, Any] = this.asInstanceOf[GroupKey[Any, Any]]
   }
+  // TODO: overrides not needed anymore
   final case class GroupKeys(keys: Map[Int, GroupKey[Any, Any]], fillmentOverrides: Map[Int, Any]) {
     override def toString: String =
       s"RollupMapKey(keys=$keys, fillmentOverrides=${fillmentOverrides.map { case (idx, k) => s"($idx)->$k" }.mkString("{", ", ", "}")})"
 
-    override lazy val hashCode: Int = MurmurHash3.orderedHash(keys.map { case (_, k) => k.value })
+    override lazy val hashCode: Int = MurmurHash3.orderedHash(
+      keys.toList
+        .sortBy { case (idx, _) => idx }
+        .map { case (_, k) => k.value }
+    )
+
     override def equals(obj: Any): Boolean = obj match {
       case rmk: GroupKeys => this.hashCode == rmk.hashCode
       case _              => false
@@ -567,17 +573,17 @@ object Query {
 
     lazy val size: Int = keys.size
 
-    private lazy val indexed = keys.toList.sortBy { case (idx, _) => idx }.map { case (_, k) => k }
-    def apply(idx: Int): Any = indexed(idx).value
+    def apply(idx: Int): Any = keys(idx).value
 
+    // TODO: remove
     def subgroups: List[GroupKeys] = {
       val isSimple     = keys.forall { case (_, k) => k.kind.isSimple }
       val allNonSimple = keys.forall { case (_, k) => !k.kind.isSimple }
-      if (isSimple) List(this)
-      else if (allNonSimple) keys.tails.map(GroupKeys(_, Map.empty)).toList
-      else {
-        (this ::
-          keys.tails
+      val result =
+        if (isSimple) List(this)
+        else if (allNonSimple) keys.tails.map(GroupKeys(_, Map.empty)).toList
+        else {
+          val subtotals = keys.tails
             .filterNot(_.isEmpty)
             .map { ks =>
               val (excluded, included) = ks.partition { case (_, k) => k.kind.isSimple }
@@ -585,8 +591,43 @@ object Query {
               GroupKeys(included, fillmentOverrides)
             }
             .toList
-            .distinct).reverse
-      }
+
+          val partial = GroupKeys(
+            keys.filter { case (_, k) => k.kind.isSimple },
+            Map.empty
+          )
+
+          (this :: partial :: subtotals).distinct.reverse
+        }
+
+      result
+    }
+
+    def subgroupsNew: List[GroupKeys] = {
+      val isSimple     = keys.forall { case (_, k) => k.kind.isSimple }
+      val allNonSimple = keys.forall { case (_, k) => !k.kind.isSimple }
+      val result =
+        if (isSimple) List(this)
+        else if (allNonSimple) keys.tails.map(GroupKeys(_, Map.empty)).toList
+        else {
+          val (partialKeys, subtotalKeys) = keys.partition { case (_, k) => k.kind.isSimple }
+
+          val subtotals = (1 until subtotalKeys.size).flatMap { n =>
+            subtotalKeys.toList
+              .combinations(n)
+              .filterNot(_.isEmpty)
+              .map(sub => GroupKeys(sub.toMap ++ partialKeys, Map.empty))
+          }.toList
+
+          val partial = GroupKeys(
+            partialKeys,
+            Map.empty
+          )
+
+          (this :: partial :: subtotals).distinct.reverse
+        }
+
+      result
     }
   }
 

@@ -134,7 +134,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
 
         interpret[In, out0](in, source)(
           Step.always[out0] { mid =>
-            group(mid).subgroups.foreach { subGroup =>
+            group(mid).subgroupsNew.foreach { subGroup =>
               if (!accCache.contains(subGroup)) {
                 accCache += (subGroup -> aggregate.init())
               }
@@ -158,45 +158,51 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
           .sortBy { case (k, _) => k }(keysOrdering)
           .foreach { case (currentKeys, acc) =>
             val res = aggregate.result(acc)
-            if (currentKeys.fillmentOverrides.nonEmpty) {
-              // TODO: fix the shift, it's incorrect
-              println("Non empty overrides")
-            }
-            val currentKeysNum = currentKeys.size
+
             // Fillments for topper-level aggregations
-            val fillments = List
-              .tabulate(
-                // Basically the number of fillments to provide
-                groupKeysNum - currentKeysNum
-              ) { offset =>
-                // In case of top-level aggregation, currentKeysNum is 0, so need to fill each grouping key.
-                // In case of mid-level aggregation M, fill N-M keys.
-                // In case of bottom-level aggregation, doesn't fill
-                val idx = currentKeysNum + offset
-                groupKinds(idx) match {
-                  case _: Query.GroupKind.Simple[Any] => None
-                  case rollupGroup: Query.GroupKind.Rollup[Any, Any] =>
-                    Some(
+            val fillments = {
+              val available = currentKeys.keys.keySet
+              (0 until groupKeysNum)
+                .filterNot(available)
+                .map { idx =>
+                  val fillment = groupKinds(idx) match {
+                    case _: Query.GroupKind.Simple[Any] =>
+                      currentKeys.fillmentOverrides
+                        .getOrElse(
+                          idx,
+                          FatalExceptions.libraryError(s"Partial rollup failure idx=$idx keys=$currentKeys")
+                        )
+                    case rollupGroup: Query.GroupKind.Rollup[Any, Any] =>
                       currentKeys.fillmentOverrides
                         .get(idx)
                         .fold(ifEmpty = rollupGroup.defaultFill)(rollupGroup.groupFill)
-                    )
+                  }
+                  idx -> fillment
                 }
-              }
-              .flatten
+                .toMap
+            }
 
             val presentKeys = currentKeys.keys.map { case (idx, key) =>
               // Convert grouping key to it's fillment, e.g. wrap into Some(_) or just return the same value
-              groupKinds(idx).apply(key.value)
-            }.toList
+              idx -> groupKinds(idx).apply(key.value)
+            }.toMap
 
             // Merge keys before building a tuple.
-            val groupKeys = fillments ::: presentKeys
+            val groupKeys = (fillments ++ presentKeys).toList
+              .sortBy { case (idx, _) => idx }
+              .map { case (_, v) => v }
+
             // Build the tuple
             val output = buildRes(groupKeys ::: List(res))
 
             // Emmit
-            step.next(output)
+            try
+              step.next(output)
+            catch {
+              case e =>
+                println("Ooops")
+                throw e
+            }
           }
 
         accCache.clear()

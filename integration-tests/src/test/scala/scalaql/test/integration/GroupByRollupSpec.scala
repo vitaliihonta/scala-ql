@@ -3,8 +3,6 @@ package scalaql.test.integration
 import org.scalactic.Equality
 import scalaql.*
 import scalaql.csv.CsvDecoder
-import scalaql.internal.RollupKey
-
 import java.nio.file.Paths
 import java.time.LocalDate
 
@@ -16,11 +14,11 @@ object GroupByRollupSpec {
     avgFreight:  Double)
 
   case class OrderStatsRollupPartial(
-    customerId:  Option[String],
-    shipCountry: Option[String],
-    shipCity:    Option[String],
-    maxFreight:  Double,
-    avgFreight:  Double)
+    customerId:   String,
+    shipCountry:  Option[String],
+    employeeId:   Option[Long],
+    totalFreight: Double,
+    avgFreight:   Double)
 }
 
 class GroupByRollupSpec extends ScalaqlUnitSpec {
@@ -37,8 +35,18 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
       }
     }
 
+  private implicit val statsRollupEquality: Equality[OrderStatsRollupPartial] =
+    new Equality[OrderStatsRollupPartial] {
+      override def areEqual(a: OrderStatsRollupPartial, b: Any): Boolean = b match {
+        case b: OrderStatsRollupPartial =>
+          a.customerId == b.customerId && a.shipCountry == b.shipCountry && a.employeeId == b.employeeId &&
+          (a.totalFreight === b.totalFreight +- 0.1) && (a.avgFreight === b.avgFreight +- 0.1)
+        case _ => false
+      }
+    }
+
   "scalaql" should {
-    "correctly process simple groupByRollup & aggregate" in {
+    "correctly process simple groupBy with rollup & aggregate" in {
       // SELECT "CustomerId", "ShipCountry", MAX("Freight") as "MaxFreight", AVG("Freight") as "AvgFreight"
       // FROM public."Order"
       //  where "ShipCountry"  in ('Poland', 'USA')
@@ -46,9 +54,9 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
       //  order by "CustomerId" nulls first, "ShipCountry"
       val query = select[Order]
         .where(_.shipCountry isIn ("Poland", "USA"))
-        .groupByRollup(
-          _.customerId,
-          _.shipCountry
+        .groupBy(
+          _.customerId.rollup,
+          _.shipCountry.rollup
         )
         .aggregate(order => order.maxOf(_.freight) && order.avgBy(_.freight))
         .mapTo(OrderStatsRollup)
@@ -73,27 +81,24 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
       actualResult should contain theSameElementsAs expectedResult
     }
 
-    "correctly process partial groupByRollup" in {
-      // SELECT "CustomerId", "ShipCountry", MAX("Freight") as "MaxFreight", AVG("Freight") as "AvgFreight", array_agg("Id") as "Id"  FROM public."Order"
-      //  where "ShipCountry"  in ('Poland', 'USA')
-      //  group by "ShipCountry", rollup("CustomerId")
-      //  order by "CustomerId" nulls first, "ShipCountry"
-
-//      val x: Order => RollupKey[String] = (_: Order).shipCountry.exclude
-
+    "correctly process partial groupBy rollup" in {
+      // SELECT "CustomerId", "ShipCountry", "EmployeeId", SUM("Freight") as "TotalFreight", AVG("Freight") as "AvgFreight" FROM public."Order"
+      //      where "ShipCountry"  in ('Poland', 'USA')
+      //      group by rollup("ShipCountry"), rollup("EmployeeId"), "CustomerId"
+      //      order by "CustomerId" nulls first, "ShipCountry", "EmployeeId" nulls first
       val query = select[Order]
         .where(_.shipCountry isIn ("Poland", "USA"))
-        .groupByRollup(
+        .groupBy(
           _.customerId,
-          _.shipCountry.exclude,
-          _.shipCity
+          _.shipCountry.rollup,
+          _.employeeId.rollup
         )
-        .aggregate(order => order.maxOf(_.freight) && order.avgBy(_.freight))
+        .aggregate(order => order.sumBy(_.freight) && order.avgBy(_.freight))
         .mapTo(OrderStatsRollupPartial)
-        .orderBy(_.customerId, _.shipCountry, _.shipCity)
+        .orderBy(_.customerId, _.shipCountry, _.employeeId)
 
-      val actualResult = query // .toList
-        .show(truncate = false, numRows = 200)
+      val actualResult = query.toList
+//        .show(truncate = false, numRows = 200)
         .run(
           from(
             csv
@@ -104,11 +109,11 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
               )
           )
         )
-//      val expectedResult = Fixture.readExpectedResult[OrderStatsRollup]("simple_rollup")
+      val expectedResult = Fixture.readExpectedResult[OrderStatsRollupPartial]("partial_rollup")
 
-//      assert(actualResult.size == expectedResult.size)
+      assert(actualResult.size == expectedResult.size)
 
-//      actualResult should contain theSameElementsAs expectedResult
+      actualResult should contain theSameElementsAs expectedResult
     }
   }
 }
