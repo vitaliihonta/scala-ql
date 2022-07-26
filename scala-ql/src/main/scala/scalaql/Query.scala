@@ -531,38 +531,18 @@ object Query {
     }
   }
 
-  sealed trait GroupKind[G, F] {
-    def widen: GroupKind[Any, Any] = this.asInstanceOf[GroupKind[Any, Any]]
-    def widenIn: GroupKind[Any, F] = this.asInstanceOf[GroupKind[Any, F]]
-    def ordering: Ordering[G]
-    def isSimple: Boolean
-    def apply(group: G): F
-  }
-  object GroupKind {
-    final case class Rollup[G, F](groupFill: G => F, defaultFill: F, ordering: Ordering[G]) extends GroupKind[G, F] {
+  final case class GroupingSet(value: List[Int])
+  final case class GroupingSets(
+    values:           List[GroupingSet],
+    orderings:        List[Ordering[Any]],
+    groupFillments:   Map[Int, Any => Any],
+    defaultFillments: Map[Int, Any])
 
-      override val isSimple           = false
-      override def apply(group: G): F = groupFill(group)
-    }
-
-    final case class Simple[G](orderingOpt: Option[Ordering[G]]) extends GroupKind[G, G] {
-      override val isSimple              = true
-      override val ordering: Ordering[G] = orderingOpt.getOrElse(NaturalOrdering[G])
-      override def apply(group: G): G    = group
-    }
-  }
-
-  final case class GroupKey[A, F](value: A, kind: GroupKind[A, F]) {
-    def widen: GroupKey[Any, Any] = this.asInstanceOf[GroupKey[Any, Any]]
-  }
-  final case class GroupKeys(keys: Map[Int, GroupKey[Any, Any]]) {
-    override def toString: String =
-      s"RollupMapKey(keys=$keys)"
-
+  final case class GroupKeys(keys: Map[Int, Any]) {
     override lazy val hashCode: Int = MurmurHash3.orderedHash(
       keys.toList
         .sortBy { case (idx, _) => idx }
-        .map { case (_, k) => k.value }
+        .map { case (_, k) => k }
     )
 
     override def equals(obj: Any): Boolean = obj match {
@@ -572,37 +552,21 @@ object Query {
 
     lazy val size: Int = keys.size
 
-    def apply(idx: Int): Any = keys(idx).value
+    def apply(idx: Int): Any = keys(idx)
+    def subgroups(sets: GroupingSets): List[GroupKeys] =
+      sets.values.map { set =>
+        val sub = set.value.map { idx =>
+          idx -> keys(idx)
+        }.toMap
 
-    def subgroups: List[GroupKeys] = {
-      val isSimple     = keys.forall { case (_, k) => k.kind.isSimple }
-      val allNonSimple = keys.forall { case (_, k) => !k.kind.isSimple }
-      val result =
-        if (isSimple) List(this)
-        else if (allNonSimple) keys.tails.map(GroupKeys).toList
-        else {
-          val (partialKeys, subtotalKeys) = keys.partition { case (_, k) => k.kind.isSimple }
-
-          val subtotals = (1 until subtotalKeys.size).flatMap { n =>
-            subtotalKeys.toList
-              .combinations(n)
-              .filterNot(_.isEmpty)
-              .map(sub => GroupKeys(sub.toMap ++ partialKeys))
-          }.toList
-
-          val partial = GroupKeys(partialKeys)
-
-          (this :: partial :: subtotals).distinct.reverse
-        }
-
-      result
-    }
+        GroupKeys(sub)
+      }
   }
 
   final class AggregateQuery[In: Tag, Out0, Out1: Tag, Res: Tag](
     private[scalaql] val source:        Query[In, Out0],
     private[scalaql] val group:         Out0 => GroupKeys,
-    private[scalaql] val groupKinds:    List[GroupKind[Any, Any]],
+    private[scalaql] val groupingSets:  GroupingSets,
     private[scalaql] val agg:           QueryExpressionBuilder[Out0] => Aggregation.Of[Out0, Out1],
     private[scalaql] val groupByString: String,
     private[scalaql] val buildRes:      List[Any] => Res)

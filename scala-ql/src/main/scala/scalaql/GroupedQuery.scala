@@ -35,7 +35,7 @@ sealed trait GroupedQuery[In, Out] {
 final class GroupedQuery1[In, Out, F] private[scalaql] (
   override protected val source: Query[In, Out],
   group:                         Out => Any,
-  kind:                          Query.GroupKind[Any, F]
+  groupingSets:                  Query.GroupingSets
 )(implicit In:                   Tag[In],
   Out:                           Tag[Out],
   F:                             Tag[F])
@@ -77,10 +77,10 @@ final class GroupedQuery1[In, Out, F] private[scalaql] (
       out =>
         Query.GroupKeys(
           Map(
-            0 -> Query.GroupKey(group(out), kind).widen
+            0 -> group(out)
           )
         ),
-      List(kind.widen),
+      groupingSets,
       f,
       groupByString,
       extractFromList { case List(fill: F, b: B) => flatten((fill, b)) }
@@ -91,8 +91,7 @@ final class GroupedQuery2[In, Out, F1, F2] private[scalaql] (
   override protected val source: Query[In, Out],
   group1:                        Out => Any,
   group2:                        Out => Any,
-  kind1:                         Query.GroupKind[Any, F1],
-  kind2:                         Query.GroupKind[Any, F2]
+  groupingSets:                  Query.GroupingSets
 )(implicit In:                   Tag[In],
   Out:                           Tag[Out],
   F1:                            Tag[F1],
@@ -136,11 +135,11 @@ final class GroupedQuery2[In, Out, F1, F2] private[scalaql] (
       out =>
         Query.GroupKeys(
           Map(
-            0 -> Query.GroupKey(group1(out), kind1).widen,
-            1 -> Query.GroupKey(group2(out), kind2).widen
+            0 -> group1(out),
+            1 -> group2(out)
           )
         ),
-      List(kind1.widen, kind2.widen),
+      groupingSets,
       f,
       groupByString,
       extractFromList { case List(fill1: F1, fill2: F2, b: B) => flatten(((fill1, fill2), b)) }
@@ -152,9 +151,7 @@ final class GroupedQuery3[In, Out, F1, F2, F3] private[scalaql] (
   group1:                        Out => Any,
   group2:                        Out => Any,
   group3:                        Out => Any,
-  val kind1:                     Query.GroupKind[Any, F1],
-  val kind2:                     Query.GroupKind[Any, F2],
-  val kind3:                     Query.GroupKind[Any, F3]
+  groupingSets:                  Query.GroupingSets
 )(implicit In:                   Tag[In],
   Out:                           Tag[Out],
   F1:                            Tag[F1],
@@ -200,12 +197,12 @@ final class GroupedQuery3[In, Out, F1, F2, F3] private[scalaql] (
       out =>
         Query.GroupKeys(
           Map(
-            0 -> Query.GroupKey(group1(out), kind1).widen,
-            1 -> Query.GroupKey(group2(out), kind2).widen,
-            2 -> Query.GroupKey(group3(out), kind3).widen
+            0 -> group1(out),
+            1 -> group2(out),
+            2 -> group3(out)
           )
         ),
-      List(kind1.widen, kind2.widen, kind3.widen),
+      groupingSets,
       f,
       groupByString,
       extractFromList { case List(fill1: F1, fill2: F2, fill3: F3, b: B) =>

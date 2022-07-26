@@ -134,7 +134,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
 
         interpret[In, out0](in, source)(
           Step.always[out0] { mid =>
-            group(mid).subgroups.foreach { subGroup =>
+            group(mid).subgroups(groupingSets).foreach { subGroup =>
               if (!accCache.contains(subGroup)) {
                 accCache += (subGroup -> aggregate.init())
               }
@@ -148,10 +148,10 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         )
 
         // Persist the group size
-        val groupKeysNum = groupKinds.size
+        val groupKeysNum = groupingSets.values.size
 
-        val keysOrdering = new RollupGroupingKeyOrdering(groupKinds.map(_.ordering))
-        println(accCache.keys.mkString("\n"))
+        val keysOrdering = new RollupGroupingKeyOrdering(groupingSets.orderings)
+//        println(accCache.keys.mkString("\n"))
 
         // order before emitting
         accCache.toList
@@ -165,19 +165,16 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
               (0 until groupKeysNum)
                 .filterNot(available)
                 .flatMap { idx =>
-                  groupKinds(idx) match {
-                    case _: Query.GroupKind.Simple[Any] =>
-                      None
-                    case rollupGroup: Query.GroupKind.Rollup[Any, Any] =>
-                      Some(idx -> rollupGroup.defaultFill)
-                  }
+                  groupingSets.defaultFillments
+                    .get(idx)
+                    .map(idx -> _)
                 }
                 .toMap
             }
 
-            val presentKeys = currentKeys.keys.map { case (idx, key) =>
+            val presentKeys = currentKeys.keys.flatMap { case (idx, key) =>
               // Convert grouping key to it's fillment, e.g. wrap into Some(_) or just return the same value
-              idx -> groupKinds(idx).apply(key.value)
+              groupingSets.groupFillments.get(idx).map(f => idx -> f(key))
             }.toMap
 
             // Merge keys before building a tuple.
