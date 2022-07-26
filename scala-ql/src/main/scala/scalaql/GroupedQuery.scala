@@ -78,8 +78,7 @@ final class GroupedQuery1[In, Out, F] private[scalaql] (
         Query.GroupKeys(
           Map(
             0 -> Query.GroupKey(group(out), kind).widen
-          ),
-          Map.empty
+          )
         ),
       List(kind.widen),
       f,
@@ -139,8 +138,7 @@ final class GroupedQuery2[In, Out, F1, F2] private[scalaql] (
           Map(
             0 -> Query.GroupKey(group1(out), kind1).widen,
             1 -> Query.GroupKey(group2(out), kind2).widen
-          ),
-          Map.empty
+          )
         ),
       List(kind1.widen, kind2.widen),
       f,
@@ -205,8 +203,7 @@ final class GroupedQuery3[In, Out, F1, F2, F3] private[scalaql] (
             0 -> Query.GroupKey(group1(out), kind1).widen,
             1 -> Query.GroupKey(group2(out), kind2).widen,
             2 -> Query.GroupKey(group3(out), kind3).widen
-          ),
-          Map.empty
+          )
         ),
       List(kind1.widen, kind2.widen, kind3.widen),
       f,

@@ -134,7 +134,7 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
 
         interpret[In, out0](in, source)(
           Step.always[out0] { mid =>
-            group(mid).subgroupsNew.foreach { subGroup =>
+            group(mid).subgroups.foreach { subGroup =>
               if (!accCache.contains(subGroup)) {
                 accCache += (subGroup -> aggregate.init())
               }
@@ -164,20 +164,13 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
               val available = currentKeys.keys.keySet
               (0 until groupKeysNum)
                 .filterNot(available)
-                .map { idx =>
-                  val fillment = groupKinds(idx) match {
+                .flatMap { idx =>
+                  groupKinds(idx) match {
                     case _: Query.GroupKind.Simple[Any] =>
-                      currentKeys.fillmentOverrides
-                        .getOrElse(
-                          idx,
-                          FatalExceptions.libraryError(s"Partial rollup failure idx=$idx keys=$currentKeys")
-                        )
+                      None
                     case rollupGroup: Query.GroupKind.Rollup[Any, Any] =>
-                      currentKeys.fillmentOverrides
-                        .get(idx)
-                        .fold(ifEmpty = rollupGroup.defaultFill)(rollupGroup.groupFill)
+                      Some(idx -> rollupGroup.defaultFill)
                   }
-                  idx -> fillment
                 }
                 .toMap
             }

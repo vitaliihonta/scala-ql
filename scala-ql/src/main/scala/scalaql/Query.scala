@@ -555,10 +555,9 @@ object Query {
   final case class GroupKey[A, F](value: A, kind: GroupKind[A, F]) {
     def widen: GroupKey[Any, Any] = this.asInstanceOf[GroupKey[Any, Any]]
   }
-  // TODO: overrides not needed anymore
-  final case class GroupKeys(keys: Map[Int, GroupKey[Any, Any]], fillmentOverrides: Map[Int, Any]) {
+  final case class GroupKeys(keys: Map[Int, GroupKey[Any, Any]]) {
     override def toString: String =
-      s"RollupMapKey(keys=$keys, fillmentOverrides=${fillmentOverrides.map { case (idx, k) => s"($idx)->$k" }.mkString("{", ", ", "}")})"
+      s"RollupMapKey(keys=$keys)"
 
     override lazy val hashCode: Int = MurmurHash3.orderedHash(
       keys.toList
@@ -575,40 +574,12 @@ object Query {
 
     def apply(idx: Int): Any = keys(idx).value
 
-    // TODO: remove
     def subgroups: List[GroupKeys] = {
       val isSimple     = keys.forall { case (_, k) => k.kind.isSimple }
       val allNonSimple = keys.forall { case (_, k) => !k.kind.isSimple }
       val result =
         if (isSimple) List(this)
-        else if (allNonSimple) keys.tails.map(GroupKeys(_, Map.empty)).toList
-        else {
-          val subtotals = keys.tails
-            .filterNot(_.isEmpty)
-            .map { ks =>
-              val (excluded, included) = ks.partition { case (_, k) => k.kind.isSimple }
-              val fillmentOverrides    = excluded.map { case (idx, k) => idx -> k.value }.toMap
-              GroupKeys(included, fillmentOverrides)
-            }
-            .toList
-
-          val partial = GroupKeys(
-            keys.filter { case (_, k) => k.kind.isSimple },
-            Map.empty
-          )
-
-          (this :: partial :: subtotals).distinct.reverse
-        }
-
-      result
-    }
-
-    def subgroupsNew: List[GroupKeys] = {
-      val isSimple     = keys.forall { case (_, k) => k.kind.isSimple }
-      val allNonSimple = keys.forall { case (_, k) => !k.kind.isSimple }
-      val result =
-        if (isSimple) List(this)
-        else if (allNonSimple) keys.tails.map(GroupKeys(_, Map.empty)).toList
+        else if (allNonSimple) keys.tails.map(GroupKeys).toList
         else {
           val (partialKeys, subtotalKeys) = keys.partition { case (_, k) => k.kind.isSimple }
 
@@ -616,13 +587,10 @@ object Query {
             subtotalKeys.toList
               .combinations(n)
               .filterNot(_.isEmpty)
-              .map(sub => GroupKeys(sub.toMap ++ partialKeys, Map.empty))
+              .map(sub => GroupKeys(sub.toMap ++ partialKeys))
           }.toList
 
-          val partial = GroupKeys(
-            partialKeys,
-            Map.empty
-          )
+          val partial = GroupKeys(partialKeys)
 
           (this :: partial :: subtotals).distinct.reverse
         }

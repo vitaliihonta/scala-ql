@@ -3,6 +3,7 @@ version
 target/
 project/project
 .coverage/
+integration-tests/db-data
 
 # Generated files
 examples/out/*.json
