@@ -13,26 +13,38 @@ abstract class BaseTypeCheckedBuilder[Builder[_]](override val c: blackbox.Conte
   )(use:                (Tree, String) => Tree
   )(implicit builderTT: WeakTypeTag[Builder[A]]
   ): Tree = {
-    libraryUsageValidityCheck[A]
+    checkValidBuilderUsage[A]
 
     val fieldName = extractSelectorField(f.tree)
       .map(_.toString)
       .getOrElse(
-        error(s"Expected a field selector to be passed (as instance.field1), got $f")
+        error(
+          FatalExceptions.macroDslErrorMessage(
+            s"expected a field selector to be passed (such as instance.field1), got ${f.tree}"
+          )
+        )
       )
 
     use(c.prefix.tree, fieldName)
   }
 
-  protected def libraryUsageValidityCheck[A: WeakTypeTag](implicit builderTT: WeakTypeTag[Builder[A]]): Unit = {
+  protected def checkValidBuilderUsage[A: WeakTypeTag](implicit builderTT: WeakTypeTag[Builder[A]]): Unit = {
     if (!(c.prefix.tree.tpe =:= weakTypeOf[Builder[A]])) {
-      error("Invalid library usage! Refer to documentation")
+      error(
+        FatalExceptions.invalidLibraryUsageMessage(
+          s"Builder methods called outside of the builder, in ${c.prefix.tree}"
+        )
+      )
     }
     val A           = weakTypeOf[A].dealias
     val tpe         = A.typeSymbol
     val isCaseClass = tpe.isClass && tpe.asClass.isCaseClass
     if (!isCaseClass) {
-      error(s"Expected $A to be a case class")
+      error(
+        FatalExceptions.macroDslErrorMessage(
+          s"expected builder type $A to be a case class"
+        )
+      )
     }
   }
 }

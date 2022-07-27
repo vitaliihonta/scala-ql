@@ -1,7 +1,7 @@
 package scalaql.internal
 
 import scalaql.Tag
-import scalaql.syntax.{EachSyntaxIterable, EachSyntaxOption, RollupOps}
+import scalaql.syntax.{EachSyntaxIterable, EachSyntaxOption, GroupingSetsOps}
 
 import scala.annotation.tailrec
 import scala.language.experimental.macros
@@ -12,7 +12,7 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
 
   private val EachSyntaxIterable = weakTypeOf[EachSyntaxIterable[Any]].dealias.typeConstructor
   private val EachSyntaxOption   = weakTypeOf[EachSyntaxOption[Any]].dealias.typeConstructor
-  private val RollupOps          = weakTypeOf[RollupOps[Any]].dealias.typeConstructor
+  private val GroupingSetsOps    = weakTypeOf[GroupingSetsOps[Any]].dealias.typeConstructor
   private val Desc               = TermName("desc")
 
   protected def freshTermName(name: String): TermName = c.freshName(TermName(name))
@@ -54,7 +54,11 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
   protected def getPrefixOf[Prefix: WeakTypeTag]: Expr[Prefix] = {
     val Prefix = weakTypeOf[Prefix]
     if (!(c.prefix.tree.tpe =:= Prefix)) {
-      error(s"Invalid library usage! Expected to be macro expanded within $Prefix, instead it's ${c.prefix.tree.tpe}")
+      error(
+        FatalExceptions.invalidLibraryUsageMessage(
+          s"Expected to be macro expanded within $Prefix, instead it's ${c.prefix.tree.tpe}"
+        )
+      )
     }
     c.Expr[Prefix](
       c.prefix.tree
@@ -76,7 +80,7 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
           buildCallChain(qualifier, acc.copy(chain = name.toTermName :: acc.chain))
         case Apply(callable, List(inner)) =>
           val tc = callable.tpe.resultType.typeConstructor
-          if (tc <:< EachSyntaxIterable || tc <:< EachSyntaxOption || tc <:< RollupOps) {
+          if (tc <:< EachSyntaxIterable || tc <:< EachSyntaxOption || tc <:< GroupingSetsOps) {
             buildCallChain(inner, acc)
           } else {
             acc
