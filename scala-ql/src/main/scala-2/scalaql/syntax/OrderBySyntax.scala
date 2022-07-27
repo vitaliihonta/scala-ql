@@ -5,7 +5,7 @@ import scalaql.internal.OrderBySyntaxMacro
 
 import scala.language.experimental.macros
 
-final class OrderBySyntax[In, Out](val self: Query[In, Out]) extends AnyVal {
+final class OrderBySyntax[In, Out](@internalApi val __scalaql_self: Query[In, Out]) extends AnyVal {
 
   /**
    * Orders `this` query output values by their natural order.
@@ -14,7 +14,7 @@ final class OrderBySyntax[In, Out](val self: Query[In, Out]) extends AnyVal {
    * @return query emitting values in the specified order
    * */
   def ordered(implicit order: Ordering[Out], In: Tag[In], Out: Tag[Out]): Query[In, Out] =
-    new Query.OrderByQuery[In, Out, Out](self, identity, None)
+    new Query.OrderByQuery[In, Out, Out](__scalaql_self, identity, None)
 
   /**
    * Orders `this` query output values by the specified ordering key.

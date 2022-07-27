@@ -4,7 +4,7 @@ import scalaql.*
 import scalaql.internal.GroupBySyntaxMacro
 import scala.language.experimental.macros
 
-final class GroupBySyntax[In, Out](@internalApi val self: Query[In, Out]) extends AnyVal {
+final class GroupBySyntax[In, Out](@internalApi val __scalaql_self: Query[In, Out]) extends AnyVal {
 
   // TODO: Implement for scala3
   def groupBy[A](f: Out => A): GroupedQuery1[In, Out, A] =

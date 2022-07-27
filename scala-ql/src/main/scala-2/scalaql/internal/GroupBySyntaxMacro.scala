@@ -53,7 +53,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 
     c.Expr[GroupedQuery1[In, Out, A]](
       q"""
-         new $GroupedQuery1($query.self, ${meta.groupFuncBody}, $groupingSets)(
+         new $GroupedQuery1($query.__scalaql_self, ${meta.groupFuncBody}, $groupingSets)(
            $InTag, $OutTag, $ATag
          )
        """.debugged("Generated groupBy")
@@ -79,7 +79,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 
     c.Expr[GroupedQuery2[In, Out, A, B]](
       q"""
-         new $GroupedQuery2($query.self, ${meta1.groupFuncBody}, ${meta2.groupFuncBody}, $groupingSets)(
+         new $GroupedQuery2($query.__scalaql_self, ${meta1.groupFuncBody}, ${meta2.groupFuncBody}, $groupingSets)(
            $InTag, $OutTag, $ATag, $BTag
          )
        """.debugged("Generated groupBy")
@@ -107,7 +107,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 
     c.Expr[GroupedQuery2[In, Out, Option[A], Option[B]]](
       q"""
-         new $GroupedQuery2($query.self, ${meta1.groupFuncBody}, ${meta2.groupFuncBody}, $groupingSetsTree)(
+         new $GroupedQuery2($query.__scalaql_self, ${meta1.groupFuncBody}, ${meta2.groupFuncBody}, $groupingSetsTree)(
            $InTag, $OutTag, $ATag, $BTag
          )
        """.debugged("Generated groupBy")
@@ -136,7 +136,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 
     c.Expr[GroupedQuery3[In, Out, A, B, C]](
       q"""
-         new $GroupedQuery3($query.self, ${meta1.groupFuncBody}, ${meta2.groupFuncBody}, ${meta3.groupFuncBody}, $groupingSets)(
+         new $GroupedQuery3($query.__scalaql_self, ${meta1.groupFuncBody}, ${meta2.groupFuncBody}, ${meta3.groupFuncBody}, $groupingSets)(
            $InTag, $OutTag, $ATag, $BTag, $CTag
          )
        """.debugged("Generated groupBy")

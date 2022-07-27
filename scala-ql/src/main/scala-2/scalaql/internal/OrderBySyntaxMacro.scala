@@ -28,7 +28,7 @@ class OrderBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 
     c.Expr[Query[In, Out]](
       q"""
-       new $OrderByQuery($query.self, $makeOrderBy, Some($ByTag.tag))($InTag, $OutTag, $makeOrdering)
+       new $OrderByQuery($query.__scalaql_self, $makeOrderBy, Some($ByTag.tag))($InTag, $OutTag, $makeOrdering)
        """.debugged("Generated orderBy query")
     )
   }
@@ -56,7 +56,7 @@ class OrderBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 
     c.Expr[Query[In, Out]](
       q"""
-       new $OrderByQuery($query.self, $makeOrderBy, Some($ByTag.tag))($InTag, $OutTag, $makeOrdering)
+       new $OrderByQuery($query.__scalaql_self, $makeOrderBy, Some($ByTag.tag))($InTag, $OutTag, $makeOrdering)
        """.debugged("Generated orderBy query")
     )
   }
@@ -87,7 +87,7 @@ class OrderBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 
     c.Expr[Query[In, Out]](
       q"""
-       new $OrderByQuery($query.self, $makeOrderBy, Some($ByTag.tag))($InTag, $OutTag, $makeOrdering)
+       new $OrderByQuery($query.__scalaql_self, $makeOrderBy, Some($ByTag.tag))($InTag, $OutTag, $makeOrdering)
        """.debugged("Generated orderBy query")
     )
   }
