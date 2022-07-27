@@ -1,5 +1,6 @@
 package scalaql.syntax
 
+import scalaql.internal.FatalExceptions
 import scala.language.implicitConversions
 
 trait GroupingSetsSyntax {
@@ -16,5 +17,7 @@ final class GroupingSetsOps[A](val self: A) extends AnyVal {
 }
 
 final class GroupingSetsFillNAOps[A](val self: Option[A]) extends AnyVal {
-  def fillna(value: A): A = self.get
+  def fillna(value: A): A = self.getOrElse(
+    throw FatalExceptions.invalidLibraryUsage(s"fillna called outside of groupBy with value=$value")
+  )
 }

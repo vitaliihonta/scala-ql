@@ -54,7 +54,11 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
   protected def getPrefixOf[Prefix: WeakTypeTag]: Expr[Prefix] = {
     val Prefix = weakTypeOf[Prefix]
     if (!(c.prefix.tree.tpe =:= Prefix)) {
-      error(s"Invalid library usage! Expected to be macro expanded within $Prefix, instead it's ${c.prefix.tree.tpe}")
+      error(
+        FatalExceptions.invalidLibraryUsageMessage(
+          s"Expected to be macro expanded within $Prefix, instead it's ${c.prefix.tree.tpe}"
+        )
+      )
     }
     c.Expr[Prefix](
       c.prefix.tree
