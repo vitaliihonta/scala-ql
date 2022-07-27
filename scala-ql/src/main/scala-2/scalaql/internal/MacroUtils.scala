@@ -1,7 +1,7 @@
 package scalaql.internal
 
 import scalaql.Tag
-import scalaql.syntax.{EachSyntaxIterable, EachSyntaxOption, RollupOps}
+import scalaql.syntax.{EachSyntaxIterable, EachSyntaxOption, GroupingSetsOps}
 
 import scala.annotation.tailrec
 import scala.language.experimental.macros
@@ -12,7 +12,7 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
 
   private val EachSyntaxIterable = weakTypeOf[EachSyntaxIterable[Any]].dealias.typeConstructor
   private val EachSyntaxOption   = weakTypeOf[EachSyntaxOption[Any]].dealias.typeConstructor
-  private val RollupOps          = weakTypeOf[RollupOps[Any]].dealias.typeConstructor
+  private val RollupOps          = weakTypeOf[GroupingSetsOps[Any]].dealias.typeConstructor
   private val Desc               = TermName("desc")
 
   protected def freshTermName(name: String): TermName = c.freshName(TermName(name))

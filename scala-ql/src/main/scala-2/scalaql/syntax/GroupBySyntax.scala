@@ -2,10 +2,8 @@ package scalaql.syntax
 
 import scalaql.*
 import scalaql.internal.GroupBySyntaxMacro
-
 import scala.language.experimental.macros
 
-// TODO: Add GROUPING SETS syntax
 final class GroupBySyntax[In, Out](@internalApi val self: Query[In, Out]) extends AnyVal {
 
   // TODO: Implement for scala3

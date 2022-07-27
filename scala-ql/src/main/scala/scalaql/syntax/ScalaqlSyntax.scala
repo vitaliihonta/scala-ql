@@ -14,7 +14,7 @@ trait ScalaqlSyntax
     with EachSyntax
     with MapToSyntax
     with GroupingSyntax
-    with RollupSyntax
+    with GroupingSetsSyntax
     with VersionSpecificImplicits {
 
   final implicit def RunSyntax[In, Out](self: QueryResult[In, Out]): RunSyntax[In, Out] =

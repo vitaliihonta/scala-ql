@@ -8,6 +8,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
   import c.universe.*
 
   private val Rollup      = TermName("rollup")
+  private val Cube        = TermName("cube")
   private val Any         = typeOf[Any]
   private val AnyOrdering = typeOf[Ordering[Any]]
   private val OrderingTC  = AnyOrdering.typeConstructor
@@ -144,7 +145,8 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 //    println(s"$f")
 //    println(callChain)
     callChain.chain.lastOption match {
-      case Some(Rollup) =>
+      // TODO: handle fillna
+      case Some(term @ (Rollup | Cube)) =>
         val theIn = A.dealias.typeArgs.head
         val out   = freshTermName("out")
         val a     = freshTermName("a")
@@ -154,7 +156,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
         val ordering = summonImplicitT(t)
 //        println(s"Summoned $ordering")
         val group            = q"(($out: $Out) => $f($out).get)".debugged("group")
-        val kind             = KindRollup
+        val kind             = if (term == Cube) KindCube else KindRollup
         val groupFillment    = q"""($a: $Any) => _root_.scala.Some($a.asInstanceOf[$theIn])"""
         val defaultFillments = Some(q"""_root_.scala.None""")
         GroupingMeta(
@@ -261,6 +263,8 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
         List(Query.GroupingSetIndices(metasWithIndex.map { case (_, idx) => idx }))
       } else {
         nonSimple.head match {
+          case KindSimple =>
+            error(FatalExceptions.libraryErrorMessage(s"Non-simple grouping kinds contains KindSimple metas=$metas"))
           // TODO: implement this shit
           case KindCube => ???
           case KindRollup if allNonSimple =>

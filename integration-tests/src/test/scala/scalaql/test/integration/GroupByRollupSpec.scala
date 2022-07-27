@@ -20,7 +20,7 @@ object GroupByRollupSpec {
     totalFreight: Double,
     avgFreight:   Double)
 
-  case class OrderStatsRollupGSets(
+  case class OrderStatsGSets(
     customerId:   Option[String],
     shipCountry:  Option[String],
     totalFreight: Double,
@@ -46,6 +46,16 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
       override def areEqual(a: OrderStatsRollupPartial, b: Any): Boolean = b match {
         case b: OrderStatsRollupPartial =>
           a.customerId == b.customerId && a.shipCountry == b.shipCountry && a.employeeId == b.employeeId &&
+          (a.totalFreight === b.totalFreight +- 0.1) && (a.avgFreight === b.avgFreight +- 0.1)
+        case _ => false
+      }
+    }
+
+  private implicit val statsGSetsEquality: Equality[OrderStatsGSets] =
+    new Equality[OrderStatsGSets] {
+      override def areEqual(a: OrderStatsGSets, b: Any): Boolean = b match {
+        case b: OrderStatsGSets =>
+          a.customerId == b.customerId && a.shipCountry == b.shipCountry &&
           (a.totalFreight === b.totalFreight +- 0.1) && (a.avgFreight === b.avgFreight +- 0.1)
         case _ => false
       }
@@ -122,31 +132,22 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
       actualResult should contain theSameElementsAs expectedResult
     }
 
-    // TODO: check this one, at least it compiles
     "correctly process groupBy with grouping sets" in {
+      // SELECT "CustomerId", "ShipCountry", SUM("Freight") as "TotalFreight", AVG("Freight") as "AvgFreight" FROM public."Order"
+      //      where "ShipCountry"  in ('Poland', 'USA')
+      //      group by grouping sets (
+      //        ("CustomerId", "ShipCountry"),
+      //        ("CustomerId"),
+      //        ("ShipCountry"),
+      //        ()
+      //      )
+      //      order by "CustomerId" nulls first, "ShipCountry"
       val query = select[Order]
-        // TODO: choose between (1) or (2)
         .where(_.shipCountry isIn ("Poland", "USA"))
-        //(1)   .groupBy(p =>
-        //     groupingSets(
-        //       (p.customerId, p.shipCountry),
-        //       p.customerId,
-        //       p.shipCountry,
-        //       ()
-        //     )
-        //
-        //   VS
-        //
-        //(2)  .groupByGroupingSets(_.customerId, _.shipCountry)((customerId, shipCountry) =>
-        //  (
-        //    (customerId, shipCountry),
-        //    customerId,
-        //    shipCountry,
-        //    ()
-        //  )
-        //)
-        //
-        .groupByGroupingSets(_.customerId, _.shipCountry)((customerId, shipCountry) =>
+        .groupByGroupingSets(
+          _.customerId,
+          _.shipCountry
+        )((customerId, shipCountry) =>
           (
             (customerId, shipCountry),
             customerId,
@@ -155,12 +156,11 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
           )
         )
         .aggregate(order => order.sumBy(_.freight) && order.avgBy(_.freight))
-        .mapTo(OrderStatsRollupGSets)
+        .mapTo(OrderStatsGSets)
         .orderBy(_.customerId, _.shipCountry)
 
-      val actualResult = query
-        // .toList
-        .show(truncate = false, numRows = 200)
+      val actualResult = query.toList
+//        .show(truncate = false, numRows = 200)
         .run(
           from(
             csv
@@ -171,6 +171,12 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
               )
           )
         )
+
+      val expectedResult = Fixture.readExpectedResult[OrderStatsGSets]("grouping_sets")
+
+      assert(actualResult.size == expectedResult.size)
+
+      actualResult should contain theSameElementsAs expectedResult
     }
   }
 }
