@@ -1,9 +1,9 @@
 package scalaql
 
 import izumi.reflect.macrortti.LightTypeTag
-import scalaql.internal.PartialFunctionAndThenCompat
+import scalaql.internal.{NaturalOrdering, PartialFunctionAndThenCompat}
 import scalaql.utils.TupleFlatten
-import scala.annotation.unchecked.uncheckedVariance
+import scala.util.hashing.MurmurHash3
 
 /** 
   * Query is a description of computations you want to perform on your data.
@@ -317,47 +317,6 @@ sealed abstract class Query[-In: Tag, +Out: Tag] extends Serializable {
    * */
   def andThen[Out0 >: Out: Tag, Out2: Tag](that: Query[From[Out0], Out2]): Query[In, Out2] =
     new Query.AndThenQuery[In, Out0, Out2](this, that, Tag[Out0].tag)
-
-  /**
-   * Entrypoint for performing aggregations on this query.
-   * 
-   * @tparam A grouping key type
-   * @param f extracts grouping key
-   * */
-  def groupBy[A: Tag](f: GroupBy[Out, A]): Query.GroupByQuery[In, Out, A] =
-    new Query.GroupByQueryImpl[In, Out, A](this, f, List(Tag[A].tag))
-
-  /**
-   * Entrypoint for performing aggregations on this query.
-   *
-   * @tparam A the first grouping key type
-   * @tparam B the second grouping key type
-   * @param f extracts the first grouping key
-   * @param g extracts the second grouping key
-   * */
-  def groupBy[A: Tag, B: Tag](f: GroupBy[Out, A], g: GroupBy[Out, B]): Query.GroupByQuery[In, Out, (A, B)] =
-    new Query.GroupByQueryImpl[In, Out, (A, B)](this, x => (f(x), g(x)), List(Tag[A].tag, Tag[B].tag))
-
-  /**
-   * Entrypoint for performing aggregations on this query.
-   *
-   * @tparam A the first grouping key type
-   * @tparam B the second grouping key type
-   * @tparam C the third grouping key type
-   * @param f extracts the first grouping key
-   * @param g extracts the second grouping key
-   * @param h extracts the third grouping key
-   * */
-  def groupBy[A: Tag, B: Tag, C: Tag](
-    f: GroupBy[Out, A],
-    g: GroupBy[Out, B],
-    h: GroupBy[Out, C]
-  ): Query.GroupByQuery[In, Out, (A, B, C)] =
-    new Query.GroupByQueryImpl[In, Out, (A, B, C)](
-      this,
-      x => (f(x), g(x), h(x)),
-      List(Tag[A].tag, Tag[B].tag, Tag[C].tag)
-    )
 }
 
 object Query {
@@ -558,7 +517,7 @@ object Query {
 
   final class OrderByQuery[In: Tag, Out: Tag, By](
     private[scalaql] val source:            Query[In, Out],
-    private[scalaql] val orderBy:           OrderBy[Out, By],
+    private[scalaql] val orderBy:           Out => By,
     private[scalaql] val orderingTag:       Option[LightTypeTag]
   )(private[scalaql] implicit val ordering: Ordering[By])
       extends Query[In, Out] {
@@ -572,12 +531,46 @@ object Query {
     }
   }
 
-  final class AggregateQuery[In: Tag, Out0, G, Out1: Tag](
+  final case class GroupingSetIndices(value: List[Int])
+  final case class GroupingSetsDescription(
+    values:           List[GroupingSetIndices],
+    orderings:        List[Ordering[Any]],
+    groupFillments:   Map[Int, Any => Any],
+    defaultFillments: Map[Int, Any])
+
+  final case class GroupKeys(keys: Map[Int, Any]) {
+    override lazy val hashCode: Int = MurmurHash3.orderedHash(
+      keys.toList
+        .sortBy { case (idx, _) => idx }
+        .map { case (_, k) => k }
+    )
+
+    override def equals(obj: Any): Boolean = obj match {
+      case rmk: GroupKeys => this.hashCode == rmk.hashCode
+      case _              => false
+    }
+
+    lazy val size: Int = keys.size
+
+    def apply(idx: Int): Any = keys(idx)
+    def subgroups(sets: GroupingSetsDescription): List[GroupKeys] =
+      sets.values.map { set =>
+        val sub = set.value.map { idx =>
+          idx -> keys(idx)
+        }.toMap
+
+        GroupKeys(sub)
+      }
+  }
+
+  final class AggregateQuery[In: Tag, Out0, Out1: Tag, Res: Tag](
     private[scalaql] val source:        Query[In, Out0],
-    private[scalaql] val group:         GroupBy[Out0, G],
-    private[scalaql] val agg:           Aggregate[G, Out0, Out1],
-    private[scalaql] val groupByString: String)
-      extends Query[In, Out1] {
+    private[scalaql] val group:         Out0 => GroupKeys,
+    private[scalaql] val groupingSets:  GroupingSetsDescription,
+    private[scalaql] val agg:           QueryExpressionBuilder[Out0] => Aggregation.Of[Out0, Out1],
+    private[scalaql] val groupByString: String,
+    private[scalaql] val buildRes:      List[Any] => Res)
+      extends Query[In, Res] {
 
     override def explain: QueryExplain =
       QueryExplain.Continuation(
@@ -614,61 +607,6 @@ object Query {
         QueryExplain.Single(s"WINDOW($partitionBy$orderBy => ${Tag[B].tag})")
       )
     }
-  }
-
-  sealed trait GroupByQuery[-In, +Out, +G] {
-
-    /**
-     * Applies the specified aggregation function to a grouped set of values.
-     * 
-     * Example:
-     * {{{
-     *   case class CountryStatistics(
-     *     name: String, 
-     *     population: Int, 
-     *     averageAge: Double
-     *   )
-     *   
-     *   select[Person]
-     *     .groupBy(_.country)
-     *     .aggregate((country, person) =>
-     *       (
-     *         person.size &&
-     *         person.avgBy(_.age.toDouble)
-     *       ).map { case (population, averageAge) => 
-     *         CountryStatistics(country, population, averageAge)
-     *       }
-     *     )
-     * }}}
-     * */
-    def aggregate[B: Tag](
-      f: Aggregate[G, Out, B] @uncheckedVariance
-    ): Query[In, B]
-  }
-
-  final class GroupByQueryImpl[In: Tag, Out: Tag, G](
-    private[scalaql] val source:       Query[In, Out],
-    private[scalaql] val group:        GroupBy[Out, G],
-    private[scalaql] val groupingTags: List[LightTypeTag])
-      extends GroupByQuery[In, Out, G] {
-
-    override def aggregate[B: Tag](
-      f: Aggregate[G, Out, B]
-    ): Query[In, B] =
-      new AggregateQuery[In, Out, G, B](
-        source,
-        group,
-        f,
-        groupByString
-      )
-
-    private def groupByString: String = {
-      val groups = tagsToString(groupingTags)
-      s"GROUP BY$groups"
-    }
-
-    override def toString: String =
-      QueryExplain.Continuation(source.explain, QueryExplain.Single(groupByString)).toString
   }
 
   final class InnerJoinPartiallyApplied[In <: From[?]: Tag, In2 <: From[?]: Tag, Out: Tag, Out2: Tag](
@@ -814,7 +752,7 @@ object Query {
       )
   }
 
-  private def tagsToString(tags: List[LightTypeTag]): String =
+  private[scalaql] def tagsToString(tags: List[LightTypeTag]): String =
     tags.mkString("(", ", ", ")")
 
   private val DefaultStrLength: Int = 20

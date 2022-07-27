@@ -1,13 +1,72 @@
 package scalaql
 
 import scalaql.fixture.*
-
 import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable
 import scala.util.Random
+import org.scalactic.Equality
 
 class BaseLineSpec extends ScalaqlUnitSpec {
   case class PeopleStats(profession: Profession, avgAge: Double)
+  case class PeopleRollupStats(profession: Option[Profession], avgAge: Double)
+
+  case class ProfessionStats(
+    profession: Profession,
+    avgAge:     Double,
+    industries: Set[Industry],
+    avgSalary:  BigDecimal)
+
+  private implicit val professionStatsEquality: Equality[ProfessionStats] =
+    new Equality[ProfessionStats] {
+      override def areEqual(a: ProfessionStats, b: Any): Boolean = b match {
+        case b: ProfessionStats =>
+          a.profession == b.profession && (a.avgAge === b.avgAge +- 0.01) &&
+          a.industries == b.industries && (a.avgSalary === b.avgSalary +- 0.01)
+        case _ => false
+      }
+    }
+
+  case class ProfessionStatsByAge(
+    profession:  Profession,
+    age:         Int,
+    industries:  Set[Industry],
+    totalSalary: BigDecimal,
+    avgSalary:   BigDecimal)
+
+  private implicit val professionStatsByAgeEquality: Equality[ProfessionStatsByAge] =
+    new Equality[ProfessionStatsByAge] {
+      override def areEqual(a: ProfessionStatsByAge, b: Any): Boolean = b match {
+        case b: ProfessionStatsByAge =>
+          a.profession == b.profession &&
+          a.age == b.age &&
+          a.industries == b.industries &&
+          (a.totalSalary === b.totalSalary +- 0.01) &&
+          (a.avgSalary === b.avgSalary +- 0.01)
+        case _ => false
+      }
+    }
+
+  case class ProfessionRollupStatsByAge(
+    profession:  Option[Profession],
+    isItGuy:     Option[Boolean],
+    lifeQuarter: Option[Int],
+    totalSalary: BigDecimal,
+    avgSalary:   BigDecimal,
+    industries:  Set[Industry])
+
+  private implicit val professionRollupStatsByAgeEquality: Equality[ProfessionRollupStatsByAge] =
+    new Equality[ProfessionRollupStatsByAge] {
+      override def areEqual(a: ProfessionRollupStatsByAge, b: Any): Boolean = b match {
+        case b: ProfessionRollupStatsByAge =>
+          a.profession == b.profession &&
+          a.isItGuy == b.isItGuy &&
+          a.lifeQuarter == b.lifeQuarter &&
+          (a.totalSalary === b.totalSalary +- 0.01) &&
+          (a.avgSalary === b.avgSalary +- 0.01) &&
+          a.industries == b.industries
+        case _ => false
+      }
+    }
 
   "scalaql" should {
     "correctly process query without input" in repeated {
@@ -16,12 +75,12 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       val query: Query[Any, String] =
         select
           .from(people)
-          .collect { case Person(name, _, Profession.Unemployed, _) =>
+          .collect { case Person(name, _, Profession.Unemployed, _, _) =>
             s"Unemployed $name"
           }
           .ordered
 
-      val expectedResult = people.collect { case Person(name, _, Profession.Unemployed, _) =>
+      val expectedResult = people.collect { case Person(name, _, Profession.Unemployed, _, _) =>
         s"Unemployed $name"
       }.sorted
 
@@ -194,14 +253,15 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       val query: Query[From[Person], PeopleStats] = select[Person]
         .groupBy(_.profession)
-        .aggregate((profession, person) => person.avgBy(_.age.toDouble).map(PeopleStats(profession, _)))
+        .aggregate(person => person.avgBy(_.age.toDouble))
+        .mapTo(PeopleStats)
 
       val expectedResult =
         people.groupBy(_.profession).map { case (profession, people) =>
           PeopleStats(profession, people.map(_.age).sum.toDouble / people.size)
         }
 
-      query.toList.run(from(people)) shouldEqual expectedResult
+      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
     "correctly process groupBy + aggregate with foldLeft and reduce" in repeated {
@@ -209,14 +269,11 @@ class BaseLineSpec extends ScalaqlUnitSpec {
 
       val query = select[Person]
         .groupBy(_.profession)
-        .aggregate((profession, people) =>
-          (
-            people.const(profession) &&
-              people.reduceBy(_.age)(_ + _) &&
-              people.foldLeft(Set.empty[Char]) { (letters, person) =>
-                letters ++ person.name.toLowerCase
-              }
-          )
+        .aggregate(people =>
+          people.reduceBy(_.age)(_ + _) &&
+            people.foldLeft(Set.empty[Char]) { (letters, person) =>
+              letters ++ person.name.toLowerCase
+            }
         )
 
       val expectedResult =
@@ -241,53 +298,52 @@ class BaseLineSpec extends ScalaqlUnitSpec {
     "correctly process multiple aggregations" in repeated {
       val people = arbitraryN[Person]
 
-      val query: Query[From[Person], (Profession, Double, Set[Profession], Set[Industry])] = select[Person]
+      val query: Query[From[Person], ProfessionStats] = select[Person]
         .groupBy(_.profession)
-        .aggregate { (profession, person) =>
-          person.const(profession) &&
+        .aggregate { person =>
           person.avgBy(_.age.toDouble) &&
-          person.distinctBy(_.profession) &&
-          person.flatDistinctBy(_.profession.industries)
+          person.distinctBy(_.industry) &&
+          person.avgBy(_.salary)
         }
+        .mapTo(ProfessionStats)
 
       val expectedResult =
         people.groupBy(_.profession).map { case (profession, people) =>
-          (
-            profession,
-            people.map(_.age.toDouble).sum / people.size,
-            people.map(_.profession).toSet,
-            people.flatMap(_.profession.industries).toSet
+          ProfessionStats(
+            profession = profession,
+            avgAge = people.map(_.age.toDouble).sum / people.size,
+            industries = people.map(_.industry).toSet,
+            avgSalary = people.map(_.salary).sum / people.size
           )
         }
 
-      query.toList.run(from(people)) shouldEqual expectedResult
+      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
     "correctly process groupBy with multiple columns" in repeated {
       val people = arbitraryN[Person]
 
-      val query: Query[From[Person], (Profession, Int, Set[Profession], Double, Int)] = select[Person]
+      val query: Query[From[Person], ProfessionStatsByAge] = select[Person]
         .groupBy(_.profession, _.age)
-        .aggregate { case ((profession, age), person) =>
-          person.const(profession) &&
-          person.const(age) &&
-          person.distinctBy(_.profession) &&
-          person.avgBy(_.age.toDouble) &&
-          person.sumBy(_.age)
+        .aggregate { person =>
+          person.distinctBy(_.industry) &&
+          person.sumBy(_.salary) &&
+          person.avgBy(_.salary)
         }
+        .mapTo(ProfessionStatsByAge)
 
       val expectedResult =
         people.groupBy(p => (p.profession, p.age)).map { case ((profession, age), people) =>
-          (
-            profession,
-            age,
-            people.map(_.profession).toSet,
-            people.map(_.age.toDouble).sum / people.size,
-            people.map(_.age).sum
+          ProfessionStatsByAge(
+            profession = profession,
+            age = age,
+            industries = people.map(_.industry).toSet,
+            totalSalary = people.map(_.salary).sum,
+            avgSalary = people.map(_.salary).sum / people.size
           )
         }
 
-      query.toList.run(from(people)) shouldEqual expectedResult
+      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
     "correctly process simple filterM + map + filter" in repeated {
@@ -535,6 +591,104 @@ class BaseLineSpec extends ScalaqlUnitSpec {
         people.zipWithIndex.flatMap { case (person, n) =>
           List.fill(n + 1)(person)
         }
+
+      query.toList.run(from(people)) should contain theSameElementsAs expectedResult
+    }
+
+    "correctly process simple groupBy with rollout + aggregate" in repeated {
+      val people = arbitraryN[Person]
+
+      val query: Query[From[Person], PeopleRollupStats] = select[Person]
+        .groupBy(_.profession.rollup)
+        .aggregate(person => person.avgBy(_.age.toDouble))
+        .mapTo(PeopleRollupStats)
+
+      val expectedResult = {
+        val baseAggregates =
+          people
+            .groupBy(_.profession)
+            .map { case (profession, people) =>
+              PeopleRollupStats(Some(profession), people.map(_.age.toDouble).sum / people.size)
+            }
+            .toList
+
+        baseAggregates.sortBy(_.profession) ::: List(
+          PeopleRollupStats(None, people.map(_.age.toDouble).sum / people.size)
+        )
+      }
+
+      query.toList.run(from(people)) shouldEqual expectedResult
+    }
+
+    "correctly process groupBy with rollout for multiple columns" in repeated {
+      val people = arbitraryN[Person].take(10)
+
+      val query: Query[From[Person], ProfessionRollupStatsByAge] = select[Person]
+        .groupBy(
+          _.profession.rollup,
+          _.profession.isIn(Profession.Developer, Profession.Manager).rollup,
+          p => (p.age % 4).rollup
+        )
+        .aggregate { person =>
+          person.sumBy(_.salary) &&
+          person.avgBy(_.salary) &&
+          person.distinctBy(_.industry)
+        }
+        .mapTo(ProfessionRollupStatsByAge)
+
+      val expectedResult = {
+        val level3Totals = people
+          .groupBy(p => (p.profession, p.profession.isIn(Profession.Developer, Profession.Manager), p.age % 4))
+          .map { case ((profession, isItGuy, lifeQuarter), people) =>
+            ProfessionRollupStatsByAge(
+              profession = Some(profession),
+              isItGuy = Some(isItGuy),
+              lifeQuarter = Some(lifeQuarter),
+              totalSalary = people.map(_.salary).sum,
+              avgSalary = people.map(_.salary).sum / people.size,
+              industries = people.map(_.industry).toSet
+            )
+          }
+
+        val level2Totals = people
+          .groupBy(p => (p.profession.isIn(Profession.Developer, Profession.Manager), p.age % 4))
+          .map { case ((isItGuy, lifeQuarter), people) =>
+            ProfessionRollupStatsByAge(
+              profession = None,
+              isItGuy = Some(isItGuy),
+              lifeQuarter = Some(lifeQuarter),
+              totalSalary = people.map(_.salary).sum,
+              avgSalary = people.map(_.salary).sum / people.size,
+              industries = people.map(_.industry).toSet
+            )
+          }
+
+        val level1Totals = people
+          .groupBy(p => p.age % 4)
+          .map { case (lifeQuarter, people) =>
+            ProfessionRollupStatsByAge(
+              profession = None,
+              isItGuy = None,
+              lifeQuarter = Some(lifeQuarter),
+              totalSalary = people.map(_.salary).sum,
+              avgSalary = people.map(_.salary).sum / people.size,
+              industries = people.map(_.industry).toSet
+            )
+          }
+
+        val level0Totals = List(
+          ProfessionRollupStatsByAge(
+            profession = None,
+            isItGuy = None,
+            lifeQuarter = None,
+            totalSalary = people.map(_.salary).sum,
+            avgSalary = people.map(_.salary).sum / people.size,
+            industries = people.map(_.industry).toSet
+          )
+        )
+
+        level0Totals ++ level1Totals ++ level2Totals ++ level3Totals
+      }
 
       query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }

@@ -3,7 +3,7 @@ package scalaql.csv
 import scalaql.Naming
 import scalaql.sources.columnar.{CodecPath, TableApiContext, TableApiWriteContext}
 
-case class CsvReadContext(location: CodecPath, naming: Naming, caseSensitive: Boolean)
+case class CsvReadContext(location: CodecPath, naming: Naming, caseSensitive: Boolean, emptyStringInOptions: Boolean)
     extends TableApiContext[CsvReadContext] {
 
   def getFieldName: String = {
@@ -39,10 +39,11 @@ case class CsvReadContext(location: CodecPath, naming: Naming, caseSensitive: Bo
 }
 
 object CsvReadContext {
-  def initial(naming: Naming, caseSensitive: Boolean): CsvReadContext = CsvReadContext(
+  def initial(naming: Naming, caseSensitive: Boolean, emptyStringInOptions: Boolean): CsvReadContext = CsvReadContext(
     location = CodecPath.Root,
     naming = naming,
-    caseSensitive = caseSensitive
+    caseSensitive = caseSensitive,
+    emptyStringInOptions = emptyStringInOptions
   )
 }
 

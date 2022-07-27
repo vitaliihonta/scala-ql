@@ -14,14 +14,15 @@ object Quoting {
 }
 
 case class CsvReadConfig(
-  delimiter:      Char,
-  quoteChar:      Char,
-  escapeChar:     Char,
-  lineTerminator: String,
-  quoting:        Quoting,
-  omitEmptyLines: Boolean,
-  naming:         Naming,
-  caseSensitive:  Boolean) { self =>
+  delimiter:            Char,
+  quoteChar:            Char,
+  escapeChar:           Char,
+  lineTerminator:       String,
+  quoting:              Quoting,
+  omitEmptyLines:       Boolean,
+  naming:               Naming,
+  caseSensitive:        Boolean,
+  emptyStringInOptions: Boolean) { self =>
 
   protected[scalaql] def toTototoshi: com.github.tototoshi.csv.CSVFormat =
     new com.github.tototoshi.csv.CSVFormat {
@@ -43,7 +44,8 @@ object CsvReadConfig {
     quoting = Quoting.QuoteMinimal,
     omitEmptyLines = false,
     naming = Naming.Literal,
-    caseSensitive = false
+    caseSensitive = false,
+    emptyStringInOptions = true
   )
 
   val tsv: CsvReadConfig = CsvReadConfig(
@@ -54,7 +56,8 @@ object CsvReadConfig {
     quoting = Quoting.QuoteNone,
     omitEmptyLines = false,
     naming = Naming.Literal,
-    caseSensitive = false
+    caseSensitive = false,
+    emptyStringInOptions = true
   )
 }
 

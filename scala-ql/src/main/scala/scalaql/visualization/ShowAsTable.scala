@@ -25,7 +25,7 @@ object ShowAsTableContext {
 
 @implicitNotFound(
   """
-Don't know how to visualize ${A} into table.
+Don't know how to visualize ${A} as table.
 Please ensure available implicits for all fields or provide your own instance of ShowAsTable"""
 )
 trait ShowAsTable[A] {

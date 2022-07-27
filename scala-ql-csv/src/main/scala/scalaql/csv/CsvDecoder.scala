@@ -135,7 +135,8 @@ trait LowPriorityCsvFieldDecoders extends CsvDecoderAutoDerivation {
           case Left(acc: CsvDecoderException.Accumulating)
               if acc.errors.forall(_.isInstanceOf[CsvDecoderException.FieldNotFound]) =>
             Right(None)
-          case other => other.map(Some(_))
+          case Right("") if !ctx.emptyStringInOptions => Right(None)
+          case other                                  => other.map(Some(_))
         }
     }
 }

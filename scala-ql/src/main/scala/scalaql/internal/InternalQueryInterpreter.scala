@@ -1,6 +1,7 @@
 package scalaql.internal
 
-import scalaql.{Aggregation, From, Query, Ranking, QueryExpressionBuilder, ToFrom}
+import izumi.reflect.macrortti.LightTypeTag
+import scalaql.{Aggregation, From, Query, QueryExpressionBuilder, Ranking, ToFrom}
 import scalaql.interpreter.QueryInterpreter
 
 import scala.collection.mutable
@@ -122,18 +123,79 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
         while (step.check() && outputs.hasNext)
           step.next(outputs.next())
 
-      case query: Query.AggregateQuery[In, out0, g, Out] =>
+      case query: Query.AggregateQuery[In, out0, aggRes, Out] =>
         import query.*
-        val tmpBuffer = ListBuffer.empty[out0]
+        type Acc = Any
+
+        // Hash code is more stable then lists
+        val accCache = mutable.Map.empty[Query.GroupKeys, Acc]
+
+        val aggregate = agg(QueryExpressionBuilder.create[out0]).asInstanceOf[Aggregation.Aux[out0, Any, aggRes]]
+
         interpret[In, out0](in, source)(
-          Step.always[out0](tmpBuffer += _)
+          Step.always[out0] { mid =>
+            group(mid).subgroups(groupingSets).foreach { subGroup =>
+              if (!accCache.contains(subGroup)) {
+                accCache += (subGroup -> aggregate.init())
+              }
+
+              // Update the accumulator and put back into cache
+              val acc     = accCache(subGroup)
+              val updated = aggregate.update(acc, mid)
+              accCache.update(subGroup, updated)
+            }
+          }
         )
-        val grouped = tmpBuffer.groupBy(group).iterator
-        while (step.check() && grouped.hasNext) {
-          val (gr, ys)   = grouped.next()
-          val aggregated = agg(gr, QueryExpressionBuilder.create[out0]).apply(ys.toList)
-          step.next(aggregated)
-        }
+
+        // Persist the group size
+        val groupKeysNum = groupingSets.values.size
+
+        val keysOrdering = new RollupGroupingKeyOrdering(groupingSets.orderings)
+//        println(accCache.keys.mkString("\n"))
+
+        // order before emitting
+        accCache.toList
+          .sortBy { case (k, _) => k }(keysOrdering)
+          .foreach { case (currentKeys, acc) =>
+            val res = aggregate.result(acc)
+
+            // Fillments for topper-level aggregations
+            val fillments = {
+              val available = currentKeys.keys.keySet
+              (0 until groupKeysNum)
+                .filterNot(available)
+                .flatMap { idx =>
+                  groupingSets.defaultFillments
+                    .get(idx)
+                    .map(idx -> _)
+                }
+                .toMap
+            }
+
+            val presentKeys = currentKeys.keys.flatMap { case (idx, key) =>
+              // Convert grouping key to it's fillment, e.g. wrap into Some(_) or just return the same value
+              groupingSets.groupFillments.get(idx).map(f => idx -> f(key))
+            }.toMap
+
+            // Merge keys before building a tuple.
+            val groupKeys = (fillments ++ presentKeys).toList
+              .sortBy { case (idx, _) => idx }
+              .map { case (_, v) => v }
+
+            // Build the tuple
+            val output = buildRes(groupKeys ::: List(res))
+
+            // Emmit
+            try
+              step.next(output)
+            catch {
+              case e =>
+                println("Ooops")
+                throw e
+            }
+          }
+
+        accCache.clear()
 
       case query: Query.WindowQuery[In, out0, res, Out] =>
         import query.*

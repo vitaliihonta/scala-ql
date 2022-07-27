@@ -12,6 +12,9 @@ trait ScalaqlSyntax
     with OrderingSyntax
     with AliasingSyntax
     with EachSyntax
+    with MapToSyntax
+    with GroupingSyntax
+    with RollupSyntax
     with VersionSpecificImplicits {
 
   final implicit def RunSyntax[In, Out](self: QueryResult[In, Out]): RunSyntax[In, Out] =
@@ -43,4 +46,7 @@ trait ScalaqlSyntax
 
   final implicit def WindowSyntax[In, Out](self: Query[In, Out]): WindowSyntax[In, Out] =
     new WindowSyntax[In, Out](self)
+//
+//  final implicit def GroupByRollupSyntax[In, Out](self: Query[In, Out]): GroupByRollupSyntax[In, Out] =
+//    new GroupByRollupSyntax[In, Out](self)
 }

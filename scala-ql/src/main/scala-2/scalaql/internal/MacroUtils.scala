@@ -1,7 +1,8 @@
 package scalaql.internal
 
 import scalaql.Tag
-import scalaql.syntax.{EachSyntaxIterable, EachSyntaxOption}
+import scalaql.syntax.{EachSyntaxIterable, EachSyntaxOption, RollupOps}
+
 import scala.annotation.tailrec
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
@@ -11,7 +12,10 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
 
   private val EachSyntaxIterable = weakTypeOf[EachSyntaxIterable[Any]].dealias.typeConstructor
   private val EachSyntaxOption   = weakTypeOf[EachSyntaxOption[Any]].dealias.typeConstructor
+  private val RollupOps          = weakTypeOf[RollupOps[Any]].dealias.typeConstructor
   private val Desc               = TermName("desc")
+
+  protected def freshTermName(name: String): TermName = c.freshName(TermName(name))
 
   protected def extractSelectorField(t: Tree): Option[TermName] = {
     val chain = getCallChain(t)
@@ -21,6 +25,22 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
   protected def getCallChain(t: Tree): CallChain =
     buildCallChain(t, CallChain(None, Nil, isFieldAccessor = false))
 
+  protected def summonImplicitT(t: Type): Tree =
+    c.inferImplicitValue(t, silent = false)
+
+  protected def summonImplicit[A: WeakTypeTag]: Tree =
+    summonImplicitT(weakTypeOf[A])
+
+  protected def summonOptionalImplicit[A: WeakTypeTag]: Option[Tree] =
+    summonOptionalImplicitT(weakTypeOf[A])
+
+  protected def summonOptionalImplicitT(t: Type): Option[Tree] =
+    try
+      Some(summonImplicitT(t))
+    catch {
+      case _: c.TypecheckException => None
+    }
+
   protected def getOrdering[B](callChain: CallChain, ordering: Expr[Ordering[B]]): Expr[Ordering[B]] =
     callChain.chain.lastOption match {
       case Some(Desc) =>
@@ -29,7 +49,7 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
     }
 
   protected def summonTag[A: WeakTypeTag]: Tree =
-    c.inferImplicitValue(weakTypeOf[Tag[A]], silent = false)
+    summonImplicit[Tag[A]]
 
   protected def getPrefixOf[Prefix: WeakTypeTag]: Expr[Prefix] = {
     val Prefix = weakTypeOf[Prefix]
@@ -54,9 +74,13 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
           acc.copy(chain = fieldName :: acc.chain, isFieldAccessor = acc.obj.exists(_.name == idt.name))
         case Select(qualifier, name) =>
           buildCallChain(qualifier, acc.copy(chain = name.toTermName :: acc.chain))
-        case Apply(callable, List(inner))
-            if callable.tpe.resultType.typeConstructor <:< EachSyntaxIterable | callable.tpe.resultType.typeConstructor <:< EachSyntaxOption =>
-          buildCallChain(inner, acc)
+        case Apply(callable, List(inner)) =>
+          val tc = callable.tpe.resultType.typeConstructor
+          if (tc <:< EachSyntaxIterable || tc <:< EachSyntaxOption || tc <:< RollupOps) {
+            buildCallChain(inner, acc)
+          } else {
+            acc
+          }
         case _ => acc
       }
 

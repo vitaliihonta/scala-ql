@@ -2,6 +2,7 @@ package scalaql.fixture
 
 import org.scalacheck.Arbitrary
 import org.scalacheck.Gen
+import scalaql.visualization.ShowAsTable
 import spire.algebra.Eq
 
 sealed trait Industry extends Product with Serializable
@@ -15,6 +16,8 @@ object Industry {
 
   implicit val eq: Eq[Industry]               = Eq.fromUniversalEquals[Industry]
   implicit val arbitrary: Arbitrary[Industry] = Arbitrary(Gen.oneOf(values))
+
+  implicit val showAsTable: ShowAsTable.Field[Industry] = ShowAsTable.fieldToString[Industry]
 }
 
 case class Company(name: String, industry: Industry)
@@ -37,7 +40,7 @@ object Office {
     for {
       name    <- Gen.alphaStr
       company <- Gen.oneOf(companies)
-      floors  <- Gen.oneOf(1 to 50)
+      floors  <- Gen.chooseNum(1, 50)
     } yield Office(name, company.name, floors)
   )
 }
@@ -68,22 +71,31 @@ object Profession {
   case object FraudSecurityManager extends Profession(List(Industry.Fintech))
   case object Unemployed           extends Profession(Nil)
 
-  val values: List[Profession] = List(Developer, Manager, Unemployed)
+  val values: List[Profession] = List(Developer, Manager, Unemployed, FraudSecurityManager, Unemployed)
 
   implicit val eq: Eq[Profession]               = Eq.fromUniversalEquals[Profession]
   implicit val arbitrary: Arbitrary[Profession] = Arbitrary(Gen.oneOf(values))
+
+  implicit val showAsTable: ShowAsTable.Field[Profession] = ShowAsTable.fieldToString[Profession]
+  implicit val ordering: Ordering[Profession]             = Ordering.by((_: Profession).toString)
 }
 
-case class Person(name: String, age: Int, profession: Profession, industry: Industry)
+case class Person(
+  name:       String,
+  age:        Int,
+  profession: Profession,
+  industry:   Industry,
+  salary:     BigDecimal)
 
 object Person {
 
   implicit val arbitrary: Arbitrary[Person] = Arbitrary(
     for {
       name       <- Gen.alphaStr
-      age        <- Gen.oneOf(1 to 80)
+      age        <- Gen.chooseNum(1, 80)
       industry   <- Arbitrary.arbitrary[Industry]
       profession <- Gen.oneOf(Profession.values.filter(_.industries contains industry))
-    } yield Person(name, age, profession, industry)
+      salary     <- Gen.chooseNum(BigDecimal(50000), BigDecimal(100000))
+    } yield Person(name, age, profession, industry, salary)
   )
 }

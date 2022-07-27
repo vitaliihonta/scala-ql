@@ -88,7 +88,7 @@ case class ByAge(age: Int, grades: List[BySpec])
 case class ByFaculty(faculty: String, grades: List[ByAge])
 ```
 
-Then, you could define the aggreagtion as follows:  
+Then, you could define the aggregation as follows:  
 
 ```scala mdoc
 val byFacultyReportQuery: Query[From[Student], ByFaculty] =

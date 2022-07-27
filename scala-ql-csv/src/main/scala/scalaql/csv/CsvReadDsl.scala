@@ -23,14 +23,15 @@ class CsvReadDsl[A](override val config: CsvReadConfig)
     withConfig(config.copy(caseSensitive = caseSensitive))
 
   def options(
-    delimiter:      Char = config.delimiter,
-    quoteChar:      Char = config.quoteChar,
-    escapeChar:     Char = config.escapeChar,
-    lineTerminator: String = config.lineTerminator,
-    quoting:        Quoting = config.quoting,
-    omitEmptyLines: Boolean = config.omitEmptyLines,
-    naming:         Naming = config.naming,
-    caseSensitive:  Boolean = config.caseSensitive
+    delimiter:            Char = config.delimiter,
+    quoteChar:            Char = config.quoteChar,
+    escapeChar:           Char = config.escapeChar,
+    lineTerminator:       String = config.lineTerminator,
+    quoting:              Quoting = config.quoting,
+    omitEmptyLines:       Boolean = config.omitEmptyLines,
+    naming:               Naming = config.naming,
+    caseSensitive:        Boolean = config.caseSensitive,
+    emptyStringInOptions: Boolean = config.emptyStringInOptions
   ): CsvReadDsl[A] =
     withConfig(
       config.copy(
@@ -41,7 +42,8 @@ class CsvReadDsl[A](override val config: CsvReadConfig)
         quoting = quoting,
         omitEmptyLines = omitEmptyLines,
         naming = naming,
-        caseSensitive = caseSensitive
+        caseSensitive = caseSensitive,
+        emptyStringInOptions = emptyStringInOptions
       )
     )
 }
