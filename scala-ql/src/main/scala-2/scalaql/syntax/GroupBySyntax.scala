@@ -27,6 +27,22 @@ final class GroupBySyntax[In, Out](@internalApi val self: Query[In, Out]) extend
     macro GroupBySyntaxMacro.groupBy2Impl[In, Out, A, B]
 
   /**
+   * Entrypoint for performing aggregations (with grouping sets) on this query.
+   *
+   * @tparam A the first grouping key type
+   * @tparam B the second grouping key type
+   * @param f1 extracts the first grouping key
+   * @param f2 extracts the second grouping key
+   * @param groupingSets grouping sets
+   * */
+  def groupByGroupingSets[A, B](
+    f1:           Out => A,
+    f2:           Out => B
+  )(groupingSets: (A, B) => Product
+  ): GroupedQuery2[In, Out, Option[A], Option[B]] =
+    macro GroupBySyntaxMacro.groupBy2GroupingSetsImpl[In, Out, A, B]
+
+  /**
    * Entrypoint for performing aggregations on this query.
    *
    * @tparam A the first grouping key type

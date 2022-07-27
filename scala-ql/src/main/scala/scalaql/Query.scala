@@ -531,9 +531,9 @@ object Query {
     }
   }
 
-  final case class GroupingSet(value: List[Int])
-  final case class GroupingSets(
-    values:           List[GroupingSet],
+  final case class GroupingSetIndices(value: List[Int])
+  final case class GroupingSetsDescription(
+    values:           List[GroupingSetIndices],
     orderings:        List[Ordering[Any]],
     groupFillments:   Map[Int, Any => Any],
     defaultFillments: Map[Int, Any])
@@ -553,7 +553,7 @@ object Query {
     lazy val size: Int = keys.size
 
     def apply(idx: Int): Any = keys(idx)
-    def subgroups(sets: GroupingSets): List[GroupKeys] =
+    def subgroups(sets: GroupingSetsDescription): List[GroupKeys] =
       sets.values.map { set =>
         val sub = set.value.map { idx =>
           idx -> keys(idx)
@@ -566,7 +566,7 @@ object Query {
   final class AggregateQuery[In: Tag, Out0, Out1: Tag, Res: Tag](
     private[scalaql] val source:        Query[In, Out0],
     private[scalaql] val group:         Out0 => GroupKeys,
-    private[scalaql] val groupingSets:  GroupingSets,
+    private[scalaql] val groupingSets:  GroupingSetsDescription,
     private[scalaql] val agg:           QueryExpressionBuilder[Out0] => Aggregation.Of[Out0, Out1],
     private[scalaql] val groupByString: String,
     private[scalaql] val buildRes:      List[Any] => Res)

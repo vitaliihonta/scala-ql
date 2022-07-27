@@ -19,6 +19,12 @@ object GroupByRollupSpec {
     employeeId:   Option[Long],
     totalFreight: Double,
     avgFreight:   Double)
+
+  case class OrderStatsRollupGSets(
+    customerId:   Option[String],
+    shipCountry:  Option[String],
+    totalFreight: Double,
+    avgFreight:   Double)
 }
 
 class GroupByRollupSpec extends ScalaqlUnitSpec {
@@ -114,6 +120,57 @@ class GroupByRollupSpec extends ScalaqlUnitSpec {
       assert(actualResult.size == expectedResult.size)
 
       actualResult should contain theSameElementsAs expectedResult
+    }
+
+    // TODO: check this one, at least it compiles
+    "correctly process groupBy with grouping sets" in {
+      val query = select[Order]
+        // TODO: choose between (1) or (2)
+        .where(_.shipCountry isIn ("Poland", "USA"))
+        //(1)   .groupBy(p =>
+        //     groupingSets(
+        //       (p.customerId, p.shipCountry),
+        //       p.customerId,
+        //       p.shipCountry,
+        //       ()
+        //     )
+        //
+        //   VS
+        //
+        //(2)  .groupByGroupingSets(_.customerId, _.shipCountry)((customerId, shipCountry) =>
+        //  (
+        //    (customerId, shipCountry),
+        //    customerId,
+        //    shipCountry,
+        //    ()
+        //  )
+        //)
+        //
+        .groupByGroupingSets(_.customerId, _.shipCountry)((customerId, shipCountry) =>
+          (
+            (customerId, shipCountry),
+            customerId,
+            shipCountry,
+            ()
+          )
+        )
+        .aggregate(order => order.sumBy(_.freight) && order.avgBy(_.freight))
+        .mapTo(OrderStatsRollupGSets)
+        .orderBy(_.customerId, _.shipCountry)
+
+      val actualResult = query
+        // .toList
+        .show(truncate = false, numRows = 200)
+        .run(
+          from(
+            csv
+              .read[Order]
+              .option(Naming.Capitalize)
+              .file(
+                Paths.get("integration-tests/src/test/resources/input/_Order__202207251611.csv")
+              )
+          )
+        )
     }
   }
 }
