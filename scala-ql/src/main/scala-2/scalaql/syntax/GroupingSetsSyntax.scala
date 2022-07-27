@@ -1,6 +1,5 @@
 package scalaql.syntax
 
-import scala.annotation.compileTimeOnly
 import scala.language.implicitConversions
 
 trait GroupingSetsSyntax {
@@ -17,6 +16,5 @@ final class GroupingSetsOps[A](val self: A) extends AnyVal {
 }
 
 final class GroupingSetsFillNAOps[A](val self: Option[A]) extends AnyVal {
-  @compileTimeOnly("fillna should be used only inside groupBy, after rollup or cube")
-  def fillna(value: A): A = ???
+  def fillna(value: A): A = self.get
 }

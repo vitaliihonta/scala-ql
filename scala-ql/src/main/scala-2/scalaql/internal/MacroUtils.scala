@@ -12,7 +12,7 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
 
   private val EachSyntaxIterable = weakTypeOf[EachSyntaxIterable[Any]].dealias.typeConstructor
   private val EachSyntaxOption   = weakTypeOf[EachSyntaxOption[Any]].dealias.typeConstructor
-  private val RollupOps          = weakTypeOf[GroupingSetsOps[Any]].dealias.typeConstructor
+  private val GroupingSetsOps    = weakTypeOf[GroupingSetsOps[Any]].dealias.typeConstructor
   private val Desc               = TermName("desc")
 
   protected def freshTermName(name: String): TermName = c.freshName(TermName(name))
@@ -76,7 +76,7 @@ abstract class MacroUtils(val c: blackbox.Context)(prefix: String) {
           buildCallChain(qualifier, acc.copy(chain = name.toTermName :: acc.chain))
         case Apply(callable, List(inner)) =>
           val tc = callable.tpe.resultType.typeConstructor
-          if (tc <:< EachSyntaxIterable || tc <:< EachSyntaxOption || tc <:< RollupOps) {
+          if (tc <:< EachSyntaxIterable || tc <:< EachSyntaxOption || tc <:< GroupingSetsOps) {
             buildCallChain(inner, acc)
           } else {
             acc
