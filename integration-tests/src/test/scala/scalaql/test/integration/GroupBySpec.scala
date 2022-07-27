@@ -147,11 +147,15 @@ class GroupBySpec extends ScalaqlUnitSpec {
     }
 
     "correctly process simple groupBy with rollup with fillna" in {
-      // SELECT "CustomerId", "ShipCountry", MAX("Freight") as "MaxFreight", AVG("Freight") as "AvgFreight"
+      // SELECT
+      //   coalesce("CustomerId", 'All customers') as "CustomerId",
+      //   coalesce("ShipCountry", 'All countries') as "ShipCountry",
+      //   MAX("Freight") as "MaxFreight",
+      //   AVG("Freight") as "AvgFreight"
       // FROM public."Order"
-      //  where "ShipCountry"  in ('Poland', 'USA')
-      //  group by rollup ("ShipCountry", "CustomerId")
-      //  order by "CustomerId" nulls first, "ShipCountry"
+      // where "ShipCountry"  in ('Poland', 'USA')
+      // group by rollup ("ShipCountry", "CustomerId")
+      // order by "CustomerId" nulls first, "ShipCountry"
       val query = select[Order]
         .where(_.shipCountry isIn ("Poland", "USA"))
         .groupBy(
