@@ -32,7 +32,7 @@ sealed trait GroupedQuery[In, Out] {
   }
 }
 
-final class GroupedQuery1[In, Out, F] private[scalaql] (
+final class GroupedQuery1[In, Out, F] @internalApi() (
   override protected val source: Query[In, Out],
   group:                         Out => Any,
   groupingSets:                  Query.GroupingSetsDescription
@@ -87,7 +87,7 @@ final class GroupedQuery1[In, Out, F] private[scalaql] (
     )
 }
 
-final class GroupedQuery2[In, Out, F1, F2] private[scalaql] (
+final class GroupedQuery2[In, Out, F1, F2] @internalApi() (
   override protected val source: Query[In, Out],
   group1:                        Out => Any,
   group2:                        Out => Any,
@@ -146,7 +146,7 @@ final class GroupedQuery2[In, Out, F1, F2] private[scalaql] (
     )
 }
 
-final class GroupedQuery3[In, Out, F1, F2, F3] private[scalaql] (
+final class GroupedQuery3[In, Out, F1, F2, F3] @internalApi() (
   override protected val source: Query[In, Out],
   group1:                        Out => Any,
   group2:                        Out => Any,

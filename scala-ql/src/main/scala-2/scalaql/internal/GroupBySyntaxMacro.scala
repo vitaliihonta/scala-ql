@@ -34,7 +34,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
     val query         = getPrefixOf[GroupBySyntax[In, Out]]
     val GroupedQuery1 = weakTypeOf[GroupedQuery1[In, Out, A]].dealias
     val meta          = getGroupingMeta[Out, A](f)
-    val groupingSets  = buildGroupingSets(List(meta))
+    val groupingSets  = buildGroupingSets(List(meta.widen))
 
     val InTag  = summonTag[In]
     val OutTag = summonTag[Out]
@@ -59,7 +59,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 
     val meta1        = getGroupingMeta[Out, A](f1)
     val meta2        = getGroupingMeta[Out, B](f2)
-    val groupingSets = buildGroupingSets(List(meta1, meta2))
+    val groupingSets = buildGroupingSets(List(meta1.widen, meta2.widen))
 
     val InTag  = summonTag[In]
     val OutTag = summonTag[Out]
@@ -87,7 +87,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
 
     val meta1            = getGroupingMeta[Out, A](f1)
     val meta2            = getGroupingMeta[Out, B](f2)
-    val groupingSetsTree = extractGroupingSets(groupingSets.tree, List(meta1, meta2))
+    val groupingSetsTree = extractGroupingSets(groupingSets.tree, List(meta1.widen, meta2.widen))
 
     val InTag  = summonTag[In]
     val OutTag = summonTag[Out]
@@ -115,7 +115,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
     val meta1        = getGroupingMeta[Out, A](f1)
     val meta2        = getGroupingMeta[Out, B](f2)
     val meta3        = getGroupingMeta[Out, C](f3)
-    val groupingSets = buildGroupingSets(List(meta1, meta2, meta3))
+    val groupingSets = buildGroupingSets(List(meta1.widen, meta2.widen, meta3.widen))
 
     val InTag  = summonTag[In]
     val OutTag = summonTag[Out]
@@ -132,7 +132,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
     )
   }
 
-  private def getGroupingMeta[Out: WeakTypeTag, A: WeakTypeTag](f: Expr[Out => A]): GroupingMeta[Tree] = {
+  private def getGroupingMeta[Out: WeakTypeTag, A: WeakTypeTag](f: Expr[Out => A]): GroupingMeta[Expr, Out, A] = {
     val Out = weakTypeOf[Out].dealias
     val A   = weakTypeOf[A].dealias
 
@@ -189,28 +189,31 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
         val defaultFillments = defaultFillOverrideOpt
           .orElse[Tree](Some(q"""_root_.scala.None"""))
 
-        GroupingMeta[Tree](
-          groupFuncBody = group,
+        GroupingMeta[Expr, Out, A](
+          groupFuncBody = c.Expr[Out => A](group),
           kind = kind,
-          ordering = q"$ordering.asInstanceOf[$AnyOrdering]",
-          groupFillments = groupFillment,
-          defaultFillments = defaultFillments
+          ordering = c.Expr[Ordering[A]](q"$ordering.asInstanceOf[$AnyOrdering]"),
+          groupFillments = c.Expr[Any => Any](groupFillment),
+          defaultFillments = defaultFillments.map(c.Expr[Any](_))
         )
       case _ =>
-        val group = f.tree
+        val group = f
         val kind  = KindSimple
-        val ordering = summonOptionalImplicit[Ordering[A]]
-          .getOrElse(reify(NaturalOrdering[A]).tree)
+        val ordering = c.Expr[Ordering[A]] {
+          val base = summonOptionalImplicit[Ordering[A]]
+            .getOrElse(reify(NaturalOrdering[A]).tree)
+          q"$base.asInstanceOf[$AnyOrdering]"
+        }
         val groupFillment = {
           val a = freshTermName("a")
           q"""($a: $Any) => $a"""
         }
         val defaultFillments = None
-        GroupingMeta[Tree](
+        GroupingMeta[Expr, Out, A](
           groupFuncBody = group,
           kind = kind,
-          ordering = q"$ordering.asInstanceOf[$AnyOrdering]",
-          groupFillments = groupFillment,
+          ordering = ordering,
+          groupFillments = c.Expr[Any => Any](groupFillment),
           defaultFillments = defaultFillments
         )
     }
@@ -227,7 +230,10 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
     typeOf[Tuple8.type].dealias
   )
 
-  private def extractGroupingSets(groupingSet: Tree, metas: List[GroupingMeta[Tree]]): Tree = {
+  private def extractGroupingSets(
+    groupingSet: Tree,
+    metas:       List[GroupingMeta[Expr, Any, Any]]
+  ): Expr[Query.GroupingSetsDescription] = {
     def toGroupings(tree: Tree, names: Map[Name, Int]): List[Int] =
 //      println(tree)
 //      println(tree.getClass)
@@ -266,28 +272,30 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
     }
     val defaultFills = metasWithIndex.map { case (_, idx) => q"""$idx -> _root_.scala.None""" }
 
-    q"""
-      _root_.scalaql.Query.GroupingSetsDescription(
-        values = List(..$sets),
-        orderings = List(..$orderings),
-        groupFillments = Map(..$groupFills),
-        defaultFillments = Map(..$defaultFills)
-      )
-      """
-  }
-
-  private def buildGroupingSets(metas: List[GroupingMeta[Tree]]): Tree =
-    GroupByMacroSharedUtils.buildGroupingSets[Tree](metas)(
-      error,
-      toGroupFills = (m, idx) => q"""$idx -> ${m.groupFillments}""",
-      toDefaultFills = (df, idx) => q"""$idx -> $df""",
-      buildTree = (sets, orderings, groupFills, defaultFills) => q"""
+    c.Expr[Query.GroupingSetsDescription](
+      q"""
         _root_.scalaql.Query.GroupingSetsDescription(
           values = List(..$sets),
           orderings = List(..$orderings),
           groupFillments = Map(..$groupFills),
           defaultFillments = Map(..$defaultFills)
         )
-      """
+        """
+    )
+  }
+
+  private def buildGroupingSets(metas: List[GroupingMeta[Expr, Any, Any]]): Expr[Query.GroupingSetsDescription] =
+    GroupByMacroSharedUtils.buildGroupingSets[Expr](metas)(
+      error,
+      toGroupFills = (m, idx) => c.Expr[(Int, Any => Any)](q"""$idx -> ${m.groupFillments}"""),
+      toDefaultFills = (df, idx) => c.Expr[(Int, Any)](q"""$idx -> $df"""),
+      buildTree = (sets, orderings, groupFills, defaultFills) => c.Expr[Query.GroupingSetsDescription](q"""
+        _root_.scalaql.Query.GroupingSetsDescription(
+          values = List(..$sets),
+          orderings = List(..$orderings),
+          groupFillments = Map(..$groupFills),
+          defaultFillments = Map(..$defaultFills)
+        )
+      """)
     )
 }

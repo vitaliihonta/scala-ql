@@ -10,20 +10,27 @@ private[scalaql] object GroupByMacroSharedUtils {
   case object KindCube   extends GroupingKind
 
   /** @tparam Tree the concrete tree implementation */
-  case class GroupingMeta[Tree](
-    groupFuncBody:    Tree,
+  case class GroupingMeta[Expr[_], A, B](
+    groupFuncBody:    Expr[A => B],
     kind:             GroupingKind,
-    ordering:         Tree,
-    groupFillments:   Tree,
-    defaultFillments: Option[Tree])
+    ordering:         Expr[Ordering[B]],
+    groupFillments:   Expr[Any => Any],
+    defaultFillments: Option[Expr[Any]]) {
+    def widen: GroupingMeta[Expr, Any, Any] = this.asInstanceOf[GroupingMeta[Expr, Any, Any]]
+  }
 
-  def buildGroupingSets[Tree](
-    metas:          List[GroupingMeta[Tree]]
+  def buildGroupingSets[Expr[_]](
+    metas:          List[GroupingMeta[Expr, Any, Any]]
   )(error:          String => Nothing,
-    toGroupFills:   (GroupingMeta[Tree], Int) => Tree,
-    toDefaultFills: (Tree, Int) => Tree,
-    buildTree:      (List[Query.GroupingSetIndices], List[Tree], List[Tree], List[Tree]) => Tree
-  ): Tree = {
+    toGroupFills:   (GroupingMeta[Expr, Any, Any], Int) => Expr[(Int, Any => Any)],
+    toDefaultFills: (Expr[Any], Int) => Expr[(Int, Any)],
+    buildTree: (
+      List[Query.GroupingSetIndices],
+      List[Expr[Ordering[Any]]],
+      List[Expr[(Int, Any => Any)]],
+      List[Expr[(Int, Any)]]
+    ) => Expr[Query.GroupingSetsDescription]
+  ): Expr[Query.GroupingSetsDescription] = {
     val kinds     = metas.map(_.kind).toSet
     val nonSimple = kinds - KindSimple
     if (nonSimple.size > 1) {

@@ -15,7 +15,17 @@ object Scala3MacroUtils {
   ): List[Call] = {
     import q.reflect.*
 
-    Expr.betaReduce(f).asTerm.underlying match {
+    accessorCallPathTerm(Expr.betaReduce(f).asTerm, onUncmached)
+  }
+
+  def accessorCallPathTerm(
+    using q:     Quotes
+  )(f:           q.reflect.Term,
+    onUncmached: (q.reflect.Term, List[Call]) => List[Call]
+  ): List[Call] = {
+    import q.reflect.*
+
+    f.underlying match {
       case Block(List(DefDef(_, _, _, Some(term))), _) =>
         selectorPath(term, onUncmached)
       case term =>
