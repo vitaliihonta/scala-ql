@@ -2,7 +2,7 @@ package scalaql.internal
 
 import scalaql.*
 import scalaql.syntax.{GroupBySyntax, GroupingSetsFillNAOps}
-
+import GroupByMacroSharedUtils.*
 import scala.reflect.macros.blackbox
 
 class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)("groupBy") {
@@ -17,17 +17,6 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
   private val Any                   = typeOf[Any]
   private val AnyOrdering           = typeOf[Ordering[Any]]
   private val OrderingTC            = AnyOrdering.typeConstructor
-
-  private sealed trait GroupingKind
-  private case object KindSimple extends GroupingKind
-  private case object KindRollup extends GroupingKind
-  private case object KindCube   extends GroupingKind
-  private case class GroupingMeta(
-    groupFuncBody:    Tree,
-    kind:             GroupingKind,
-    ordering:         Tree,
-    groupFillments:   Tree,
-    defaultFillments: Option[Tree])
 
   private implicit val LiftableGroupingSetIndices: Liftable[Query.GroupingSetIndices] =
     Liftable[Query.GroupingSetIndices] { set =>
@@ -143,7 +132,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
     )
   }
 
-  private def getGroupingMeta[Out: WeakTypeTag, A: WeakTypeTag](f: Expr[Out => A]): GroupingMeta = {
+  private def getGroupingMeta[Out: WeakTypeTag, A: WeakTypeTag](f: Expr[Out => A]): GroupingMeta[Tree] = {
     val Out = weakTypeOf[Out].dealias
     val A   = weakTypeOf[A].dealias
 
@@ -200,7 +189,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
         val defaultFillments = defaultFillOverrideOpt
           .orElse[Tree](Some(q"""_root_.scala.None"""))
 
-        GroupingMeta(
+        GroupingMeta[Tree](
           groupFuncBody = group,
           kind = kind,
           ordering = q"$ordering.asInstanceOf[$AnyOrdering]",
@@ -217,7 +206,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
           q"""($a: $Any) => $a"""
         }
         val defaultFillments = None
-        GroupingMeta(
+        GroupingMeta[Tree](
           groupFuncBody = group,
           kind = kind,
           ordering = q"$ordering.asInstanceOf[$AnyOrdering]",
@@ -238,7 +227,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
     typeOf[Tuple8.type].dealias
   )
 
-  private def extractGroupingSets(groupingSet: Tree, metas: List[GroupingMeta]): Tree = {
+  private def extractGroupingSets(groupingSet: Tree, metas: List[GroupingMeta[Tree]]): Tree = {
     def toGroupings(tree: Tree, names: Map[Name, Int]): List[Int] =
 //      println(tree)
 //      println(tree.getClass)
@@ -287,57 +276,18 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
       """
   }
 
-  private def buildGroupingSets(metas: List[GroupingMeta]): Tree = {
-    val kinds     = metas.map(_.kind).toSet
-    val nonSimple = kinds - KindSimple
-    if (nonSimple.size > 1) {
-      error(
-        s"It is not allowed to mix ${nonSimple.mkString(" and ")} in a single groupBy. Try to express this logic with grouping sets"
-      )
-    }
-    val metasWithIndex = metas.zipWithIndex
-//    println(s"metasWithIndex=$metasWithIndex")
-    val sets = {
-      val isSimple     = nonSimple.isEmpty
-      def allNonSimple = metas.forall(_.kind != KindSimple)
-      if (isSimple) {
-        List(Query.GroupingSetIndices(metasWithIndex.map { case (_, idx) => idx }))
-      } else {
-        nonSimple.head match {
-          case KindSimple =>
-            error(FatalExceptions.libraryErrorMessage(s"Non-simple grouping kinds contains KindSimple metas=$metas"))
-          case KindRollup if allNonSimple =>
-            metasWithIndex.tails.map(tail => Query.GroupingSetIndices(tail.map { case (_, idx) => idx })).toList
-          case KindCube | KindRollup =>
-            val (partialKeys, subtotalKeys) = metasWithIndex.partition { case (m, _) => m.kind == KindSimple }
-
-            val subtotals = (1 until subtotalKeys.size).flatMap { n =>
-              subtotalKeys
-                .map { case (_, idx) => idx }
-                .combinations(n)
-                .filterNot(_.isEmpty)
-                .map(sub => Query.GroupingSetIndices((sub.toList ++ partialKeys.map { case (_, idx) => idx }).distinct))
-            }.toList
-
-            val partial = Query.GroupingSetIndices(partialKeys.map { case (_, idx) => idx })
-            val all     = Query.GroupingSetIndices(metasWithIndex.map { case (_, idx) => idx })
-
-            (all :: partial :: subtotals).distinct.reverse
-        }
-      }
-    }
-
-    val orderings    = metas.map(_.ordering)
-    val groupFills   = metasWithIndex.map { case (m, idx) => q"""$idx -> ${m.groupFillments}""" }
-    val defaultFills = metasWithIndex.flatMap { case (m, idx) => m.defaultFillments.map(df => q"""$idx -> $df""") }
-
-    q"""
-      _root_.scalaql.Query.GroupingSetsDescription(
-        values = List(..$sets),
-        orderings = List(..$orderings),
-        groupFillments = Map(..$groupFills),
-        defaultFillments = Map(..$defaultFills)
-      )
+  private def buildGroupingSets(metas: List[GroupingMeta[Tree]]): Tree =
+    GroupByMacroSharedUtils.buildGroupingSets[Tree](metas)(
+      error,
+      toGroupFills = (m, idx) => q"""$idx -> ${m.groupFillments}""",
+      toDefaultFills = (df, idx) => q"""$idx -> $df""",
+      buildTree = (sets, orderings, groupFills, defaultFills) => q"""
+        _root_.scalaql.Query.GroupingSetsDescription(
+          values = List(..$sets),
+          orderings = List(..$orderings),
+          groupFillments = Map(..$groupFills),
+          defaultFillments = Map(..$defaultFills)
+        )
       """
-  }
+    )
 }
