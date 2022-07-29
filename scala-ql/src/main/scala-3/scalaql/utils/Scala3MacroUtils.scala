@@ -2,6 +2,7 @@ package scalaql.utils
 
 import scala.annotation.tailrec
 import scala.quoted.*
+import scala.compiletime.summonFrom
 
 object Scala3MacroUtils {
 
@@ -69,4 +70,10 @@ object Scala3MacroUtils {
       case other =>
         ordering
     }
+
+  inline def summonOption[A]: Option[A] = summonFrom {
+    case v: A => Some(v)
+    case _    => None
+  }
+
 }
