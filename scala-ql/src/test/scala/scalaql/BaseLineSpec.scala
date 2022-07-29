@@ -696,6 +696,3 @@ class BaseLineSpec extends ScalaqlUnitSpec {
   private def distinctBy[A, B](values: List[A])(f: A => B): List[A] =
     values.groupBy(f).map { case (_, v) => v.head }.toList
 }
-
-//  PeopleRollupStats(None,32.13559322033898), PeopleRollupStats(Some(Developer),23.571428571428573), PeopleRollupStats(Some(FraudSecurityManager),67.0), PeopleRollupStats(Some(Manager),34.65384615384615))
-//  PeopleRollupStats(None,32.13559322033898), PeopleRollupStats(Some(Developer),23.571428571428573), PeopleRollupStats(Some(FraudSecurityManager),67.0), PeopleRollupStats(Some(Manager),34.65384615384615))
