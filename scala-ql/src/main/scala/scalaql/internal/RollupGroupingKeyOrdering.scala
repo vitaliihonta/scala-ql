@@ -29,7 +29,7 @@ private[scalaql] class RollupGroupingKeyOrdering(orders: List[Ordering[Any]]) ex
 
       if (result == 0 && sizeX != sizeY) {
         // if one of keys is subset of another - the shorter one is greater
-        sizeY - sizeX
+        sizeX - sizeY
       } else result
     }
 }

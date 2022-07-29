@@ -595,7 +595,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
-    "correctly process simple groupBy with rollout + aggregate" in repeated {
+    "correctly process simple groupBy with rollup + aggregate" in repeated {
       val people = arbitraryN[Person]
 
       val query: Query[From[Person], PeopleRollupStats] = select[Person]
@@ -612,9 +612,8 @@ class BaseLineSpec extends ScalaqlUnitSpec {
             }
             .toList
 
-        baseAggregates.sortBy(_.profession) ::: List(
-          PeopleRollupStats(None, people.map(_.age.toDouble).sum / people.size)
-        )
+        PeopleRollupStats(None, people.map(_.age.toDouble).sum / people.size) ::
+          baseAggregates.sortBy(_.profession)
       }
 
       query.toList.run(from(people)) shouldEqual expectedResult
@@ -697,3 +696,6 @@ class BaseLineSpec extends ScalaqlUnitSpec {
   private def distinctBy[A, B](values: List[A])(f: A => B): List[A] =
     values.groupBy(f).map { case (_, v) => v.head }.toList
 }
+
+//  PeopleRollupStats(None,32.13559322033898), PeopleRollupStats(Some(Developer),23.571428571428573), PeopleRollupStats(Some(FraudSecurityManager),67.0), PeopleRollupStats(Some(Manager),34.65384615384615))
+//  PeopleRollupStats(None,32.13559322033898), PeopleRollupStats(Some(Developer),23.571428571428573), PeopleRollupStats(Some(FraudSecurityManager),67.0), PeopleRollupStats(Some(Manager),34.65384615384615))
