@@ -531,7 +531,8 @@ object Query {
     }
   }
 
-  final case class GroupingSetIndices(value: List[Int])
+  /* Using alias to avoid implementing Liftable/ToExpr for the case class*/
+  final type GroupingSetIndices = List[Int]
   final case class GroupingSetsDescription(
     values:           List[GroupingSetIndices],
     orderings:        List[Ordering[Any]],
@@ -555,7 +556,7 @@ object Query {
     def apply(idx: Int): Any = keys(idx)
     def subgroups(sets: GroupingSetsDescription): List[GroupKeys] =
       sets.values.map { set =>
-        val sub = set.value.map { idx =>
+        val sub = set.map { idx =>
           idx -> keys(idx)
         }.toMap
 

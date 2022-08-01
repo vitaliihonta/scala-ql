@@ -2,7 +2,7 @@ package scalaql.internal
 
 import scalaql.Query
 
-private[scalaql] object GroupByMacroSharedUtils {
+object GroupByMacroSharedUtils {
 
   sealed trait GroupingKind
   case object KindSimple extends GroupingKind
@@ -13,7 +13,7 @@ private[scalaql] object GroupByMacroSharedUtils {
   case class GroupingMeta[Expr[_], A, B](
     groupFuncBody:    Expr[A => B],
     kind:             GroupingKind,
-    ordering:         Expr[Ordering[B]],
+    ordering:         Expr[Ordering[Any]],
     groupFillments:   Expr[Any => Any],
     defaultFillments: Option[Expr[Any]]) {
     def widen: GroupingMeta[Expr, Any, Any] = this.asInstanceOf[GroupingMeta[Expr, Any, Any]]
@@ -44,13 +44,13 @@ private[scalaql] object GroupByMacroSharedUtils {
       val isSimple     = nonSimple.isEmpty
       def allNonSimple = metas.forall(_.kind != KindSimple)
       if (isSimple) {
-        List(Query.GroupingSetIndices(metasWithIndex.map { case (_, idx) => idx }))
+        List(metasWithIndex.map { case (_, idx) => idx })
       } else {
         nonSimple.head match {
           case KindSimple =>
             error(FatalExceptions.libraryErrorMessage(s"Non-simple grouping kinds contains KindSimple metas=$metas"))
           case KindRollup if allNonSimple =>
-            metasWithIndex.tails.map(tail => Query.GroupingSetIndices(tail.map { case (_, idx) => idx })).toList
+            metasWithIndex.tails.map(tail => tail.map { case (_, idx) => idx }).toList
           case KindCube | KindRollup =>
             val (partialKeys, subtotalKeys) = metasWithIndex.partition { case (m, _) => m.kind == KindSimple }
 
@@ -59,11 +59,11 @@ private[scalaql] object GroupByMacroSharedUtils {
                 .map { case (_, idx) => idx }
                 .combinations(n)
                 .filterNot(_.isEmpty)
-                .map(sub => Query.GroupingSetIndices((sub.toList ++ partialKeys.map { case (_, idx) => idx }).distinct))
+                .map(sub => (sub.toList ++ partialKeys.map { case (_, idx) => idx }).distinct)
             }.toList
 
-            val partial = Query.GroupingSetIndices(partialKeys.map { case (_, idx) => idx })
-            val all     = Query.GroupingSetIndices(metasWithIndex.map { case (_, idx) => idx })
+            val partial = partialKeys.map { case (_, idx) => idx }
+            val all     = metasWithIndex.map { case (_, idx) => idx }
 
             (all :: partial :: subtotals).distinct.reverse
         }

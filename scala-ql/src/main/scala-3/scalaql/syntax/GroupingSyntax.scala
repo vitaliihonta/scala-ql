@@ -54,8 +54,8 @@ object GroupingSyntax {
     import q.reflect.*
 
     val (chainTree, groupFillOverrideOpt, defaultFillOverrideOpt) = Expr.betaReduce(f).asTerm.underlying match {
-      case Block(List(DefDef(_, List(param), tpt, Some(Select(qual, sym)))), _) =>
-        println(s"GroupingMeta param=$param qual=$qual sym=$sym")
+      case Block(List(DefDef(_, List(param), tpt, Some(Select(qual, Rollup | Cube)))), _) =>
+        println(s"GroupingMeta param=$param qual=$qual")
         ???
       case Block(List(DefDef(_, List(param), tpt, Some(Apply(fun, args)))), _) =>
         println(s"GroupingMeta param=$param cls=${fun.getClass} fun=$fun size=${args.size} args=$args")
@@ -70,8 +70,9 @@ object GroupingSyntax {
       case _ =>
         val group = f
         val kind  = KindSimple
-        val ordering = summonOption[Ordering[A]]
-          .getOrElse(NaturalOrdering[A])
+        val ordering = Expr
+          .summon[Ordering[A]]
+          .getOrElse('{ NaturalOrdering[A] })
 
         val groupFillment   = '{ (a: Any) => a }
         val defaultFillment = None
@@ -79,7 +80,7 @@ object GroupingSyntax {
         GroupingMeta[Expr, Out, A](
           groupFuncBody = group,
           kind = kind,
-          ordering = ordering, // TODO: fix
+          ordering = '{$ordering.asInstanceOf[Ordering[Any]]},
           groupFillments = groupFillment,
           defaultFillments = defaultFillment
         )
@@ -98,7 +99,7 @@ object GroupingSyntax {
       buildTree = (sets, orderings, groupFills, defaultFills) =>
         '{
           Query.GroupingSetsDescription(
-            values = sets,
+            values = ${ Expr(sets) },
             orderings = ${ Expr.ofList(orderings) },
             groupFillments = ${ Expr.ofList(groupFills) }.toMap,
             defaultFillments = ${ Expr.ofList(defaultFills) }.toMap

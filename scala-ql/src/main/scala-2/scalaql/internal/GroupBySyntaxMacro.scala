@@ -18,15 +18,6 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
   private val AnyOrdering           = typeOf[Ordering[Any]]
   private val OrderingTC            = AnyOrdering.typeConstructor
 
-  private implicit val LiftableGroupingSetIndices: Liftable[Query.GroupingSetIndices] =
-    Liftable[Query.GroupingSetIndices] { set =>
-      val res =
-        Apply(q"_root_.scalaql.Query.GroupingSetIndices", List(implicitly[Liftable[List[Int]]].apply(set.value)))
-
-//      println(s"Lifted $res")
-      res
-    }
-
   def groupBy1Impl[In: WeakTypeTag, Out: WeakTypeTag, A: WeakTypeTag](
     f: Expr[Out => A]
   ): Expr[GroupedQuery1[In, Out, A]] = {
@@ -192,14 +183,14 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
         GroupingMeta[Expr, Out, A](
           groupFuncBody = c.Expr[Out => A](group),
           kind = kind,
-          ordering = c.Expr[Ordering[A]](q"$ordering.asInstanceOf[$AnyOrdering]"),
+          ordering = c.Expr[Ordering[Any]](q"$ordering.asInstanceOf[$AnyOrdering]"),
           groupFillments = c.Expr[Any => Any](groupFillment),
           defaultFillments = defaultFillments.map(c.Expr[Any](_))
         )
       case _ =>
         val group = f
         val kind  = KindSimple
-        val ordering = c.Expr[Ordering[A]] {
+        val ordering = c.Expr[Ordering[Any]] {
           val base = summonOptionalImplicit[Ordering[A]]
             .getOrElse(reify(NaturalOrdering[A]).tree)
           q"$base.asInstanceOf[$AnyOrdering]"

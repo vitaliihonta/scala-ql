@@ -80,10 +80,4 @@ object Scala3MacroUtils {
       case other =>
         ordering
     }
-
-  inline def summonOption[A]: Option[A] = summonFrom {
-    case v: A => Some(v)
-    case _    => None
-  }
-
 }
