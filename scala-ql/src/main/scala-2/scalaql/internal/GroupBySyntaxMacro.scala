@@ -156,7 +156,9 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
     callChain.chain.lastOption match {
       case Some(term @ (Rollup | Cube)) =>
         println(s"Rollup/Cube A=$A targs=${A.dealias.typeArgs}")
-        val theIn = A.dealias.typeArgs.headOption
+        val theIn = Some(A.dealias)
+          .filter(_ <:< typeOf[Option[Any]])
+          .flatMap(_.typeArgs.headOption)
           // in case of fillna, A is not option
           .getOrElse(A)
         val out = freshTermName("out")

@@ -27,8 +27,13 @@ object Scala3MacroUtils {
 
     f.underlying match {
       case Block(List(DefDef(_, _, _, Some(term))), _) =>
+        println(s"Matched root $term")
+        selectorPath(term, onUncmached)
+      // case for rollup/cube
+      case term @ Apply(_, _) =>
         selectorPath(term, onUncmached)
       case term =>
+        println(s"Unmatched root $term")
         onUncmached(term, Nil)
     }
   }

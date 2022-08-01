@@ -595,29 +595,29 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
-//    "correctly process simple groupBy with rollup + aggregate" in repeated {
-//      val people = arbitraryN[Person]
-//
-//      val query: Query[From[Person], PeopleRollupStats] = select[Person]
-//        .groupBy(_.profession.rollup)
-//        .aggregate(person => person.avgBy(_.age.toDouble))
-//        .mapTo(PeopleRollupStats)
-//
-//      val expectedResult = {
-//        val baseAggregates =
-//          people
-//            .groupBy(_.profession)
-//            .map { case (profession, people) =>
-//              PeopleRollupStats(Some(profession), people.map(_.age.toDouble).sum / people.size)
-//            }
-//            .toList
-//
-//        PeopleRollupStats(None, people.map(_.age.toDouble).sum / people.size) ::
-//          baseAggregates.sortBy(_.profession)
-//      }
-//
-//      query.toList.run(from(people)) shouldEqual expectedResult
-//    }
+    "correctly process simple groupBy with rollup + aggregate" in repeated {
+      val people = arbitraryN[Person]
+
+      val query: Query[From[Person], PeopleRollupStats] = select[Person]
+        .groupBy(_.profession.rollup)
+        .aggregate(person => person.avgBy(_.age.toDouble))
+        .mapTo(PeopleRollupStats)
+
+      val expectedResult = {
+        val baseAggregates =
+          people
+            .groupBy(_.profession)
+            .map { case (profession, people) =>
+              PeopleRollupStats(Some(profession), people.map(_.age.toDouble).sum / people.size)
+            }
+            .toList
+
+        PeopleRollupStats(None, people.map(_.age.toDouble).sum / people.size) ::
+          baseAggregates.sortBy(_.profession)
+      }
+
+      query.toList.run(from(people)) shouldEqual expectedResult
+    }
 
 //    "correctly process groupBy with rollout for multiple columns" in repeated {
 //      val people = arbitraryN[Person].take(10)

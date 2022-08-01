@@ -36,6 +36,7 @@ object GroupingSyntax {
 
   private val Rollup = "rollup"
   private val Cube   = "cube"
+  private val Fillna = "fillna"
 
   def groupByImpl[In: Type, Out: Type, A: Type](
     self:    Expr[Query[In, Out]],
@@ -50,23 +51,81 @@ object GroupingSyntax {
     }
   }
 
-  def getGroupingMeta[Out: Type, A: Type](f: Expr[Out => A])(using q: Quotes): GroupingMeta[Expr, Out, A] = {
+  def getGroupingMeta[Out: Type, A](f: Expr[Out => A])(using q: Quotes, A: Type[A]): GroupingMeta[Expr, Out, A] = {
     import q.reflect.*
 
     val (chainTree, groupFillOverrideOpt, defaultFillOverrideOpt) = Expr.betaReduce(f).asTerm.underlying match {
       case Block(List(DefDef(_, List(param), tpt, Some(Select(qual, Rollup | Cube)))), _) =>
         println(s"GroupingMeta param=$param qual=$qual")
         ???
-      case Block(List(DefDef(_, List(param), tpt, Some(Apply(fun, args)))), _) =>
-        println(s"GroupingMeta param=$param cls=${fun.getClass} fun=$fun size=${args.size} args=$args")
-        ???
+      case Block(
+            List(
+              DefDef(_,
+                     List(param),
+                     tpt,
+                     Some(
+                       Apply(
+                         Apply(
+                           TypeApply(
+                             Ident(Fillna),
+                             _
+                           ),
+                           List(
+                             body @ Apply(
+                               TypeApply(Ident(Rollup | Cube), _),
+                               _
+                             )
+                           )
+                         ),
+                         List(fillment)
+                       )
+                     )
+              )
+            ),
+            _
+          ) =>
+        println(s"GroupingMeta fillna param=$param cls=${body.getClass} body=$body fillment=$fillment")
+        (body, Some('{ (fill: Any) => fill }), Some(fillment.asExpr))
       case other => (other, None, None)
     }
 
     val callChain: List[Call] = Scala3MacroUtils.accessorCallPathTerm(chainTree, ignoreUnmatched)
+    println(s"Call chain=$callChain")
     callChain.lastOption match {
       case Some(Call(term @ (Rollup | Cube), _)) =>
-        ???
+        val (theIn, orderingOpt) = A match {
+          case '[Option[t]] =>
+            Type.of[t] -> Expr.summon[Ordering[t]]
+          case _ => A -> Expr.summon[Ordering[A]]
+        }
+
+        println(s"The in is ${Type.show(using theIn)}")
+
+        val ordering = orderingOpt.getOrElse(
+          sys.error(
+            s"Implicit ordering for grouping key is required in case of rollup/cube. Not found Ordering of ${Type.show(using theIn)}"
+          )
+        )
+
+        val group = groupFillOverrideOpt
+          .map(_ => f)
+          .getOrElse('{ (out: Out) => $f(out).asInstanceOf[Option[Any]].get })
+
+        val kind = if (term == Cube) KindCube else KindRollup
+
+        val groupFillment = groupFillOverrideOpt
+          .getOrElse('{ (a: Any) => Some(a) })
+
+        val defaultFillments = defaultFillOverrideOpt
+          .orElse(Some[Expr[Any]]('{ None }))
+
+        GroupingMeta[Expr, Out, A](
+          groupFuncBody = group.asInstanceOf[Expr[Out => A]],
+          kind = kind,
+          ordering = '{ $ordering.asInstanceOf[Ordering[Any]] },
+          groupFillments = groupFillment,
+          defaultFillments = defaultFillments
+        )
       case _ =>
         val group = f
         val kind  = KindSimple
@@ -80,7 +139,7 @@ object GroupingSyntax {
         GroupingMeta[Expr, Out, A](
           groupFuncBody = group,
           kind = kind,
-          ordering = '{$ordering.asInstanceOf[Ordering[Any]]},
+          ordering = '{ $ordering.asInstanceOf[Ordering[Any]] },
           groupFillments = groupFillment,
           defaultFillments = defaultFillment
         )
