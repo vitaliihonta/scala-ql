@@ -6,7 +6,6 @@ import scala.language.experimental.macros
 
 final class GroupBySyntax[In, Out](@internalApi val __scalaql_self: Query[In, Out]) extends AnyVal {
 
-  // TODO: Implement for scala3
   def groupBy[A](f: Out => A): GroupedQuery1[In, Out, A] =
     macro GroupBySyntaxMacro.groupBy1Impl[In, Out, A]
 
@@ -24,6 +23,7 @@ final class GroupBySyntax[In, Out](@internalApi val __scalaql_self: Query[In, Ou
   ): GroupedQuery2[In, Out, A, B] =
     macro GroupBySyntaxMacro.groupBy2Impl[In, Out, A, B]
 
+  // TODO: add arity 3
   /**
    * Entrypoint for performing aggregations (with grouping sets) on this query.
    *

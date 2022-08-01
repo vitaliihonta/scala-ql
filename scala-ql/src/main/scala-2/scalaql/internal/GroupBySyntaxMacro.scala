@@ -255,7 +255,7 @@ class GroupBySyntaxMacro(override val c: blackbox.Context) extends MacroUtils(c)
         }
     }
 
-    val sets      = groupingIndices.map(Query.GroupingSetIndices)
+    val sets      = groupingIndices
     val orderings = metas.map(_.ordering)
 
     val metasWithIndex = metas.zipWithIndex

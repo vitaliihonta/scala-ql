@@ -4,6 +4,7 @@ import scala.annotation.tailrec
 import scala.quoted.*
 import scala.compiletime.summonFrom
 
+// TODO: add error method (like in macro 2)
 object Scala3MacroUtils {
 
   case class Call(name: String, method: Boolean)
@@ -27,13 +28,13 @@ object Scala3MacroUtils {
 
     f.underlying match {
       case Block(List(DefDef(_, _, _, Some(term))), _) =>
-        println(s"Matched root $term")
+//        println(s"Matched root $term")
         selectorPath(term, onUncmached)
       // case for rollup/cube
       case term @ Apply(_, _) =>
         selectorPath(term, onUncmached)
       case term =>
-        println(s"Unmatched root $term")
+//        println(s"Unmatched root $term")
         onUncmached(term, Nil)
     }
   }
