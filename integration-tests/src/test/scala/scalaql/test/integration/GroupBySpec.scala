@@ -22,6 +22,7 @@ object GroupBySpec {
   case class OrderStatsCube(
     customerId:   Option[String],
     shipCountry:  Option[String],
+    shipVia:      Option[Long],
     totalFreight: Double,
     avgFreight:   Double)
 
@@ -221,16 +222,17 @@ class GroupBySpec extends ScalaqlUnitSpec {
     }
 
     "correctly process groupBy with multiple cube" in {
-      // SELECT "CustomerId", "ShipCountry", SUM("Freight") as "TotalFreight", AVG("Freight") as "AvgFreight" FROM public."Order"
-      //      where "ShipCountry"  in ('Poland', 'USA')
-      //      group by
-      //        cube ("CustomerId", "ShipCountry")
-      //      order by "CustomerId" nulls first, "ShipCountry"
+      // SELECT "CustomerId", "ShipCountry", "ShipVia", SUM("Freight") as "TotalFreight", AVG("Freight") as "AvgFreight" FROM public."Order"
+      //  where "ShipCountry"  in ('Poland', 'USA')
+      //  group by
+      //  cube ("CustomerId", "ShipCountry", "ShipVia")
+      //  order by "CustomerId" nulls first, "ShipCountry"
       val query = select[Order]
         .where(_.shipCountry isIn ("Poland", "USA"))
         .groupBy(
           _.customerId.cube,
-          _.shipCountry.cube
+          _.shipCountry.cube,
+          _.shipVia.cube
         )
         .aggregate(order => order.sumBy(_.freight) && order.avgBy(_.freight))
         .mapTo(OrderStatsCube)

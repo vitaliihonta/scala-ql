@@ -3,13 +3,13 @@ package scalaql.internal
 import scalaql.*
 import scala.language.implicitConversions
 
-private[scalaql] object NaturalOrdering extends Ordering[Any] {
+object NaturalOrdering extends Ordering[Any] {
   override def compare(x: Any, y: Any): Int = 1
   def apply[A]: Ordering[A]                 = NaturalOrdering.asInstanceOf[Ordering[A]]
 }
 
 // DO NOT USE AS SORTED MAP ORDERING, IT MAY PRODUCE STRANGE RESULTS
-private[scalaql] class RollupGroupingKeyOrdering(orders: List[Ordering[Any]]) extends Ordering[Query.GroupKeys] {
+final class RollupGroupingKeyOrdering(orders: List[Ordering[Any]]) extends Ordering[Query.GroupKeys] {
   override def compare(xs: Query.GroupKeys, ys: Query.GroupKeys): Int =
     if (xs.hashCode == ys.hashCode) 0
     else {
@@ -29,7 +29,7 @@ private[scalaql] class RollupGroupingKeyOrdering(orders: List[Ordering[Any]]) ex
 
       if (result == 0 && sizeX != sizeY) {
         // if one of keys is subset of another - the shorter one is greater
-        sizeY - sizeX
+        sizeX - sizeY
       } else result
     }
 }

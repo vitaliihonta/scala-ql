@@ -595,7 +595,7 @@ class BaseLineSpec extends ScalaqlUnitSpec {
       query.toList.run(from(people)) should contain theSameElementsAs expectedResult
     }
 
-    "correctly process simple groupBy with rollout + aggregate" in repeated {
+    "correctly process simple groupBy with rollup + aggregate" in repeated {
       val people = arbitraryN[Person]
 
       val query: Query[From[Person], PeopleRollupStats] = select[Person]
@@ -612,9 +612,8 @@ class BaseLineSpec extends ScalaqlUnitSpec {
             }
             .toList
 
-        baseAggregates.sortBy(_.profession) ::: List(
-          PeopleRollupStats(None, people.map(_.age.toDouble).sum / people.size)
-        )
+        PeopleRollupStats(None, people.map(_.age.toDouble).sum / people.size) ::
+          baseAggregates.sortBy(_.profession)
       }
 
       query.toList.run(from(people)) shouldEqual expectedResult
