@@ -20,13 +20,13 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
   case class Metadata(id: UUID, createdAt: LocalDateTime)
   case class NestedPersonOption(names: Names, metadata: Option[Metadata])
 
-  case class PeopleStatsPerIsProgrammer2(
+  case class PeopleStats(
     isProgrammer:         Option[Boolean],
     birthYear:            Option[Int],
     avgWorkingExperience: Double,
-    records:              List[PersonRecord2])
+    records:              List[PersonRecord])
 
-  case class PersonRecord2(
+  case class PersonRecord(
     id:                     UUID,
     name:                   String,
     workingExperienceYears: Int,
@@ -117,7 +117,7 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
           people.avgBy(_.workingExperienceYears.toDouble) &&
           people
             .toListOf(person =>
-              PersonRecord2(
+              PersonRecord(
                 id = person.id,
                 name = person.name,
                 workingExperienceYears = person.workingExperienceYears,
@@ -127,10 +127,10 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
             )
             .withoutSubtotals
         }
-        .mapTo(PeopleStatsPerIsProgrammer2)
+        .mapTo(PeopleStats)
         .foreach(
           html
-            .write[PeopleStatsPerIsProgrammer2]
+            .write[PeopleStats]
             .string(resultBuilder)
         )
         .run(
@@ -169,8 +169,8 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
     "write html with styles" in {
       val resultBuilder = new mutable.StringBuilder
 
-      val styling: HtmlStyling[PeopleStatsPerIsProgrammer2] = HtmlStyling
-        .builder[PeopleStatsPerIsProgrammer2]
+      val styling: HtmlStyling[PeopleStats] = HtmlStyling
+        .builder[PeopleStats]
         .forHeader(_.isProgrammer, List(backgroundColor := "green", border := "3px solid #000"))
         .forHeader(_.birthYear, List(backgroundColor := "yellow", border := "3px solid #000"))
         .forHeader(_.avgWorkingExperience, List(backgroundColor := "yellow", border := "3px solid #000"))
@@ -232,7 +232,7 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
           people.avgBy(_.workingExperienceYears.toDouble) &&
           people
             .toListOf(person =>
-              PersonRecord2(
+              PersonRecord(
                 id = person.id,
                 name = person.name,
                 workingExperienceYears = person.workingExperienceYears,
@@ -242,10 +242,10 @@ class ScalaqlHtmlSupportSpec extends ScalaqlUnitSpec {
             )
             .withoutSubtotals
         }
-        .mapTo(PeopleStatsPerIsProgrammer2)
+        .mapTo(PeopleStats)
         .foreach(
           html
-            .write[PeopleStatsPerIsProgrammer2]
+            .write[PeopleStats]
             .option(Naming.WithSpacesCapitalize)
             .option(styling)
             .options(
