@@ -10,34 +10,14 @@ import scala.collection.mutable.ListBuffer
 @forbiddenInheritance
 trait AggregationFunctions {
 
-  trait AggregateWithSubtotals[A] extends Aggregation[A] {
-    protected def updateImpl(acc: Acc, value: A): Acc
-
-    override def update(acc: Acc, value: A, isSubtotal: Boolean): Acc =
-      updateImpl(acc, value)
-  }
-
-  final class AggregateIgnoreSubtotals[A, Acc0, Out0](base: Aggregation.Aux[A, Acc0, Out0]) extends Aggregation[A] {
-    override type Out = Out0
-    override type Acc = Acc0
-
-    override def init(): Acc0 = base.init()
-
-    override def update(acc: Acc0, value: A, isSubtotal: Boolean): Acc0 =
-      if (isSubtotal) acc
-      else base.update(acc, value, isSubtotal)
-
-    override def result(acc: Acc0): Out0 = base.result(acc)
-  }
-
-  final class Const[A](value: A) extends AggregateWithSubtotals[Any] {
+  final class Const[A](value: A) extends Aggregation[Any] {
 
     override type Out = A
     override type Acc = Unit
 
-    override def init(): Unit                            = ()
-    override def updateImpl(acc: Unit, value: Any): Unit = ()
-    override def result(acc: Unit): A                    = value
+    override def init(): Unit                        = ()
+    override def update(acc: Unit, value: Any): Unit = ()
+    override def result(acc: Unit): A                = value
   }
 
   final class Contramapped[A0, A, Acc0, B](base: Aggregation.Aux[A, Acc0, B], f: A0 => A) extends Aggregation[A0] {
@@ -45,9 +25,9 @@ trait AggregationFunctions {
     override type Out = B
     override type Acc = Acc0
 
-    override def init(): Acc                                             = base.init()
-    override def update(acc: Acc0, value: A0, isSubtotal: Boolean): Acc0 = base.update(acc, f(value), isSubtotal)
-    override def result(acc: Acc0): B                                    = base.result(acc)
+    override def init(): Acc                        = base.init()
+    override def update(acc: Acc0, value: A0): Acc0 = base.update(acc, f(value))
+    override def result(acc: Acc0): B               = base.result(acc)
   }
 
   final class Mapped[A, Out0, Acc0, B](base: Aggregation.Aux[A, Acc0, Out0], f: Out0 => B) extends Aggregation[A] {
@@ -55,9 +35,9 @@ trait AggregationFunctions {
     override type Out = B
     override type Acc = Acc0
 
-    override def init(): Acc0                                           = base.init()
-    override def update(acc: Acc0, value: A, isSubtotal: Boolean): Acc0 = base.update(acc, value, isSubtotal)
-    override def result(acc: Acc0): B                                   = f(base.result(acc))
+    override def init(): Acc0                      = base.init()
+    override def update(acc: Acc0, value: A): Acc0 = base.update(acc, value)
+    override def result(acc: Acc0): B              = f(base.result(acc))
   }
 
   final class Chained[A, Out0, Out1, Acc0, Acc1, U](
@@ -70,9 +50,9 @@ trait AggregationFunctions {
     override type Acc = (Acc0, Acc1)
 
     override def init(): (Acc0, Acc1) = f.init() -> g.init()
-    override def update(acc: (Acc0, Acc1), value: A, isSubtotal: Boolean): (Acc0, Acc1) = {
+    override def update(acc: (Acc0, Acc1), value: A): (Acc0, Acc1) = {
       val (acc0, acc1) = acc
-      f.update(acc0, value, isSubtotal) -> g.update(acc1, value, isSubtotal)
+      f.update(acc0, value) -> g.update(acc1, value)
     }
 
     override def result(acc: (Acc0, Acc1)): U = {
@@ -81,132 +61,132 @@ trait AggregationFunctions {
     }
   }
 
-  trait Unoptimized[A] extends AggregateWithSubtotals[A] {
+  trait Unoptimized[A] extends Aggregation[A] {
     protected type By
     protected def by(value: A): By
     protected def apply(xs: Iterable[By]): Out
 
     override final type Acc = mutable.ListBuffer[By]
-    override final def init(): mutable.ListBuffer[By]                            = mutable.ListBuffer.empty[By]
-    override final def updateImpl(acc: ListBuffer[By], value: A): ListBuffer[By] = acc += by(value)
-    override final def result(acc: ListBuffer[By]): Out                          = apply(acc)
+    override final def init(): mutable.ListBuffer[By]                        = mutable.ListBuffer.empty[By]
+    override final def update(acc: ListBuffer[By], value: A): ListBuffer[By] = acc += by(value)
+    override final def result(acc: ListBuffer[By]): Out                      = apply(acc)
   }
 
-  final class ToList[A] extends AggregateWithSubtotals[A] {
+  final class ToList[A] extends Aggregation[A] {
     override type Out = List[A]
     override type Acc = mutable.Builder[A, List[A]]
 
     override def init(): Acc = List.newBuilder[A]
 
-    override def updateImpl(acc: mutable.Builder[A, List[A]], value: A): mutable.Builder[A, List[A]] =
+    override def update(acc: mutable.Builder[A, List[A]], value: A): mutable.Builder[A, List[A]] =
       acc += value
 
     override def result(acc: mutable.Builder[A, List[A]]): List[A] = acc.result()
   }
 
-  final class ToListOf[A, B](f: A => B) extends AggregateWithSubtotals[A] {
+  final class ToListOf[A, B](f: A => B) extends Aggregation[A] {
     override type Out = List[B]
 
     override type Acc = mutable.Builder[B, List[B]]
 
     override def init(): Acc = List.newBuilder[B]
 
-    override def updateImpl(acc: mutable.Builder[B, List[B]], value: A): mutable.Builder[B, List[B]] =
+    override def update(acc: mutable.Builder[B, List[B]], value: A): mutable.Builder[B, List[B]] =
       acc += f(value)
 
     override def result(acc: mutable.Builder[B, List[B]]): List[B] = acc.result()
   }
 
-  final class Distinct[A] extends AggregateWithSubtotals[A] {
+  final class Distinct[A] extends Aggregation[A] {
     override type Out = Set[A]
     override type Acc = mutable.Builder[A, Set[A]]
 
     override def init(): Acc = Set.newBuilder[A]
 
-    override def updateImpl(acc: mutable.Builder[A, Set[A]], value: A): mutable.Builder[A, Set[A]] =
+    override def update(acc: mutable.Builder[A, Set[A]], value: A): mutable.Builder[A, Set[A]] =
       acc += value
 
     override def result(acc: mutable.Builder[A, Set[A]]): Set[A] = acc.result()
   }
 
-  final class DistinctBy[A, B](f: A => B) extends AggregateWithSubtotals[A] {
+  final class DistinctBy[A, B](f: A => B) extends Aggregation[A] {
     override type Out = Set[B]
     override type Acc = mutable.Builder[B, Set[B]]
 
     override def init(): Acc = Set.newBuilder[B]
 
-    override def updateImpl(acc: mutable.Builder[B, Set[B]], value: A): mutable.Builder[B, Set[B]] =
+    override def update(acc: mutable.Builder[B, Set[B]], value: A): mutable.Builder[B, Set[B]] =
       acc += f(value)
 
     override def result(acc: mutable.Builder[B, Set[B]]): Set[B] = acc.result()
   }
 
-  final class FlatDistinctBy[A, B](f: A => Iterable[B]) extends AggregateWithSubtotals[A] {
+  final class FlatDistinctBy[A, B](f: A => Iterable[B]) extends Aggregation[A] {
     override type Out = Set[B]
     override type Acc = mutable.Builder[B, Set[B]]
 
     override def init(): Acc = Set.newBuilder[B]
 
-    override def updateImpl(acc: mutable.Builder[B, Set[B]], value: A): mutable.Builder[B, Set[B]] =
+    override def update(acc: mutable.Builder[B, Set[B]], value: A): mutable.Builder[B, Set[B]] =
       acc ++= f(value)
 
     override def result(acc: mutable.Builder[B, Set[B]]): Set[B] = acc.result()
   }
 
-  final class Sum[A](ev: AdditiveMonoid[A]) extends AggregateWithSubtotals[A] {
+  final class Sum[A](ev: AdditiveMonoid[A]) extends Aggregation[A] {
     override type Out = A
     override type Acc = A
 
-    override def init(): A                       = ev.zero
-    override def updateImpl(acc: A, value: A): A = ev.plus(acc, value)
-    override def result(acc: A): A               = acc
+    override def init(): A                   = ev.zero
+    override def update(acc: A, value: A): A = ev.plus(acc, value)
+    override def result(acc: A): A           = acc
   }
 
-  final class SumBy[A, B](f: A => B, ev: AdditiveMonoid[B]) extends AggregateWithSubtotals[A] {
+  final class SumBy[A, B](f: A => B, ev: AdditiveMonoid[B]) extends Aggregation[A] {
     override type Out = B
     override type Acc = B
 
-    override def init(): B                       = ev.zero
-    override def updateImpl(acc: B, value: A): B = ev.plus(acc, f(value))
-    override def result(acc: B): B               = acc
+    override def init(): B                   = ev.zero
+    override def update(acc: B, value: A): B = ev.plus(acc, f(value))
+    override def result(acc: B): B           = acc
   }
 
-  final class Count[A](p: A => Boolean) extends AggregateWithSubtotals[A] {
+  final class Count[A](p: A => Boolean) extends Aggregation[A] {
     override type Out = Int
     override type Acc = Int
 
-    override def init(): Int                         = 0
-    override def updateImpl(acc: Int, value: A): Int = acc + 1
-    override def result(acc: Int): Int               = acc
+    override def init(): Int                     = 0
+    override def update(acc: Int, value: A): Int = acc + 1
+    override def result(acc: Int): Int           = acc
   }
 
-  final class Product[A](ev: MultiplicativeMonoid[A]) extends AggregateWithSubtotals[A] {
+  final class Product[A](ev: MultiplicativeMonoid[A]) extends Aggregation[A] {
     override type Out = A
     override type Acc = A
 
-    override def init(): A                       = ev.one
-    override def updateImpl(acc: A, value: A): A = ev.times(acc, value)
-    override def result(acc: A): A               = acc
+    override def init(): A                   = ev.one
+    override def update(acc: A, value: A): A = ev.times(acc, value)
+    override def result(acc: A): A           = acc
   }
 
-  final class ProductBy[A, B](f: A => B, ev: MultiplicativeMonoid[B]) extends AggregateWithSubtotals[A] {
+  final class ProductBy[A, B](f: A => B, ev: MultiplicativeMonoid[B]) extends Aggregation[A] {
 
     override type Out = B
     override type Acc = B
 
-    override def init(): B                       = ev.one
-    override def updateImpl(acc: B, value: A): B = ev.times(acc, f(value))
-    override def result(acc: B): B               = acc
+    override def init(): B                   = ev.one
+    override def update(acc: B, value: A): B = ev.times(acc, f(value))
+    override def result(acc: B): B           = acc
   }
 
-  final class Avg[A](ev: Field[A]) extends AggregateWithSubtotals[A] {
+  final class Avg[A](ev: Field[A]) extends Aggregation[A] {
 
     override type Out = A
     override type Acc = (Int, A)
 
     override def init(): (Int, A) = (0, ev.zero)
 
-    override def updateImpl(acc: (Int, A), value: A): (Int, A) = {
+    override def update(acc: (Int, A), value: A): (Int, A) = {
       val (count, sum) = acc
       (count + 1, ev.plus(sum, value))
     }
@@ -217,14 +197,14 @@ trait AggregationFunctions {
     }
   }
 
-  final class AvgBy[A, B](f: A => B, ev: Field[B]) extends AggregateWithSubtotals[A] {
+  final class AvgBy[A, B](f: A => B, ev: Field[B]) extends Aggregation[A] {
 
     override type Out = B
     override type Acc = (Int, B)
 
     override def init(): (Int, B) = (0, ev.zero)
 
-    override def updateImpl(acc: (Int, B), value: A): (Int, B) = {
+    override def update(acc: (Int, B), value: A): (Int, B) = {
       val (count, sum) = acc
       (count + 1, ev.plus(sum, f(value)))
     }
@@ -255,12 +235,12 @@ trait AggregationFunctions {
       MathUtils.std[B](xs)(ev).value
   }
 
-  final class Reduce[A](op: (A, A) => A, opName: String) extends AggregateWithSubtotals[A] {
+  final class Reduce[A](op: (A, A) => A, opName: String) extends Aggregation[A] {
     override type Out = A
     override type Acc = A
 
     override def init(): A = null.asInstanceOf[A]
-    override def updateImpl(acc: A, value: A): A =
+    override def update(acc: A, value: A): A =
       if (acc == null) value
       else op(acc, value)
 
@@ -269,12 +249,12 @@ trait AggregationFunctions {
       else acc
   }
 
-  final class ReduceBy[A, B](by: A => B, op: (B, B) => B, opName: String) extends AggregateWithSubtotals[A] {
+  final class ReduceBy[A, B](by: A => B, op: (B, B) => B, opName: String) extends Aggregation[A] {
     override type Out = B
     override type Acc = B
 
     override def init(): B = null.asInstanceOf[B]
-    override def updateImpl(acc: B, value: A): B =
+    override def update(acc: B, value: A): B =
       if (acc == null) by(value)
       else op(acc, by(value))
 
@@ -283,22 +263,22 @@ trait AggregationFunctions {
       else acc
   }
 
-  final class FoldLeft[A, B](initial: B, f: (B, A) => B) extends AggregateWithSubtotals[A] {
+  final class FoldLeft[A, B](initial: B, f: (B, A) => B) extends Aggregation[A] {
     override type Out = B
     override type Acc = B
 
-    override def init(): B                       = initial
-    override def updateImpl(acc: B, value: A): B = f(acc, value)
-    override def result(acc: B): B               = acc
+    override def init(): B                   = initial
+    override def update(acc: B, value: A): B = f(acc, value)
+    override def result(acc: B): B           = acc
   }
 
-  final class FoldLeftBy[A, B, R](by: A => B, initial: R, f: (R, B) => R) extends AggregateWithSubtotals[A] {
+  final class FoldLeftBy[A, B, R](by: A => B, initial: R, f: (R, B) => R) extends Aggregation[A] {
     override type Out = R
     override type Acc = R
 
-    override def init(): R                       = initial
-    override def updateImpl(acc: R, value: A): R = f(acc, by(value))
-    override def result(acc: R): R               = acc
+    override def init(): R                   = initial
+    override def update(acc: R, value: A): R = f(acc, by(value))
+    override def result(acc: R): R           = acc
   }
 
 //  final class Report1[A, B, U1](

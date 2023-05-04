@@ -45,7 +45,7 @@ trait Aggregation[-A] extends QueryExpression[A] { self =>
 
   type Acc
   def init(): Acc
-  def update(acc: Acc, value: A, isSubtotal: Boolean): Acc
+  def update(acc: Acc, value: A): Acc
   def result(acc: Acc): Out
 
   /**
@@ -92,9 +92,6 @@ trait Aggregation[-A] extends QueryExpression[A] { self =>
   ): Aggregation.Of[A0, tupled.Out] =
     new Aggregation.Chained[A0, Out, that.Out, Acc, that.Acc, tupled.Out](self, that)(tupled)
 
-  def withoutSubtotals: Aggregation.Of[A, Out] =
-    new Aggregation.AggregateIgnoreSubtotals[A, Acc, Out](self)
-
   override final def processWindow(
     order:            Ordering[A] @uncheckedVariance,
     values:           Iterable[A]
@@ -103,7 +100,7 @@ trait Aggregation[-A] extends QueryExpression[A] { self =>
     var acc  = init()
     val iter = values.iterator
     while (iter.hasNext)
-      acc = update(acc, iter.next(), isSubtotal = false)
+      acc = update(acc, iter.next())
     val res = result(acc)
     values.map(v => flatten(v -> res))
   }
