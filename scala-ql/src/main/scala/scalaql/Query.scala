@@ -537,7 +537,10 @@ object Query {
     values:           List[GroupingSetIndices],
     orderings:        List[Ordering[Any]],
     groupFillments:   Map[Int, Any => Any],
-    defaultFillments: Map[Int, Any])
+    defaultFillments: Map[Int, Any]) {
+
+    val numGroups: Int = orderings.size
+  }
 
   final case class GroupKeys(keys: Map[Int, Any]) {
     override lazy val hashCode: Int = MurmurHash3.orderedHash(
@@ -554,13 +557,15 @@ object Query {
     lazy val size: Int = keys.size
 
     def apply(idx: Int): Any = keys(idx)
-    def subgroups(sets: GroupingSetsDescription): List[GroupKeys] =
+    def subgroups(sets: GroupingSetsDescription): List[(GroupKeys, Boolean)] =
       sets.values.map { set =>
         val sub = set.map { idx =>
           idx -> keys(idx)
         }.toMap
 
-        GroupKeys(sub)
+        val isSubtotal = sets.numGroups != sub.size
+
+        GroupKeys(sub) -> isSubtotal
       }
   }
 

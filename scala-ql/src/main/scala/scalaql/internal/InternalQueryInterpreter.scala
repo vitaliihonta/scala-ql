@@ -134,14 +134,14 @@ private[scalaql] object InternalQueryInterpreter extends QueryInterpreter[Step] 
 
         interpret[In, out0](in, source)(
           Step.always[out0] { mid =>
-            group(mid).subgroups(groupingSets).foreach { subGroup =>
+            group(mid).subgroups(groupingSets).foreach { case (subGroup, isSubtotal) =>
               if (!accCache.contains(subGroup)) {
                 accCache += (subGroup -> aggregate.init())
               }
 
               // Update the accumulator and put back into cache
               val acc     = accCache(subGroup)
-              val updated = aggregate.update(acc, mid)
+              val updated = aggregate.update(acc, mid, isSubtotal)
               accCache.update(subGroup, updated)
             }
           }
